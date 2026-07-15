@@ -39,6 +39,7 @@ const getPasswordScore = (pass: string) => {
     if (/[A-Z]/.test(pass) && /[0-9]/.test(pass)) score++;
     if (/[^A-Za-z0-9]/.test(pass)) score++;
     if (pass.length > 12) score++;
+    if (score < 2) return { score, label: 'Weak', color: 'bg-red-400', w: 'w-1/4' };
     if (score === 2) return { score, label: 'Fair', color: 'bg-yellow-400', w: 'w-2/4' };
     if (score === 3) return { score, label: 'Good', color: 'bg-blue-500', w: 'w-3/4' };
     return { score, label: 'Strong', color: 'bg-green-500', w: 'w-full' };

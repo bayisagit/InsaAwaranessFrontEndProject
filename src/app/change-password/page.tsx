@@ -9,15 +9,16 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const getPasswordScore = (pass: string) => {
-    if (!pass) return { label: '', color: 'bg-gray-200', w: 'w-0' };
-    if (pass.length < 8) return { label: 'Weak', color: 'bg-red-500', w: 'w-1/4' };
+    if (!pass) return { score: 0, label: '', color: 'bg-gray-200', w: 'w-0' };
+    if (pass.length < 8) return { score: 1, label: 'Weak', color: 'bg-red-500', w: 'w-1/4' };
     let score = 1;
     if (/[A-Z]/.test(pass) && /[0-9]/.test(pass)) score++;
     if (/[^A-Za-z0-9]/.test(pass)) score++;
     if (pass.length > 12) score++;
-    if (score === 2) return { label: 'Fair', color: 'bg-yellow-400', w: 'w-2/4' };
-    if (score === 3) return { label: 'Good', color: 'bg-blue-500', w: 'w-3/4' };
-    return { label: 'Strong', color: 'bg-green-500', w: 'w-full' };
+    if (score < 2) return { score, label: 'Weak', color: 'bg-red-400', w: 'w-1/4' };
+    if (score === 2) return { score, label: 'Fair', color: 'bg-yellow-400', w: 'w-2/4' };
+    if (score === 3) return { score, label: 'Good', color: 'bg-blue-500', w: 'w-3/4' };
+    return { score, label: 'Strong', color: 'bg-green-500', w: 'w-full' };
 };
 
 export default function ChangePasswordPage() {
