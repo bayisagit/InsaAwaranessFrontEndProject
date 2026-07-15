@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { apiFetch, getCertificateExams, CertificateExam, Enrollment } from '@/lib/api';
+import { apiFetch, getCertificates, Certificate } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
+import { LinkifyText } from '@/components/LinkifyText';
 
 interface Module { id: string; title: string; description?: string; order?: number; }
-interface Course { id: string; title: string; description?: string; difficulty?: string; language?: string; status?: string; }
+interface Course { id: string; title: string; description?: string; difficulty?: string; level?: string; language?: string; status?: string; }
+interface Enrollment { id: string; user: string; course: string; progress: number; status: string; }
 
 export default function CourseDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -23,7 +25,8 @@ export default function CourseDetailPage() {
     const [enrollError, setEnrollError] = useState('');
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
-    const [certificateExam, setCertificateExam] = useState<CertificateExam | null>(null);
+    const [certificate, setCertificate] = useState<Certificate | null>(null);
+
 
     useEffect(() => {
         if (id) fetchCourseData();
@@ -33,15 +36,9 @@ export default function CourseDetailPage() {
         setIsLoading(true);
         const [courseRes, enrollRes] = await Promise.all([
             apiFetch(`/api/v1/courses/${id}/`),
-            isAuthenticated ? apiFetch('/api/v1/enrollments/') : Promise.resolve({ data: null })
+            // Filter by course to avoid fetching all enrollments client-side
+            isAuthenticated ? apiFetch(`/api/v1/enrollments/?course=${id}`) : Promise.resolve({ data: null })
         ]);
-
-        // Try to fetch cert exam (only works for admin/provider roles; silently ignored for learners)
-        getCertificateExams({ course: id }).then(examRes => {
-            const results = (examRes.data as any)?.results ?? [];
-            if (Array.isArray(results) && results.length > 0) setCertificateExam(results[0]);
-        }).catch(() => { });
-
 
         if (courseRes.error) {
             setError(courseRes.error);
@@ -52,43 +49,61 @@ export default function CourseDetailPage() {
             }
         }
 
-        if (enrollRes.data) {
+        if (enrollRes?.data) {
             const results = enrollRes.data.results || (Array.isArray(enrollRes.data) ? enrollRes.data : []);
-            const foundEnrollment = results.find((e: any) => {
-                const cId = typeof e.course === 'object' ? e.course.id : e.course;
-                return cId === id;
-            });
+            const foundEnrollment = results[0] || null; // already filtered by course
             setIsEnrolled(!!foundEnrollment);
-            setEnrollment(foundEnrollment || null);
+            setEnrollment(foundEnrollment);
+
+            // If enrolled and completed, fetch certificate
+            if (foundEnrollment?.status === 'completed') {
+                getCertificates({ enrollment: foundEnrollment.id }).then(certRes => {
+                    const certs = certRes.data?.results ?? [];
+                    if (certs.length > 0) setCertificate(certs[0]);
+                }).catch(() => {});
+            }
         }
 
         setIsLoading(false);
     };
 
+
     const handleDownloadCertificate = async () => {
-        if (!enrollment) return;
-        window.open(`/api/v1/enrollments/${enrollment.id}/certificate/`, '_blank');
+        if (!certificate?.certificate_id) return;
+        // Build a verification URL using the public certificate_id token
+        window.open(`/verify/${certificate.certificate_id}`, '_blank');
     };
+
 
     const handleEnroll = async () => {
         if (!isAuthenticated) { router.push('/login'); return; }
         setIsEnrolling(true); setEnrollError('');
-        const { error: e, status } = await apiFetch('/api/v1/enrollments/', {
+
+        // Per API docs: only send user + course. Backend defaults progress=0, status=in_progress
+        const { data, error: e, status } = await apiFetch('/api/v1/enrollments/', {
             method: 'POST',
             body: JSON.stringify({
                 user: user?.id,
-                course: id,
-                progress: 0,
-                status: 'in_progress'
+                course: id
             })
         });
+
+        if (status === 400 && (data as any)?.status === 'profile_required') {
+            // Public user must complete their background profile before enrolling
+            router.push('/profile/background?next=' + encodeURIComponent(`/courses/${id}`));
+            return;
+        }
+
         if (e || (status !== 200 && status !== 201)) {
             setEnrollError(e || 'Enrollment failed. You may already be enrolled.');
         } else {
             setEnrollSuccess('You have been successfully enrolled! 🎉');
+            setIsEnrolled(true);
+            setEnrollment(data as Enrollment);
         }
         setIsEnrolling(false);
     };
+
 
     if (isLoading) {
         return (
@@ -133,7 +148,7 @@ export default function CourseDetailPage() {
                                 )}
                             </div>
                             <h1 className="text-3xl font-extrabold text-gray-900">{course.title}</h1>
-                            {course.description && <p className="mt-3 text-gray-600 leading-relaxed">{course.description}</p>}
+                            {course.description && <p className="mt-3 text-gray-600 leading-relaxed"><LinkifyText text={course.description} /></p>}
                         </div>
                         <div className="shrink-0 w-64 space-y-3">
                             {enrollSuccess || isEnrolled ? (
@@ -151,9 +166,10 @@ export default function CourseDetailPage() {
 
                                     {enrollment?.status === 'completed' && (
                                         <Button variant="outline" onClick={handleDownloadCertificate} className="w-full mt-2 border-green-200 text-green-700 hover:bg-green-50">
-                                            🏆 Download Certificate
+                                            🏆 {certificate ? 'View Certificate' : 'Certificate Issued'}
                                         </Button>
                                     )}
+
                                 </>
                             ) : (
                                 <>
@@ -198,7 +214,7 @@ export default function CourseDetailPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">{module.title}</h3>
-                                        {module.description && <p className="text-sm text-gray-500 mt-1">{module.description}</p>}
+                                        {module.description && <p className="text-sm text-gray-500 mt-1"><LinkifyText text={module.description} /></p>}
                                     </div>
                                     <div className="ml-auto flex items-center gap-2">
                                         <span className="text-xs font-bold text-gray-300 group-hover:text-primary uppercase tracking-widest hidden sm:block">Start Reading</span>

@@ -13,12 +13,9 @@ interface Module {
     id: string;
     course: string;
     title: string;
-    description?: string;
-    learning_objectives?: string;
-    version?: string;
     order: number;
-    course_title?: string;
 }
+
 
 interface Course {
     id: string;
@@ -49,11 +46,9 @@ export default function AdminModulesPage() {
     const [form, setForm] = useState({
         course: '',
         title: '',
-        description: '',
-        learning_objectives: '',
-        version: '1.0.0',
         order: 0
     });
+
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -64,13 +59,14 @@ export default function AdminModulesPage() {
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) router.push('/login');
-            else if (user?.role !== 'super_admin' && user?.role !== 'org_admin' && user?.role !== 'course_provider') router.push('/dashboard');
+    else if (user?.role !== 'super_admin' && user?.role !== 'course_provider') router.push('/dashboard');
+
             else {
                 fetchCourses();
                 fetchModules();
             }
         }
-    }, [isAuthenticated, isLoading, user, router, page, searchTerm]);
+    }, [isAuthenticated, isLoading, user, router, page]);
 
     const fetchCourses = async () => {
         const { data } = await apiFetch('/api/v1/courses/?page_size=100');
@@ -107,9 +103,6 @@ export default function AdminModulesPage() {
             setForm({
                 course: mod.course,
                 title: mod.title,
-                description: mod.description || '',
-                learning_objectives: mod.learning_objectives || '',
-                version: mod.version || '1.0.0',
                 order: mod.order
             });
         } else {
@@ -117,14 +110,12 @@ export default function AdminModulesPage() {
             setForm({
                 course: courses[0]?.id || '',
                 title: '',
-                description: '',
-                learning_objectives: '',
-                version: '1.0.0',
                 order: modules.length + 1
             });
         }
         setIsModalOpen(true);
     };
+
 
     const handleSubmit = async (ev: React.FormEvent) => {
         ev.preventDefault();
@@ -134,9 +125,12 @@ export default function AdminModulesPage() {
         const isEditing = !!selectedModule;
         const endpoint = `/api/v1/modules/${isEditing ? `${selectedModule.id}/` : ''}`;
 
+        // Only send API-supported fields: course, title, order
+        const payload = { course: form.course, title: form.title, order: form.order };
+
         const { error: apiErr, status } = await apiFetch(endpoint, {
             method: isEditing ? 'PATCH' : 'POST',
-            body: JSON.stringify(form)
+            body: JSON.stringify(isEditing ? { title: form.title, order: form.order } : payload)
         });
 
         if (apiErr || (status !== 200 && status !== 201)) {
@@ -168,8 +162,9 @@ export default function AdminModulesPage() {
         return courses.find(c => c.id === courseId)?.title || courseId;
     };
 
-    if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
-    if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin' && user.role !== 'course_provider')) return null;
+    if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+    if (!user || (user.role !== 'super_admin' && user.role !== 'course_provider')) return null;
+
 
     const filteredModules = modules.filter(m => {
         const matchesCourse = selectedCourses.length === 0 || selectedCourses.includes(m.course);
@@ -244,58 +239,65 @@ export default function AdminModulesPage() {
                 <div className="flex-1">
                     {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
-                                <tr>
-                                    <th className="px-6 py-4">Title</th>
-                                    <th className="px-6 py-4">Course</th>
-                                    <th className="px-6 py-4 text-center">Order</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {filteredModules.length === 0 ? (
-                                    <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No modules found matching your criteria.</td></tr>
-                                ) : filteredModules.map(m => (
-                                    <tr key={m.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900">{m.title}</td>
-                                        <td className="px-6 py-4 text-gray-600 truncate max-w-[250px]">{getCourseName(m.course)}</td>
-                                        <td className="px-6 py-4 text-center">{m.order}</td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            <button onClick={() => openModal(m)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
-                                            <button onClick={() => handleDelete(m.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Pagination */}
-                    {totalCount > pageSize && !selectedCourses.length && !searchTerm && (
-                        <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                            <span className="text-sm text-gray-500">Showing {modules.length} of {totalCount} modules</span>
-                            <div className="flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={page <= 1 || isFetching}
-                                    onClick={() => setPage(p => p - 1)}
-                                >
-                                    Previous
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={(page * pageSize) >= totalCount || isFetching}
-                                    onClick={() => setPage(p => p + 1)}
-                                >
-                                    Next
-                                </Button>
+                    <div className="relative">
+                        {isFetching && (
+                            <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
+                        )}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <table className="w-full text-left text-sm text-gray-500">
+                                <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-6 py-4">Title</th>
+                                        <th className="px-6 py-4">Course</th>
+                                        <th className="px-6 py-4 text-center">Order</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {filteredModules.length === 0 ? (
+                                        <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No modules found matching your criteria.</td></tr>
+                                    ) : filteredModules.map(m => (
+                                        <tr key={m.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 font-medium text-gray-900">{m.title}</td>
+                                            <td className="px-6 py-4 text-gray-600 truncate max-w-[250px]">{getCourseName(m.course)}</td>
+                                            <td className="px-6 py-4 text-center">{m.order}</td>
+                                            <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                <button onClick={() => openModal(m)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                                <button onClick={() => handleDelete(m.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                    )}
+
+                        {/* Pagination */}
+                        {totalCount > pageSize && !selectedCourses.length && !searchTerm && (
+                            <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
+                                <span className="text-sm text-gray-500">Showing {modules.length} of {totalCount} modules</span>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={page <= 1 || isFetching}
+                                        onClick={() => setPage(p => p - 1)}
+                                    >
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={(page * pageSize) >= totalCount || isFetching}
+                                        onClick={() => setPage(p => p + 1)}
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -328,44 +330,14 @@ export default function AdminModulesPage() {
                         placeholder="e.g., Introduction to Phishing"
                     />
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                        <textarea
-                            className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px]"
-                            value={form.description}
-                            onChange={e => setForm({ ...form, description: e.target.value })}
-                            disabled={isActionLoading}
-                            placeholder="Briefly describe the module..."
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Learning Objectives</label>
-                        <textarea
-                            className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px]"
-                            value={form.learning_objectives}
-                            onChange={e => setForm({ ...form, learning_objectives: e.target.value })}
-                            disabled={isActionLoading}
-                            placeholder="What will students learn? (One per line)"
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input
-                            label="Version"
-                            value={form.version}
-                            onChange={e => setForm({ ...form, version: e.target.value })}
-                            disabled={isActionLoading}
-                        />
-                        <Input
-                            label="Display Order"
-                            type="number"
-                            value={form.order}
-                            onChange={e => setForm({ ...form, order: parseInt(e.target.value) || 0 })}
-                            required
-                            disabled={isActionLoading}
-                        />
-                    </div>
+                    <Input
+                        label="Display Order"
+                        type="number"
+                        value={form.order}
+                        onChange={e => setForm({ ...form, order: parseInt(e.target.value) || 0 })}
+                        required
+                        disabled={isActionLoading}
+                    />
 
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>

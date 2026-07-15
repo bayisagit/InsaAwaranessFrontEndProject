@@ -47,28 +47,27 @@ export default function AdminArticlesPage() {
     const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
+    // Article API schema: only module, content, order
     const [formData, setFormData] = useState({
         module: '',
         content: '',
-        category: 'general',
-        difficulty: 'beginner',
-        language: 'en',
-        version: '1.0.0',
         order: 0
     });
+
 
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) {
                 router.push('/login');
-            } else if (user?.role !== 'super_admin' && user?.role !== 'org_admin' && user?.role !== 'course_provider') {
+            } else if (user?.role !== 'super_admin' && user?.role !== 'course_provider') {
+
                 router.push('/dashboard');
             } else {
                 fetchArticles();
                 fetchModules();
             }
         }
-    }, [isAuthenticated, isLoading, user, router, page, searchTerm]);
+    }, [isAuthenticated, isLoading, user, router, page]);
 
     const fetchModules = async () => {
         const { data } = await apiFetch('/api/v1/modules/?page_size=100');
@@ -104,19 +103,12 @@ export default function AdminArticlesPage() {
         setActionError('');
         if (article) {
             setSelectedArticle(article);
-            setFormData({
-                module: article.module,
-                content: article.content,
-                category: article.category || 'general',
-                difficulty: article.difficulty || 'beginner',
-                language: article.language || 'en',
-                version: article.version || '1.0.0',
-                order: article.order
-            });
+            setFormData({ module: article.module, content: article.content, order: article.order });
         } else {
             setSelectedArticle(null);
-            setFormData({ module: '', content: '', category: 'general', difficulty: 'beginner', language: 'en', version: '1.0.0', order: 0 });
+            setFormData({ module: '', content: '', order: 0 });
         }
+
         setIsModalOpen(true);
     };
 
@@ -134,15 +126,13 @@ export default function AdminArticlesPage() {
         const endpoint = `/api/v1/articles/${isEditing ? `${selectedArticle.id}/` : ''}`;
         const method = isEditing ? 'PATCH' : 'POST';
 
+        // Only send API-supported fields: module, content, order
         const payload = {
             module: formData.module,
             content: formData.content,
-            category: formData.category,
-            difficulty: formData.difficulty,
-            language: formData.language,
-            version: formData.version,
             order: Number(formData.order)
         };
+
 
         const { error: apiError, status } = await apiFetch(endpoint, {
             method,
@@ -182,17 +172,15 @@ export default function AdminArticlesPage() {
         setIsActionLoading(false);
     };
 
-    if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
-    if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin' && user.role !== 'course_provider')) return null;
+    if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+    if (!user || (user.role !== 'super_admin' && user.role !== 'course_provider')) return null;
 
-    const filteredArticles = articles.filter(a => {
-        const matchesModule = selectedModules.length === 0 || selectedModules.includes(a.module);
-        const matchesCategory = selectedCategories.length === 0 || (a.category && selectedCategories.includes(a.category));
-        const matchesDifficulty = selectedDifficulties.length === 0 || (a.difficulty && selectedDifficulties.includes(a.difficulty));
-        const matchesLanguage = selectedLanguages.length === 0 || (a.language && selectedLanguages.includes(a.language));
-        const matchesSearch = !searchTerm || a.content.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesModule && matchesCategory && matchesDifficulty && matchesLanguage && matchesSearch;
-    });
+
+    // Local search filter — only filter by content text (module filter is done server-side)
+    const filteredArticles = searchTerm
+        ? articles.filter(a => a.content.toLowerCase().includes(searchTerm.toLowerCase()))
+        : articles;
+
 
     const getModuleName = (id: string) => modules.find(m => m.id === id)?.title || id;
 
@@ -328,43 +316,40 @@ export default function AdminArticlesPage() {
                 <div className="flex-1">
                     {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
-                                <tr>
-                                    <th className="px-6 py-4">Content Preview</th>
-                                    <th className="px-6 py-4">Module</th>
-                                    <th className="px-6 py-4">Category</th>
-                                    <th className="px-6 py-4">Diff.</th>
-                                    <th className="px-6 py-4">Lang</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {filteredArticles.length === 0 ? (
-                                    <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">No articles found matching your criteria.</td></tr>
-                                ) : filteredArticles.map(a => (
-                                    <tr key={a.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900 italic truncate max-w-[250px]">"{a.content.substring(0, 50)}..."</td>
-                                        <td className="px-6 py-4 text-gray-600 truncate max-w-[150px]">{getModuleName(a.module)}</td>
-                                        <td className="px-6 py-4 capitalize">{a.category || (a as any).category_name || '—'}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${(a.difficulty || (a as any).level) === 'beginner' ? 'bg-green-50 text-green-600' :
-                                                    (a.difficulty || (a as any).level) === 'intermediate' ? 'bg-yellow-50 text-yellow-600' :
-                                                        (a.difficulty || (a as any).level) === 'advanced' ? 'bg-red-50 text-red-600' : 'bg-gray-50 text-gray-600'
-                                                }`}>
-                                                {a.difficulty || (a as any).level || '—'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 uppercase text-xs">{a.language || (a as any).lang || '—'}</td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            <button onClick={() => handleOpenModal(a)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
-                                            <button onClick={() => handleDeleteArticle(a.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
-                                        </td>
+                    <div className="relative">
+                        {isFetching && (
+                            <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                            </div>
+                        )}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <table className="w-full text-left text-sm text-gray-500">
+                                <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-6 py-4">Content Preview</th>
+                                        <th className="px-6 py-4">Module</th>
+                                        <th className="px-6 py-4 text-center">Order</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {filteredArticles.length === 0 ? (
+                                        <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No articles found matching your criteria.</td></tr>
+                                    ) : filteredArticles.map(a => (
+                                        <tr key={a.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 font-medium text-gray-900 italic truncate max-w-[300px]">"{a.content.substring(0, 80)}..."</td>
+                                            <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{getModuleName(a.module)}</td>
+                                            <td className="px-6 py-4 text-center">{a.order}</td>
+                                            <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                <button onClick={() => handleOpenModal(a)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                                <button onClick={() => handleDeleteArticle(a.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -411,51 +396,17 @@ export default function AdminArticlesPage() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
-                            <select className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} disabled={isActionLoading}>
-                                <option value="general">General</option>
-                                <option value="technical">Technical</option>
-                                <option value="behavioral">Behavioral</option>
-                                <option value="compliance">Compliance</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Difficulty</label>
-                            <select className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none" value={formData.difficulty} onChange={e => setFormData({ ...formData, difficulty: e.target.value })} disabled={isActionLoading}>
-                                <option value="beginner">Beginner</option>
-                                <option value="intermediate">Intermediate</option>
-                                <option value="advanced">Advanced</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Display Order</label>
+                        <input
+                            type="number"
+                            className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none"
+                            value={formData.order}
+                            onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                            disabled={isActionLoading}
+                        />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
-                            <select className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none" value={formData.language} onChange={e => setFormData({ ...formData, language: e.target.value })} disabled={isActionLoading}>
-                                <option value="en">English (en)</option>
-                                <option value="am">Amharic (am)</option>
-                                <option value="om">Oromo (om)</option>
-                            </select>
-                        </div>
-                        <Input
-                            label="Version"
-                            value={formData.version}
-                            onChange={(e) => setFormData({ ...formData, version: e.target.value })}
-                            disabled={isActionLoading}
-                        />
-                        <Input
-                            label="Order"
-                            type="number"
-                            name="order"
-                            value={formData.order}
-                            onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                            required
-                            disabled={isActionLoading}
-                        />
-                    </div>
 
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isActionLoading}>

@@ -27,6 +27,10 @@ export default function AdminAwarenessToolsPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedTool, setSelectedTool] = useState<AwarenessTool | null>(null);
     const [isActionLoading, setIsActionLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const pageSize = 10;
 
     const [formData, setFormData] = useState({
         name: '',
@@ -41,13 +45,21 @@ export default function AdminAwarenessToolsPage() {
             else if (user?.role !== 'super_admin') router.push('/dashboard');
             else fetchTools();
         }
-    }, [isAuthenticated, isLoading, user, router]);
+    }, [isAuthenticated, isLoading, user, router, page, searchTerm]);
 
     const fetchTools = async () => {
         setIsFetching(true);
-        const { data, error: e } = await getAwarenessTools();
+        const params: Record<string, any> = {
+            page: page.toString(),
+            page_size: pageSize.toString()
+        };
+        if (searchTerm) params.search = searchTerm;
+        const { data, error: e } = await getAwarenessTools(params);
         if (e) setError(e);
-        else if (data?.results) setTools(data.results);
+        else if (data?.results) {
+            setTools(data.results);
+            setTotalCount(data.count || 0);
+        }
         setIsFetching(false);
     };
 
@@ -58,7 +70,7 @@ export default function AdminAwarenessToolsPage() {
                 name: tool.name,
                 description: tool.description,
                 status: tool.status,
-                config: tool.config
+                config: tool.config ? JSON.stringify(tool.config, null, 2) : '{}'
             });
         } else {
             setSelectedTool(null);
@@ -66,7 +78,7 @@ export default function AdminAwarenessToolsPage() {
                 name: '',
                 description: '',
                 status: 'enabled',
-                config: ''
+                config: '{}'
             });
         }
         setIsModalOpen(true);
@@ -77,9 +89,20 @@ export default function AdminAwarenessToolsPage() {
         setIsActionLoading(true);
         setError('');
 
+        let parsedConfig: Record<string, any> = {};
+        try {
+            parsedConfig = JSON.parse(formData.config);
+        } catch {
+            setError('Invalid JSON in configuration field.');
+            setIsActionLoading(false);
+            return;
+        }
+
+        const payload = { ...formData, config: parsedConfig };
+
         const { error: err } = selectedTool
-            ? await updateAwarenessTool(selectedTool.id, formData)
-            : await createAwarenessTool(formData);
+            ? await updateAwarenessTool(selectedTool.id, payload)
+            : await createAwarenessTool(payload);
 
         if (err) {
             setError(err);
@@ -133,6 +156,16 @@ export default function AdminAwarenessToolsPage() {
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
                 {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    <div className="flex-1">
+                        <Input
+                            placeholder="Search tools by name or description..."
+                            value={searchTerm}
+                            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                        />
+                    </div>
+                </div>
 
                 <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
@@ -197,6 +230,30 @@ export default function AdminAwarenessToolsPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {totalCount > pageSize && (
+                    <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
+                        <span className="text-sm text-gray-500">Showing {tools.length} of {totalCount} tools</span>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={page <= 1 || isFetching}
+                                onClick={() => setPage(p => p - 1)}
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={(page * pageSize) >= totalCount || isFetching}
+                                onClick={() => setPage(p => p + 1)}
+                            >
+                                Next
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <Modal

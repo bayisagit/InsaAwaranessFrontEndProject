@@ -20,10 +20,12 @@ interface Lesson {
     content?: string;
     media_url?: string;
     image_url?: string;
-    assessment_type?: 'true_false' | 'multiple_choice';
-    assessment_payload?: string;
+    assessment_type?: 'true_false' | 'multiple_choice' | 'matching';
+    assessment_payload?: any; // object on response, string while editing in form
+    passing_score?: number;
     order: number;
 }
+
 
 interface Module {
     id: string;
@@ -59,10 +61,12 @@ export default function AdminLessonsPage() {
         content: '',
         media_url: '',
         image_url: '',
-        assessment_type: 'true_false',
-        assessment_payload: '',
+        assessment_type: 'multiple_choice',
+        assessment_payload: '',  // stored as JSON string while editing, parsed before submit
+        passing_score: 70,
         order: 0
     });
+
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -81,7 +85,7 @@ export default function AdminLessonsPage() {
                 fetchLessons();
             }
         }
-    }, [isAuthenticated, isLoading, user, router, page, searchTerm]);
+    }, [isAuthenticated, isLoading, user, router, page]);
 
     const fetchModules = async () => {
         const { data } = await apiFetch('/api/v1/modules/?page_size=100');
@@ -122,12 +126,14 @@ export default function AdminLessonsPage() {
             content: '',
             media_url: '',
             image_url: '',
-            assessment_type: 'true_false',
+            assessment_type: 'multiple_choice',
             assessment_payload: '',
+            passing_score: 70,
             order: lessons.length + 1
         });
         setIsModalOpen(true);
     };
+
 
     const handleEdit = (lesson: Lesson) => {
         setActionError('');
@@ -140,8 +146,13 @@ export default function AdminLessonsPage() {
             content: lesson.content || '',
             media_url: lesson.media_url || '',
             image_url: lesson.image_url || '',
-            assessment_type: lesson.assessment_type || 'true_false',
-            assessment_payload: lesson.assessment_payload || '',
+            assessment_type: lesson.assessment_type || 'multiple_choice',
+            assessment_payload: lesson.assessment_payload
+                ? (typeof lesson.assessment_payload === 'string'
+                    ? lesson.assessment_payload
+                    : JSON.stringify(lesson.assessment_payload, null, 2))
+                : '',
+            passing_score: lesson.passing_score ?? 70,
             order: lesson.order
         });
         setIsModalOpen(true);
@@ -152,41 +163,52 @@ export default function AdminLessonsPage() {
         setActionError('');
         setIsActionLoading(true);
 
-        const isEditing = !!selectedLesson;
+        // Build API payload
+        const payload: Record<string, any> = {
+            module: form.module,
+            title: form.title,
+            content_type: form.content_type,
+            language: form.language,
+            order: form.order,
+        };
 
-        // Payload Validation
-        if (form.content_type === 'assessment') {
+        if (form.content_type === 'video') {
+            payload.media_url = form.media_url;
+            payload.content = form.content || '';
+        } else if (form.content_type === 'article') {
+            payload.content = form.content;
+        } else if (form.content_type === 'image') {
+            payload.image_url = form.image_url;
+            payload.content = form.content || '';
+        } else if (form.content_type === 'assessment') {
             try {
-                const payload = JSON.parse(form.assessment_payload);
-                if (!payload || typeof payload !== 'object' || !Array.isArray(payload.questions) || payload.questions.length === 0) {
-                    throw new Error('Payload must be a JSON object with a non-empty "questions" array.');
+                const parsed = JSON.parse(form.assessment_payload);
+                if (!parsed?.questions || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+                    throw new Error('Payload must have a non-empty "questions" array.');
                 }
-                const validTypes = ['multiple_choice', 'true_false', 'matching'];
-                for (let i = 0; i < payload.questions.length; i++) {
-                    const q = payload.questions[i];
-                    if (!q.id || !q.type || !q.question || q.correct_answer === undefined) {
-                        throw new Error(`Question at index ${i} missing required fields (id, type, question, correct_answer).`);
-                    }
-                    if (!validTypes.includes(q.type)) {
-                        throw new Error(`Question at index ${i} has invalid type "${q.type}".`);
-                    }
+                for (let i = 0; i < parsed.questions.length; i++) {
+                    const q = parsed.questions[i];
+                    if (!q.id || !q.type || !q.question || q.correct_answer === undefined)
+                        throw new Error(`Question ${i + 1} missing required fields (id, type, question, correct_answer).`);
+                    if (!['multiple_choice', 'true_false', 'matching'].includes(q.type))
+                        throw new Error(`Question ${i + 1} has invalid type "${q.type}". Use multiple_choice, true_false, or matching.`);
                     if (q.type === 'multiple_choice') {
-                        if (!Array.isArray(q.options) || q.options.length === 0) {
-                            throw new Error(`Multiple choice question at index ${i} must have an "options" array.`);
-                        }
-                        if (!q.options.find((opt: any) => opt.id === q.correct_answer)) {
-                            throw new Error(`Multiple choice question at index ${i} has a correct_answer that does not match any option id.`);
-                        }
+                        if (!Array.isArray(q.options) || q.options.length === 0)
+                            throw new Error(`Multiple choice question ${i + 1} must have an "options" array.`);
+                        if (!q.options.find((opt: any) => opt.id === q.correct_answer))
+                            throw new Error(`Multiple choice question ${i + 1}: correct_answer doesn't match any option id.`);
                     } else if (q.type === 'true_false') {
-                        if (typeof q.correct_answer !== 'boolean') {
-                            throw new Error(`True/False question at index ${i} must have a boolean correct_answer.`);
-                        }
+                        if (typeof q.correct_answer !== 'boolean')
+                            throw new Error(`True/False question ${i + 1}: correct_answer must be boolean true or false (not a string).`);
                     } else if (q.type === 'matching') {
-                        if (typeof q.correct_answer !== 'object' || Array.isArray(q.correct_answer)) {
-                            throw new Error(`Matching question at index ${i} must have an object for correct_answer.`);
-                        }
+                        if (typeof q.correct_answer !== 'object' || Array.isArray(q.correct_answer))
+                            throw new Error(`Matching question ${i + 1}: correct_answer must be a plain object.`);
                     }
                 }
+                // ✅ Send as parsed object — backend expects object, not string
+                payload.assessment_payload = parsed;
+                payload.assessment_type = form.assessment_type;
+                payload.passing_score = form.passing_score;
             } catch (err: any) {
                 setActionError(err.message || 'Invalid assessment payload JSON.');
                 setIsActionLoading(false);
@@ -194,11 +216,12 @@ export default function AdminLessonsPage() {
             }
         }
 
-        const endpoint = `/api/v1/lessons/${isEditing ? `${selectedLesson.id}/` : ''}`;
+        const isEditing = !!selectedLesson;
+        const endpoint = `/api/v1/lessons/${isEditing ? `${selectedLesson!.id}/` : ''}`;
 
         const { error: apiErr, status } = await apiFetch(endpoint, {
             method: isEditing ? 'PATCH' : 'POST',
-            body: JSON.stringify(form)
+            body: JSON.stringify(payload)
         });
 
         if (apiErr || (status !== 200 && status !== 201)) {
@@ -209,6 +232,7 @@ export default function AdminLessonsPage() {
         }
         setIsActionLoading(false);
     };
+
 
     const handleDelete = (id: string) => {
         setItemToDelete(id);
@@ -228,7 +252,7 @@ export default function AdminLessonsPage() {
 
     const getModuleName = (id: string) => modules.find(m => m.id === id)?.title || id;
 
-    if (isLoading || isFetching) return (
+    if (isLoading) return (
         <div className="flex justify-center items-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -252,9 +276,10 @@ export default function AdminLessonsPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Lessons Management</h1>
                         <p className="text-gray-500">Create rich content including videos, articles, and assessments.</p>
                     </div>
-                    {user?.role === 'course_provider' && (
+                    {(user?.role === 'course_provider' || user?.role === 'super_admin') && (
                         <Button variant="primary" onClick={handleAddNew}>Add Lesson</Button>
                     )}
+
                 </div>
             </div>
 
@@ -360,6 +385,12 @@ export default function AdminLessonsPage() {
                 <div className="flex-1">
                     {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
+                    <div className="relative">
+                        {isFetching && (
+                            <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                            </div>
+                        )}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <table className="w-full text-left text-sm text-gray-500">
                             <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
@@ -391,13 +422,14 @@ export default function AdminLessonsPage() {
                                         <td className="px-6 py-4 uppercase text-xs">{l.language}</td>
                                         <td className="px-6 py-4 text-center">{l.order}</td>
                                         <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            {user?.role === 'course_provider' && (
+                                            {(user?.role === 'course_provider' || user?.role === 'super_admin') && (
                                                 <button onClick={() => handleEdit(l)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
                                             )}
-                                            {user?.role === 'super_admin' && (
+                                            {(user?.role === 'super_admin' || user?.role === 'course_provider') && (
                                                 <button onClick={() => handleDelete(l.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                             )}
                                         </td>
+
                                     </tr>
                                 ))}
                             </tbody>
@@ -428,6 +460,7 @@ export default function AdminLessonsPage() {
                             </div>
                         </div>
                     )}
+                    </div>
                 </div>
             </div>
 
@@ -560,24 +593,36 @@ export default function AdminLessonsPage() {
                                         onChange={(e) => setForm({ ...form, assessment_type: e.target.value as any })}
                                         required
                                     >
-                                        <option value="true_false">True / False</option>
                                         <option value="multiple_choice">Multiple Choice</option>
+                                        <option value="true_false">True / False</option>
                                         <option value="matching">Matching</option>
                                     </select>
                                 </div>
                                 <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Passing Score (%)</label>
+                                    <input
+                                        type="number"
+                                        min={0} max={100}
+                                        className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                                        value={form.passing_score}
+                                        onChange={(e) => setForm({ ...form, passing_score: parseInt(e.target.value) || 0 })}
+                                        required
+                                    />
+                                </div>
+                                <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-1">Assessment JSON Payload</label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[150px]"
-                                        placeholder='{"questions": [...]}'
+                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[180px] resize-y"
+                                        placeholder='{"questions": [{"id":"q1","type":"multiple_choice","question":"...","options":[{"id":"a","text":"..."},{"id":"b","text":"..."}],"correct_answer":"a"}]}'
                                         value={form.assessment_payload}
                                         onChange={(e) => setForm({ ...form, assessment_payload: e.target.value })}
                                         required
                                     />
-                                    <p className="text-[10px] text-gray-400 mt-1 italic">Note: Provide a valid JSON object matching the Assessment schema.</p>
+                                    <p className="text-[10px] text-gray-400 mt-1">Use types: <code>multiple_choice</code>, <code>true_false</code>, <code>matching</code>. correct_answer must match an option id for multiple_choice, or be boolean for true_false.</p>
                                 </div>
                             </div>
                         )}
+
                     </div>
 
                     <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">

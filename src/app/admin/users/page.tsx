@@ -9,6 +9,8 @@ import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 
+const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white disabled:opacity-75 disabled:bg-gray-100 disabled:cursor-not-allowed";
+
 interface UserData {
     id: string;
     email: string;
@@ -268,9 +270,11 @@ export default function AdminUsersPage() {
                                                     {u.is_active ? 'Active' : 'Inactive'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <button onClick={() => handleOpenModal(u)} className="text-secondary hover:text-primary font-medium mr-3">Edit</button>
-                                                <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                                            <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                <div className="flex items-center justify-end gap-2">
+                                                <button onClick={() => handleOpenModal(u)} className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Edit</button>
+                                                <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
@@ -329,15 +333,15 @@ export default function AdminUsersPage() {
                                     Organization
                                 </label>
                                 <select
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
+                                    className={SELECT_CLS}
                                     value={formData.organization_id}
                                     onChange={(e) => setFormData({ ...formData, organization_id: e.target.value })}
                                     disabled={isActionLoading}
                                     required
                                 >
-                                    <option value="" className="text-gray-900">Select Organization</option>
+                                    <option value="">Select Organization</option>
                                     {organizations.map(org => (
-                                        <option key={org.id} value={org.id} className="text-gray-900">{org.name}</option>
+                                        <option key={org.id} value={org.id}>{org.name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -346,13 +350,13 @@ export default function AdminUsersPage() {
                                     Language
                                 </label>
                                 <select
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
+                                    className={SELECT_CLS}
                                     value={formData.preferred_language}
                                     onChange={(e) => setFormData({ ...formData, preferred_language: e.target.value })}
                                     disabled={isActionLoading}
                                 >
-                                    <option value="en" className="text-gray-900">English</option>
-                                    <option value="am" className="text-gray-900">Amharic</option>
+                                    <option value="en">English</option>
+                                    <option value="am">Amharic</option>
                                 </select>
                             </div>
                         </div>
@@ -368,16 +372,16 @@ export default function AdminUsersPage() {
                             </div>
                         ) : (
                             <select
-                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
+                                className={SELECT_CLS}
                                 value={formData.role}
                                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                 disabled={isActionLoading}
                             >
-                                <option value="member" className="text-gray-900">Member</option>
-                                <option value="course_provider" className="text-gray-900">Course Provider</option>
-                                <option value="org_admin" className="text-gray-900">Organization Admin</option>
-                                <option value="super_admin" className="text-gray-900">Super Admin</option>
-                                <option value="user" className="text-gray-900">Regular User</option>
+                                <option value="member">Member</option>
+                                <option value="course_provider">Course Provider</option>
+                                <option value="org_admin">Organization Admin</option>
+                                <option value="super_admin">Super Admin</option>
+                                <option value="user">Regular User</option>
                             </select>
                         )}
                     </div>

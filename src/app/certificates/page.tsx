@@ -1,17 +1,22 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, downloadCertificate, generateCertificatePdf } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/Input';
 import { Button } from '@/components/Button';
+import { PageHeader } from '@/components/PageHeader';
+import { Pagination } from '@/components/Pagination';
+import { EmptyState } from '@/components/EmptyState';
+import { CardSkeleton } from '@/components/LoadingSkeleton';
 
 interface Certificate {
     id: string;
     enrollment?: string;
     certificate_id?: string;
     issued_at?: string;
+    pdf_file?: string | null;
 }
 
 export default function CertificatesPage() {
@@ -20,10 +25,11 @@ export default function CertificatesPage() {
     const [certificates, setCertificates] = useState<Certificate[]>([]);
     const [isLoadingCertificates, setIsLoadingCertificates] = useState(true); // Renamed isLoading to isLoadingCertificates
     const [error, setError] = useState('');
-    const [searchTerm, setSearchTerm] = useState(''); // Added searchTerm state
-    const [page, setPage] = useState(1); // Added page state
-    const [totalCount, setTotalCount] = useState(0); // Added totalCount state
-    const pageSize = 8; // Added pageSize constant
+    const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const pageSize = 8;
 
     useEffect(() => {
         if (!authLoading) { // Changed from !isLoading to !authLoading to match original context
@@ -59,6 +65,25 @@ export default function CertificatesPage() {
         setIsLoadingCertificates(false); // Changed to setIsLoadingCertificates
     };
 
+    const handleDownload = async (id: string) => {
+        const { data, error: e } = await downloadCertificate(id);
+        if (e || !data) { setError(e || 'Failed to download'); return; }
+        const url = window.URL.createObjectURL(data as any);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `certificate-${id}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
+    const handleGeneratePdf = async (id: string) => {
+        setActionLoading(id);
+        const { error: e } = await generateCertificatePdf(id);
+        if (e) setError(e);
+        else fetchCertificates();
+        setActionLoading(null);
+    };
+
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return 'N/A';
         try {
@@ -71,49 +96,51 @@ export default function CertificatesPage() {
     if (authLoading || isLoadingCertificates) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <div aria-label="Loading" className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-5xl mx-auto px-6 lg:px-12 py-8 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">My Certificates</h1>
-                        <p className="text-gray-500">View and download your earned cybersecurity certifications.</p>
-                    </div>
-                    <div className="flex-1 max-w-md">
+            <PageHeader
+                title="My Certificates"
+                description="View and download your earned cybersecurity certifications."
+                actions={
+                    <div className="w-full max-w-md">
                         <Input
                             placeholder="Search certificates by ID..."
                             value={searchTerm}
                             onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                         />
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             {isLoadingCertificates ? (
-                <div className="max-w-5xl mx-auto px-6 lg:px-12 py-20 flex justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <div className="max-w-5xl mx-auto px-6 lg:px-12 pt-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[1, 2, 3, 4].map(i => (
+                            <CardSkeleton key={i} />
+                        ))}
+                    </div>
                 </div>
             ) : error ? (
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 py-10">
-                    <div className="bg-red-50 text-red-600 p-4 rounded-lg border border-red-100">{error}</div>
+                    <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-lg border border-red-100">{error}</div>
                 </div>
             ) : (
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 pt-10">
                     {certificates.length === 0 ? (
-                        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                            <div className="text-gray-400 mb-4">
-                                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <EmptyState
+                            icon={
+                                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-1">No Certificates Found</h3>
-                            <p className="text-gray-500 max-w-xs mx-auto">Complete training modules to earn your cybersecurity certifications.</p>
-                        </div>
+                            }
+                            title="No Certificates Found"
+                            description="Complete training modules to earn your cybersecurity certifications."
+                        />
                     ) : (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
@@ -146,40 +173,40 @@ export default function CertificatesPage() {
                                             </div>
                                         </div>
 
-                                        <div className="mt-6">
-                                            <button className="w-full py-2.5 bg-gray-50 text-gray-700 font-bold rounded-lg border border-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center gap-2">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                                </svg>
-                                                Download PDF
-                                            </button>
+                                        <div className="mt-6 flex gap-2">
+                                            {cert.pdf_file ? (
+                                                <button
+                                                    onClick={() => handleDownload(cert.id)}
+                                                    disabled={actionLoading === cert.id}
+                                                    className="flex-1 py-2.5 bg-gray-50 text-gray-700 font-bold rounded-lg border border-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    </svg>
+                                                    Download PDF
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleGeneratePdf(cert.id)}
+                                                    disabled={actionLoading === cert.id}
+                                                    className="flex-1 py-2.5 bg-primary/10 text-primary font-bold rounded-lg border border-primary/20 hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {actionLoading === cert.id ? 'Generating...' : 'Generate PDF'}
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Pagination */}
-                            <div className="mt-6 mb-20 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                                <span className="text-sm text-gray-500">Showing {certificates.length} of {totalCount} results</span>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={page <= 1 || isLoadingCertificates}
-                                        onClick={() => setPage(p => p - 1)}
-                                    >
-                                        Previous
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={certificates.length < pageSize && (page * pageSize) >= totalCount || isLoadingCertificates}
-                                        onClick={() => setPage(p => p + 1)}
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </div>
+                            <Pagination
+                                page={page}
+                                pageSize={pageSize}
+                                totalCount={totalCount}
+                                isLoading={isLoadingCertificates}
+                                onPageChange={setPage}
+                                label="certificates"
+                            />
                         </>
                     )}
                 </div>

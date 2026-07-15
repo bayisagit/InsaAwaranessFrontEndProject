@@ -8,6 +8,8 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { PageHeader } from '@/components/PageHeader';
+import { Pagination } from '@/components/Pagination';
 
 interface Organization {
     id: string;
@@ -32,7 +34,7 @@ export default function AdminCampaignsPage() {
     const [actionError, setActionError] = useState('');
     const [selected, setSelected] = useState<Campaign | null>(null);
     const [orgs, setOrgs] = useState<Organization[]>([]);
-    const [form, setForm] = useState({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: 'email', status: 'draft' });
+    const [form, setForm] = useState({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: '', status: 'draft' });
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
@@ -48,7 +50,7 @@ export default function AdminCampaignsPage() {
             else if (user?.role !== 'super_admin' && user?.role !== 'org_admin') router.push('/dashboard');
             else fetchAll();
         }
-    }, [isAuthenticated, isLoading, user, router, page, searchTerm]);
+    }, [isAuthenticated, isLoading, user, router, page]);
 
     const fetchOrgs = async () => {
         const { data } = await apiFetch('/api/v1/organizations/');
@@ -93,12 +95,12 @@ export default function AdminCampaignsPage() {
                 message: item.message,
                 start_date: item.start_date.split('T')[0],
                 send_time: item.send_time ? (item.send_time.includes('T') ? item.send_time.split('T')[1].substring(0, 5) : item.send_time.substring(0, 5)) : '',
-                channels: item.channels || 'email',
+                channels: Array.isArray(item.channels) ? item.channels.join(', ') : item.channels || '',
                 status: item.status || 'draft'
             });
         } else {
             setSelected(null);
-            setForm({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: 'email', status: 'draft' });
+            setForm({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: '', status: 'draft' });
         }
         setIsModalOpen(true);
     };
@@ -107,7 +109,11 @@ export default function AdminCampaignsPage() {
         ev.preventDefault(); setActionError(''); setIsActionLoading(true);
         const isEditing = !!selected;
         const endpoint = `/api/v1/campaigns/${isEditing ? `${selected!.id}/` : ''}`;
-        const { error: apiErr, status } = await apiFetch(endpoint, { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(form) });
+        const payload = {
+            ...form,
+            channels: form.channels.split(',').map(c => c.trim()).filter(Boolean)
+        };
+        const { error: apiErr, status } = await apiFetch(endpoint, { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(payload) });
         if (apiErr || (status !== 200 && status !== 201)) setActionError(apiErr || 'Failed to save.');
         else { fetchAll(); setIsModalOpen(false); }
         setIsActionLoading(false);
@@ -129,24 +135,19 @@ export default function AdminCampaignsPage() {
         setIsActionLoading(false);
     };
 
-    if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+    if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div aria-label="Loading" className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
     if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin')) return null;
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Campaigns Management</h1>
-                        <p className="text-gray-500">Manage national cybersecurity awareness campaigns.</p>
-                    </div>
-                    <Button variant="primary" onClick={() => openModal()}>Add Campaign</Button>
-                </div>
-            </div>
+            <PageHeader
+                title="Campaigns Management"
+                description="Manage national cybersecurity awareness campaigns."
+                actions={<Button variant="primary" onClick={() => openModal()}>Add Campaign</Button>}
+            />
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
-                {/* Filters */}
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="flex-1">
                         <Input
@@ -157,80 +158,61 @@ export default function AdminCampaignsPage() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table className="w-full text-left text-sm text-gray-500">
-                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
-                            <tr>
-                                <th className="px-6 py-4">Title</th>
-                                <th className="px-6 py-4">Timeline</th>
-                                <th className="px-6 py-4">Engagement</th>
-                                <th className="px-6 py-4">Status</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {camps.length === 0 ? (
-                                <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No campaigns yet.</td></tr>
-                            ) : camps.map(c => (
-                                <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="font-medium text-gray-900">{c.title}</div>
-                                        <div className="text-gray-500 truncate max-w-sm">{c.message}</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-xs">
-                                        {new Date(c.start_date).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex gap-4">
-                                            <div className="text-center">
-                                                <div className="text-[10px] text-gray-400 uppercase font-bold">Views</div>
-                                                <div className="text-sm font-semibold text-gray-700">{c.impressions || Math.floor(Math.random() * 5000)}</div>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-[10px] text-gray-400 uppercase font-bold">Clicks</div>
-                                                <div className="text-sm font-semibold text-gray-700">{c.clicks || Math.floor(Math.random() * 800)}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${c.status === 'live' ? 'bg-green-50 text-green-700' :
-                                            c.status === 'scheduled' ? 'bg-blue-50 text-blue-700' :
-                                                c.status === 'cancelled' ? 'bg-red-50 text-red-700' :
-                                                    'bg-gray-100 text-gray-600'
-                                            }`}>
-                                            {c.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right whitespace-nowrap">
-                                        <button onClick={() => openModal(c)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
-                                        <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
-                                    </td>
+                <div className="relative">
+                    {isFetching && (
+                        <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                    )}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <table className="w-full text-left text-sm text-gray-500">
+                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                                <tr>
+                                    <th className="px-6 py-4">Title</th>
+                                    <th className="px-6 py-4">Timeline</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Pagination */}
-                <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                    <span className="text-sm text-gray-500">Showing {camps.length} of {totalCount} results</span>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={page <= 1 || isFetching}
-                            onClick={() => setPage(p => p - 1)}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={camps.length < pageSize && (page * pageSize) >= totalCount || isFetching}
-                            onClick={() => setPage(p => p + 1)}
-                        >
-                            Next
-                        </Button>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {camps.length === 0 ? (
+                                    <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No campaigns yet.</td></tr>
+                                ) : camps.map(c => (
+                                    <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-gray-900">{c.title}</div>
+                                            <div className="text-gray-500 truncate max-w-sm">{c.message}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-xs">
+                                            {new Date(c.start_date).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${c.status === 'live' ? 'bg-green-50 text-green-700' :
+                                                c.status === 'scheduled' ? 'bg-blue-50 text-blue-700' :
+                                                    c.status === 'cancelled' ? 'bg-red-50 text-red-700' :
+                                                        'bg-gray-100 text-gray-600'
+                                                }`}>
+                                                {c.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                                            <button onClick={() => openModal(c)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                            <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="mt-6">
+                        <Pagination
+                            page={page}
+                            pageSize={pageSize}
+                            totalCount={totalCount}
+                            isLoading={isFetching}
+                            onPageChange={setPage}
+                            label="campaigns"
+                        />
                     </div>
                 </div>
             </div>
@@ -247,7 +229,7 @@ export default function AdminCampaignsPage() {
                                 {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
                             </select>
                         </div>
-                        <Input label="Channels (e.g. Email, SMS)" value={form.channels} onChange={e => setForm({ ...form, channels: e.target.value })} required disabled={isActionLoading} />
+                        <Input label="Channels (comma-separated)" placeholder="e.g. email, sms" value={form.channels} onChange={e => setForm({ ...form, channels: e.target.value })} required disabled={isActionLoading} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

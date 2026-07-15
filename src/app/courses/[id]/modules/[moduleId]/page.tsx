@@ -7,6 +7,7 @@ import { apiFetch, Module, Lesson } from '@/lib/api';
 import { Button } from '@/components/Button';
 
 import { AssessmentViewer } from '@/components/AssessmentViewer';
+import { LinkifyText } from '@/components/LinkifyText';
 
 // Using imported Module and Lesson interfaces from lib/api
 
@@ -97,12 +98,8 @@ export default function ModuleContentPage() {
                     <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
                         {module.title}
                     </h1>
-                    {module.description && (
-                        <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
-                            {module.description}
-                        </p>
-                    )}
                 </header>
+
 
                 <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
                     <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
@@ -137,7 +134,7 @@ export default function ModuleContentPage() {
                                                     {lesson.content_type}
                                                 </span>
                                             </div>
-                                            {lesson.description && <p className="text-sm text-gray-500 line-clamp-1">{lesson.description}</p>}
+                                            {lesson.description && <p className="text-sm text-gray-500 line-clamp-1"><LinkifyText text={lesson.description} /></p>}
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <span className="text-xs font-bold text-gray-300 group-hover:text-primary transition-colors uppercase tracking-widest hidden sm:block">Start</span>

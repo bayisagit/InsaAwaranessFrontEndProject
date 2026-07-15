@@ -1,66 +1,89 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { apiFetch } from '@/lib/api';
+import React, { useState, useEffect, useCallback } from 'react';
+import { apiFetch, Resource } from '@/lib/api';
 import { Button } from '@/components/Button';
-
-interface Resource {
-    id: string;
-    title: string;
-    file_url?: string;
-    resource_type?: string;
-    description?: string;
-    uploaded_at?: string;
-}
+import { PageHeader } from '@/components/PageHeader';
+import { Pagination } from '@/components/Pagination';
+import { EmptyState } from '@/components/EmptyState';
+import { CardSkeleton } from '@/components/LoadingSkeleton';
+import { LinkifyText } from '@/components/LinkifyText';
+import { SupportCTA } from '@/components/SupportCTA';
 
 export default function ResourcesPage() {
     const [resources, setResources] = useState<Resource[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const pageSize = 12;
+
+    const fetchResources = useCallback(async () => {
+        setIsLoading(true);
+        setError('');
+        const params = new URLSearchParams({
+            page: page.toString(),
+            page_size: pageSize.toString(),
+            ordering: '-created_at'
+        });
+        if (searchQuery) params.set('search', searchQuery);
+        const { data, error: e } = await apiFetch(`/api/v1/resources/?${params.toString()}`);
+        if (e) setError(e);
+        else if (data?.results) {
+            setResources(data.results);
+            setTotalCount(data.count || 0);
+        }
+        else if (Array.isArray(data)) {
+            setResources(data);
+            setTotalCount(data.length);
+        }
+        setIsLoading(false);
+    }, [page, searchQuery]);
 
     useEffect(() => {
         fetchResources();
-    }, []);
+    }, [fetchResources]);
 
-    const fetchResources = async () => {
-        setIsLoading(true);
-        const { data, error: e } = await apiFetch('/api/v1/resources/');
-        if (e) setError(e);
-        else if (data?.results) setResources(data.results);
-        else if (Array.isArray(data)) setResources(data);
-        setIsLoading(false);
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        setPage(1);
+        fetchResources();
     };
 
-    const filteredResources = resources.filter(r =>
-        r.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const typeIcon: Record<string, string> = {
-        pdf: '📄', video: '🎬', doc: '📝', docx: '📝', xlsx: '📊', ppt: '📑', link: '🔗'
+    const typeIcons: Record<string, React.ReactNode> = {
+        pdf: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
+        video: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25V7.5a2.25 2.25 0 00-2.25-2.25H4.5A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" /></svg>,
+        doc: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
+        docx: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
+        xlsx: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" /></svg>,
+        ppt: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" /></svg>,
+        link: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>,
     };
 
     const getIcon = (r: Resource) => {
-        const ext = r.file_url?.split('.').pop()?.toLowerCase() || r.resource_type?.toLowerCase() || '';
-        return typeIcon[ext] || '📁';
+        const ext = r.file_url?.split('.').pop()?.toLowerCase() || r.category?.toLowerCase() || '';
+        return typeIcons[ext] || (
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+            </svg>
+        );
     };
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center">
-            {/* Hero */}
-            <section className="w-full relative overflow-hidden bg-white px-6 py-20 text-center flex flex-col items-center border-b border-gray-100">
-                <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                    RESOURCE LIBRARY
-                </span>
-                <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl max-w-2xl">
-                    Cybersecurity Knowledge Base
-                </h1>
-                <p className="mt-6 text-base leading-7 text-gray-500 max-w-xl mx-auto">
-                    Equip yourself with the latest guides, tools, and policy frameworks.
-                </p>
-                <div className="mt-8 max-w-xl w-full flex bg-white border border-gray-200 rounded-full p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary transition-all">
-                    <div className="pl-4 flex items-center text-gray-400">&#128269;</div>
+            <PageHeader
+                title="Cybersecurity Knowledge Base"
+                description="Equip yourself with the latest guides, tools, and policy frameworks."
+                className="w-full text-center"
+            />
+            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-12 -mt-4 mb-8">
+                <form onSubmit={handleSearch} className="max-w-xl mx-auto flex bg-white border border-gray-200 rounded-full p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary transition-all">
+                    <div className="pl-4 flex items-center text-gray-400">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
                     <input
                         type="text"
                         placeholder="Search resources..."
@@ -68,20 +91,20 @@ export default function ResourcesPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-2 text-sm font-semibold transition-colors">
+                    <button type="submit" className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-2 text-sm font-semibold transition-colors">
                         Search
                     </button>
-                </div>
-            </section>
+                </form>
+            </div>
 
-            <section className="w-full max-w-6xl mx-auto px-6 py-12">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+            <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 py-12">
+                {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                         Available Resources
                         <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                            {filteredResources.length} items
+                            {totalCount} items
                         </span>
                     </h3>
                 </div>
@@ -89,62 +112,77 @@ export default function ResourcesPage() {
                 {isLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 animate-pulse h-32"></div>
+                            <CardSkeleton key={i} />
                         ))}
                     </div>
-                ) : filteredResources.length === 0 ? (
-                    <div className="text-center py-16 text-gray-500">
-                        <div className="text-4xl mb-4">📚</div>
-                        <p className="font-medium">{searchQuery ? 'No resources matched your search.' : 'No resources available yet.'}</p>
-                    </div>
+                ) : resources.length === 0 ? (
+                    <EmptyState
+                        icon={
+                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        }
+                        title={searchQuery ? 'No resources matched your search.' : 'No resources available yet.'}
+                        description={searchQuery ? 'Try a different search term.' : 'Check back soon for new resources.'}
+                    />
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {filteredResources.map(resource => (
-                            <div key={resource.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex gap-5 hover:shadow-md hover:border-primary/20 transition-all group">
-                                <div className="w-14 h-14 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                                    {getIcon(resource)}
-                                </div>
-                                <div className="flex-1 flex flex-col justify-between min-w-0">
-                                    <div>
-                                        <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">{resource.title}</h4>
-                                        {resource.description && (
-                                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{resource.description}</p>
-                                        )}
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {resources.map(resource => (
+                                <div key={resource.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex gap-5 hover:shadow-md hover:border-primary/20 transition-all group">
+                                    <div className="w-14 h-14 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                        {getIcon(resource)}
                                     </div>
-                                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                                        {resource.resource_type && (
-                                            <span className="text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded uppercase">
-                                                {resource.resource_type}
-                                            </span>
-                                        )}
-                                        {resource.file_url && (
-                                            <a
-                                                href={resource.file_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-xs font-semibold text-primary hover:underline ml-auto flex items-center gap-1"
-                                            >
-                                                Open Resource ↗
-                                            </a>
-                                        )}
+                                    <div className="flex-1 flex flex-col justify-between min-w-0">
+                                        <div>
+                                            <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">{resource.title}</h4>
+                                            {resource.content && (
+                                                <LinkifyText text={resource.content} className="text-xs text-gray-500 mt-1 line-clamp-2" />
+                                            )}
+                                        </div>
+                                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
+                                            {resource.category && (
+                                                <span className="text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded uppercase">
+                                                    {resource.category}
+                                                </span>
+                                            )}
+                                            {resource.file_url && (
+                                                <a
+                                                    href={resource.file_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-xs font-semibold text-primary hover:underline ml-auto inline-flex items-center gap-1"
+                                                >
+                                                    Open Resource
+                                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                                    </svg>
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+
+                        <Pagination
+                            page={page}
+                            pageSize={pageSize}
+                            totalCount={totalCount}
+                            isLoading={isLoading}
+                            onPageChange={setPage}
+                            label="resources"
+                        />
+                    </>
                 )}
             </section>
 
-            {/* Footer CTA */}
-            <section className="w-full bg-[#111] py-16 px-6 text-center text-white">
-                <h3 className="text-2xl font-bold mb-3">Can&apos;t find what you&apos;re looking for?</h3>
-                <p className="text-gray-400 text-sm max-w-lg mx-auto mb-8">
-                    Our support team is available to help citizens and organizations find the right resources.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button variant="primary" className="bg-white text-black hover:bg-gray-100">Contact Support</Button>
-                </div>
-            </section>
+            <SupportCTA
+                title="Can't find what you're looking for?"
+                description="Our support team is available to help citizens and organizations find the right resources."
+                buttonText="Contact Support"
+                buttonHref="/contact"
+            />
         </div>
     );
 }

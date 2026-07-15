@@ -3,17 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { apiFetch } from '@/lib/api';
-
-interface AuditLog {
-    id: string;
-    user_email: string;
-    action: string;
-    resource: string;
-    details: string;
-    ip_address: string;
-    created_at: string;
-}
+import { getAuditLogs } from '@/lib/api';
+import type { AuditLog } from '@/lib/api';
+import { Input } from '@/components/Input';
+import { PageHeader } from '@/components/PageHeader';
+import { Pagination } from '@/components/Pagination';
 
 export default function AuditLogsPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -21,6 +15,12 @@ export default function AuditLogsPage() {
     const [logs, setLogs] = useState<AuditLog[]>([]);
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [actionFilter, setActionFilter] = useState('');
+    const [appFilter, setAppFilter] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const pageSize = 15;
 
     useEffect(() => {
         if (!isLoading) {
@@ -28,74 +28,148 @@ export default function AuditLogsPage() {
             else if (user?.role !== 'super_admin') router.push('/dashboard');
             else fetchLogs();
         }
-    }, [isAuthenticated, isLoading, user, router]);
+    }, [isAuthenticated, isLoading, user, router, page]);
 
     const fetchLogs = async () => {
         setIsFetching(true);
-        // Mocking audit logs as they might not be fully exposed yet
-        // In a real scenario, this would be: const { data } = await apiFetch('/api/v1/audit-logs/');
-        const mockLogs: AuditLog[] = [
-            { id: '1', user_email: 'admin@insa.gov.et', action: 'LOGIN', resource: 'AUTH', details: 'Successful login from Addis Ababa', ip_address: '197.156.10.2', created_at: new Date(Date.now() - 3600000).toISOString() },
-            { id: '2', user_email: 'provider@insa.gov.et', action: 'CREATE', resource: 'COURSE', details: 'Created course "Intro to Phishing"', ip_address: '197.156.10.5', created_at: new Date(Date.now() - 7200000).toISOString() },
-            { id: '3', user_email: 'admin@insa.gov.et', action: 'APPROVE', resource: 'ORGANIZATION', details: 'Approved Ethio Telecom registration', ip_address: '197.156.10.2', created_at: new Date(Date.now() - 10800000).toISOString() },
-            { id: '4', user_email: 'admin@insa.gov.et', action: 'PUBLISH', resource: 'ALERT', details: 'Published High severity alert on Ransomware', ip_address: '197.156.10.2', created_at: new Date(Date.now() - 86400000).toISOString() },
-        ];
+        setError('');
+        const params: Record<string, any> = {
+            page: page.toString(),
+            page_size: pageSize.toString(),
+            ordering: '-created_at',
+        };
+        if (searchTerm) params.search = searchTerm;
+        if (actionFilter) params.action = actionFilter;
+        if (appFilter) params.app_label = appFilter;
 
-        setTimeout(() => {
-            setLogs(mockLogs);
-            setIsFetching(false);
-        }, 800);
+        const { data, error: e } = await getAuditLogs(params);
+        if (e) setError(e);
+        else if (data) {
+            setLogs(data.results);
+            setTotalCount(data.count);
+        }
+        setIsFetching(false);
     };
 
-    if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+    const formatDate = (dateStr: string) => {
+        try {
+            return new Date(dateStr).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+        } catch {
+            return dateStr;
+        }
+    };
+
+    const actionBadge = (action: string) => {
+        const styles: Record<string, string> = {
+            create: 'bg-green-50 text-green-700',
+            update: 'bg-blue-50 text-blue-700',
+            delete: 'bg-red-50 text-red-700',
+        };
+        return styles[action] || 'bg-gray-100 text-gray-700';
+    };
+
+    if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
     if (!user || user.role !== 'super_admin') return null;
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Audit Logs</h1>
-                        <p className="text-gray-500">Monitor system activity and security events.</p>
+            <PageHeader
+                title="Audit Logs"
+                description="Monitor system activity and security events."
+                actions={
+                    <div className="flex gap-3 flex-wrap">
+                        <div className="w-48">
+                            <Input
+                                placeholder="Search model, object, email..."
+                                value={searchTerm}
+                                onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                            />
+                        </div>
+                        <select
+                            value={actionFilter}
+                            onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}
+                            className="rounded-md border border-gray-300 py-2 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                        >
+                            <option value="">All actions</option>
+                            <option value="create">Create</option>
+                            <option value="update">Update</option>
+                            <option value="delete">Delete</option>
+                        </select>
+                        <select
+                            value={appFilter}
+                            onChange={(e) => { setAppFilter(e.target.value); setPage(1); }}
+                            className="rounded-md border border-gray-300 py-2 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                        >
+                            <option value="">All apps</option>
+                            <option value="accounts">Accounts</option>
+                            <option value="courses">Courses</option>
+                            <option value="organizations">Organizations</option>
+                            <option value="alerts">Alerts</option>
+                            <option value="resources">Resources</option>
+                            <option value="campaigns">Campaigns</option>
+                        </select>
                     </div>
-                </div>
-            </div>
+                }
+            />
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
                 {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table className="w-full text-left text-sm text-gray-500">
-                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
-                            <tr>
-                                <th className="px-6 py-4">Timestamp</th>
-                                <th className="px-6 py-4">User</th>
-                                <th className="px-6 py-4">Action</th>
-                                <th className="px-6 py-4">Resource</th>
-                                <th className="px-6 py-4">Details</th>
-                                <th className="px-6 py-4">IP Address</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {logs.map(log => (
-                                <tr key={log.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-600">
-                                        {new Date(log.created_at).toLocaleString()}
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900">{log.user_email}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${log.action === 'LOGIN' ? 'bg-blue-50 text-blue-700' :
-                                                log.action === 'DELETE' ? 'bg-red-50 text-red-700' :
-                                                    'bg-gray-100 text-gray-700'
-                                            }`}>
-                                            {log.action}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-xs font-mono">{log.resource}</td>
-                                    <td className="px-6 py-4 text-gray-600">{log.details}</td>
-                                    <td className="px-6 py-4 text-xs text-gray-500">{log.ip_address}</td>
+                <div className="relative">
+                    {isFetching && (
+                        <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                    )}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <table className="w-full text-left text-sm text-gray-500">
+                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                                <tr>
+                                    <th className="px-6 py-4">Timestamp</th>
+                                    <th className="px-6 py-4">Actor</th>
+                                    <th className="px-6 py-4">Action</th>
+                                    <th className="px-6 py-4">App / Model</th>
+                                    <th className="px-6 py-4">Object ID</th>
+                                    <th className="px-6 py-4">Changes</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {logs.length === 0 ? (
+                                    <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">No audit logs found.</td></tr>
+                                ) : logs.map(log => (
+                                    <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-600">
+                                            {formatDate(log.created_at)}
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900">
+                                            {log.actor_email || <span className="text-gray-400 italic">system</span>}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${actionBadge(log.action)}`}>
+                                                {log.action}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-xs font-mono text-gray-500">{log.app_label}</span>
+                                            <span className="mx-1 text-gray-300">/</span>
+                                            <span className="text-xs font-mono">{log.model}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-xs font-mono text-gray-500 max-w-[120px] truncate" title={log.object_id}>
+                                            {log.object_id}
+                                        </td>
+                                        <td className="px-6 py-4 text-xs text-gray-600 max-w-[200px] truncate" title={JSON.stringify(log.changes)}>
+                                            {Object.keys(log.changes).length > 0
+                                                ? Object.entries(log.changes).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(', ')
+                                                : '—'}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {totalCount > pageSize && (
+                        <div className="mt-6">
+                            <Pagination page={page} pageSize={pageSize} totalCount={totalCount} isLoading={isFetching} onPageChange={setPage} label="audit logs" />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

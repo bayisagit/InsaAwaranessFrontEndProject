@@ -66,11 +66,8 @@ export default function CertificateExamPage() {
 
                 <main>
                     <AssessmentViewer
-                        certificateExam={exam}
-                        type="certificate"
-                        onComplete={() => {
-                            // Optionally redirect after a delay, but AssessmentViewer shows results.
-                        }}
+                        certificateExamId={examId}
+                        onComplete={() => { /* results shown inline by AssessmentViewer */ }}
                     />
                 </main>
 

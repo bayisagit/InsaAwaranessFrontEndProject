@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="w-full flex-col flex bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden w-full px-6 py-24 sm:py-32 lg:px-8 text-center flex flex-col items-center"
+      <section className="relative overflow-hidden w-full px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center flex flex-col items-center"
         style={{ backgroundImage: "url('/background.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         {/* Dark overlay for text legibility */}
@@ -25,26 +25,39 @@ export default function Home() {
           The official government platform empowering citizens, businesses, and institutions with knowledge to defend against cyber threats.
         </p>
 
-        <div className="relative z-10 mt-10 flex items-center justify-center gap-x-4">
-          <Link href="/courses"><Button variant="primary" size="lg">Explore Courses &rarr;</Button></Link>
-          <Link href="/login"><Button variant="outline" size="lg" className="border-gray-300 text-white hover:bg-white/10">Sign In</Button></Link>
+        <div className="relative z-10 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link href="/courses" aria-label="Explore Courses">
+            <Button variant="primary" size="lg">Explore Courses &rarr;</Button>
+          </Link>
+          <Link href="/login" aria-label="Sign In to your account">
+            <Button variant="outline" size="lg" className="border-gray-300 text-white hover:bg-white/10">Sign In</Button>
+          </Link>
         </div>
 
         <div className="relative z-10 mt-16 pt-8 border-t border-white/20 flex flex-wrap justify-center gap-x-12 gap-y-4 text-xs font-semibold text-gray-300 uppercase tracking-widest">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 text-primary">&#9733;</span> Citizen Resource Hub
+            <svg className="w-3 h-3 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            Citizen Resource Hub
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 text-primary">&#9888;</span> Latest Cyber Alerts
+            <svg className="w-3 h-3 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            Latest Cyber Alerts
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 text-primary">&#9993;</span> Report Incident
+            <svg className="w-3 h-3 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Report Incident
           </div>
         </div>
       </section>
 
       {/* Strategic Pillars */}
-      <section className="py-24 bg-gray-50 px-6 lg:px-8">
+      <section className="py-24 bg-gray-50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Strategic Pillars of Defense</h2>
           <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
@@ -55,13 +68,15 @@ export default function Home() {
             {/* Pillar 1 */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow">
               <div className="w-12 h-12 rounded-xl bg-red-50 text-primary flex items-center justify-center mb-6">
-                &#128218;
+                <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Educate & Train</h3>
               <p className="mt-3 text-gray-600 text-sm leading-relaxed mb-6">
                 Equipping all citizens and organizations with essential cybersecurity skills through interactive modules.
               </p>
-              <Link href="/courses" className="text-primary font-semibold text-sm hover:underline flex items-center gap-1">
+              <Link href="/courses" className="text-primary font-semibold text-sm hover:underline flex items-center gap-1" aria-label="Explore educational modules">
                 Explore Modules &rarr;
               </Link>
             </div>
@@ -69,13 +84,15 @@ export default function Home() {
             {/* Pillar 2 */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow">
               <div className="w-12 h-12 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center mb-6">
-                &#128365;
+                <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Alert & Inform</h3>
               <p className="mt-3 text-gray-600 text-sm leading-relaxed mb-6">
                 Providing timely, reliable alerts regarding active ransomware and phishing campaigns.
               </p>
-              <Link href="/dashboard" className="text-yellow-600 font-semibold text-sm hover:underline flex items-center gap-1">
+              <Link href="/dashboard" className="text-yellow-600 font-semibold text-sm hover:underline flex items-center gap-1" aria-label="View latest security alerts">
                 View Latest Alerts &rarr;
               </Link>
             </div>
@@ -83,13 +100,15 @@ export default function Home() {
             {/* Pillar 3 */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow">
               <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-6">
-                &#128274;
+                <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Protect & Empower</h3>
               <p className="mt-3 text-gray-600 text-sm leading-relaxed mb-6">
                 Delivering actionable guidance and tools to establish robust digital defenses for all sectors.
               </p>
-              <Link href="/tools" className="text-green-600 font-semibold text-sm hover:underline flex items-center gap-1">
+              <Link href="/tools" className="text-green-600 font-semibold text-sm hover:underline flex items-center gap-1" aria-label="Explore security tools">
                 Explore Tools &rarr;
               </Link>
             </div>
@@ -98,7 +117,7 @@ export default function Home() {
       </section>
 
       {/* Tailored Guidance */}
-      <section className="py-24 bg-white px-6 lg:px-8">
+      <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
           <div className="lg:col-span-1">
             <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 block">Sector Specific</span>
@@ -106,7 +125,9 @@ export default function Home() {
             <p className="mt-4 text-gray-600 leading-relaxed">
               Cyber threats don&apos;t stop when you log off. Access specialized resources, frameworks, and actionable advice crafted specifically for your sector&apos;s needs.
             </p>
-            <Link href="/resources"><Button variant="outline" className="mt-8">View All Categories</Button></Link>
+            <Link href="/resources" aria-label="View all resource categories">
+              <Button variant="outline" className="mt-8">View All Categories</Button>
+            </Link>
           </div>
 
           <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
@@ -131,13 +152,15 @@ export default function Home() {
       </section>
 
       {/* Recent Threat Alerts */}
-      <section className="py-24 bg-gray-50 px-6 lg:px-8">
+      <section className="py-24 bg-gray-50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
               <span className="w-1.5 h-6 bg-primary rounded-full"></span> Recent Threat Alerts
             </h2>
-            <Link href="/dashboard" className="text-sm font-semibold text-gray-500 hover:text-gray-900">View All Alerts &rarr;</Link>
+            <Link href="/dashboard" className="text-sm font-semibold text-gray-500 hover:text-gray-900" aria-label="View all threat alerts">
+              View All Alerts &rarr;
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -148,7 +171,9 @@ export default function Home() {
               </div>
               <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors">Global Ransomware Campaign</h4>
               <p className="text-sm text-gray-600 mb-4 line-clamp-2">A coordinated ransomware attack is targeting national infrastructure. Ensure all systems are patched and offline backups are secured immediately.</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline group-hover:text-primary transition-colors">Read Details &rarr;</Link>
+              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline group-hover:text-primary transition-colors" aria-label="Read details about Global Ransomware Campaign alert">
+                Read Details &rarr;
+              </Link>
             </div>
 
             <div className="bg-white p-6 border-t-4 border-yellow-500 rounded-b-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300 group">
@@ -158,7 +183,9 @@ export default function Home() {
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Tax Season Phishing</h4>
               <p className="text-sm text-gray-600 mb-4 line-clamp-2">Cybercriminals are sending fraudulent emails impersonating the tax authority. Do not click links or download attachments from unknown senders.</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline">Read Details &rarr;</Link>
+              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline" aria-label="Read details about Tax Season Phishing alert">
+                Read Details &rarr;
+              </Link>
             </div>
 
             <div className="bg-white p-6 border-t-4 border-blue-500 rounded-b-xl shadow-sm">
@@ -168,25 +195,27 @@ export default function Home() {
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Browser Security Patch</h4>
               <p className="text-sm text-gray-600 mb-4 line-clamp-2">Major browser vendors have released critical updates to address a zero-day vulnerability in rendering engines. Please update immediately.</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline">Read Details &rarr;</Link>
+              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline" aria-label="Read details about Browser Security Patch update">
+                Read Details &rarr;
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Footer Section */}
-      <section className="py-24 bg-secondary px-6 lg:px-8 text-center text-white">
+      <section className="py-24 bg-secondary px-4 sm:px-6 lg:px-8 text-center text-white">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Join the National Cyber Defense</h2>
           <p className="mt-4 text-gray-400 text-lg">
             Cybersecurity is a shared responsibility. Equip yourself with the knowledge to identify threats and protect our nation&apos;s digital way of life.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/signup">
+            <Link href="/signup" aria-label="Create a free account">
               <Button variant="primary" size="lg" className="w-full sm:w-auto">Create Free Account</Button>
             </Link>
-            <Link href="/resources">
-              <Button size="lg" className="w-full sm:w-auto bg-transparent border border-gray-600 text-white hover:bg-gray-800">Explore Resources</Button>
+            <Link href="/resources" aria-label="Explore cybersecurity resources">
+              <Button variant="ghost" size="lg" className="w-full sm:w-auto text-white border border-gray-600 hover:bg-gray-800">Explore Resources</Button>
             </Link>
           </div>
         </div>

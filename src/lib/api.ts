@@ -1,6 +1,17 @@
-export const API_BASE_URL = 'https://insaawaranessbackend-1.onrender.com';
+// export const API_BASE_URL = 'https://insaawaranessbackend-1.onrender.com';
+export const API_BASE_URL = 'http://127.0.0.1:8000';
 
 // Types
+
+// Login response — matches POST /api/auth/login/ 200 OK
+export interface LoginResponse {
+    access: string;
+    refresh: string;
+    user: User;
+    dashboard_route: string;
+    must_change_password: boolean;
+}
+
 export interface Tokens {
     access: string;
     refresh?: string;
@@ -14,8 +25,30 @@ export interface User {
     role: string;
     preferred_language: string;
     is_active: boolean;
-    must_change_password?: boolean;
+    must_change_password: boolean;
     organization_id?: string;
+    organization_name?: string;
+}
+
+// Background profile — matches GET/PUT/PATCH /api/auth/user/background-profile/
+export interface BackgroundProfile {
+    id?: string;
+    user?: string;
+    phone_number: string;
+    nationality: string;
+    region?: string;
+    age_range: string;
+    gender: string;
+    education_level: string;
+    field_of_study: string;
+    institution_name?: string;
+    employment_status: string;
+    employer_name?: string;
+    unemployment_description?: string;
+    professional_experience: string;
+    enrollment_motivation: string;
+    referral_source: string;
+    is_information_confirmed: boolean;
 }
 
 export interface PaginatedResponse<T> {
@@ -33,12 +66,51 @@ export interface Organization {
     created_at: string;
 }
 
+// Org Application — POST /api/v1/organization-applications/
+export interface OrganizationApplication {
+    id: string;
+    name: string;
+    description: string;
+    contact_email: string;
+    contact_phone: string;
+    website?: string;
+    address: string;
+    submitted_by: string | null;
+    status: 'pending' | 'approved' | 'rejected';
+    reviewed_by: string | null;
+    reviewed_at: string | null;
+    created_at: string;
+}
+
+// Membership — matches /api/v1/memberships/
+export interface Membership {
+    id: string;
+    user: string;
+    organization: string;
+    org_role: 'admin' | 'member';
+    department?: string;
+    employee_id?: string;
+    is_primary: boolean;
+    joined_at: string;
+}
+
 export interface PaymentApproval {
     id: string;
     organization: string;
     amount: string;
     status: 'pending' | 'approved' | 'rejected';
     reviewed_by: string;
+    created_by: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ComplianceReport {
+    id: string;
+    organization: string;
+    title: string;
+    status: 'draft' | 'submitted' | 'approved' | 'rejected';
+    report_data: Record<string, any>;
     created_by: string;
     created_at: string;
     updated_at: string;
@@ -61,25 +133,34 @@ export interface Resource {
 export interface Enrollment {
     id: string;
     user: string;
-    course: {
-        id: string;
-        title: string;
-        difficulty: string;
-    } | string;
+    course: string; // UUID from backend; hydrate separately if needed
     progress: number;
     status: 'in_progress' | 'completed';
-    last_accessed: string;
+    updated_at: string;
+}
+
+export interface Article {
+    id: string;
+    module: string;
+    content: string;
+    order: number;
+}
+
+export interface Certificate {
+    id: string;
+    enrollment: string;
+    certificate_id: string;
+    issued_at: string;
+    pdf_file: string | null;
 }
 
 export interface TrainingRequest {
     id: string;
     organization: string;
-    organization_name?: string;
     created_by: string;
-    title?: string;
     description: string;
     attachment_url?: string;
-    status: 'pending' | 'approved' | 'rejected' | 'forwarded';
+    status: 'pending' | 'approved' | 'rejected';
     created_at: string;
     updated_at: string;
 }
@@ -89,7 +170,7 @@ export interface AwarenessTool {
     name: string;
     description: string;
     status: 'enabled' | 'disabled';
-    config: string;
+    config: Record<string, any>;
     created_by: string;
     created_at: string;
     updated_at: string;
@@ -158,33 +239,143 @@ export interface CertificateExam {
 export interface Course {
     id: string;
     title: string;
-    description: string;
-    course_provider: string; // Required during creation
+    description?: string;
+    course_provider?: string;
+    created_by?: string;
+    assigned_by?: string | null;
+    organization?: string | null;
     language: string;
-    difficulty: string;
+    level?: string;  // Backend field is 'level', not 'difficulty'
+    is_active?: boolean;
     status: 'draft' | 'published' | 'archived';
     thumbnail_url?: string;
-    modules?: any[];
+    modules?: CourseModule[];
+    certificate_exams?: CertificateExam[];
+    created_at: string;
+}
+
+// Module shape as returned inline in CourseDetailSerializer
+export interface CourseModule {
+    id: string;
+    course: string;
+    title: string;
+    order: number;
+    articles: Article[];
+    videos: Video[];
+    lessons: Lesson[];
+}
+
+// Module shape from /api/v1/modules/ (includes nested articles/videos/lessons)
+export interface Module {
+    id: string;
+    course: string;
+    title: string;
+    order: number;
+    articles?: Article[];
+    videos?: Video[];
+    lessons?: Lesson[];
+}
+
+// ─────────────────────────────────────────────────────────────
+// Normalized Assessment System (v1 API)
+// ─────────────────────────────────────────────────────────────
+
+export type QuestionType =
+    | 'multiple_choice'
+    | 'multiple_select'
+    | 'true_false'
+    | 'fill_blank'
+    | 'matching'
+    | 'ordering'
+    | 'short_answer'
+    | 'essay';
+
+export interface AssessmentChoice {
+    id: string;
+    question: string;
+    text: string;
+    value: string;
+    is_correct: boolean;
+    order: number;
+    created_at: string;
+}
+
+export interface AssessmentQuestion {
+    id: string;
+    assessment: string;
+    type: QuestionType;
+    prompt: string;
+    explanation: string;
+    order: number;
+    points: number;
+    is_required: boolean;
+    allow_multiple_selection: boolean;
+    case_sensitive: boolean;
+    correct_text_answer: string;
+    requires_manual_grading: boolean;
+    choices: AssessmentChoice[];
+    matching_pairs: { id: string; left_text: string; right_text: string }[];
+    ordering_items: { id: string; text: string; order: number }[];
     created_at: string;
     updated_at: string;
 }
 
-export interface Module {
+export interface Assessment {
     id: string;
-    course: string;
-    course_name?: string;
+    lesson: string | null;
+    certificate_exam: string | null;
+    parent_type: 'lesson' | 'certificate_exam';
     title: string;
     description: string;
-    order: number;
-    created_at?: string;
-    updated_at?: string;
+    passing_score: number;
+    time_limit_minutes: number;
+    shuffle_questions: boolean;
+    assessment_payload: any; // read-only, legacy auto-generated — use questions[] instead
+    questions: AssessmentQuestion[];
+    created_at: string;
+    updated_at: string;
 }
+
+export interface AssessmentAnswer {
+    id: string;
+    attempt: string;
+    question: string;
+    response_text: string;
+    response_json: Record<string, any> | null;
+    is_correct: boolean | null; // null = manual grading pending
+    requires_manual_grading: boolean;
+    score: number;
+    graded_by: string | null;
+    graded_at: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface AssessmentAttempt {
+    id: string;
+    assessment: string;
+    user: string;
+    attempt_number: number;
+    status: 'started' | 'in_progress' | 'submitted' | 'graded' | 'needs_review';
+    score: number;       // percentage 0–100
+    max_score: number;   // sum of question.points
+    passed: boolean;
+    current_question_index: number;
+    started_at: string;
+    last_saved_at: string;
+    submitted_at: string | null;
+    graded_at: string | null;
+    answers: AssessmentAnswer[];
+    created_at: string;
+    updated_at: string;
+}
+
 
 export interface Alert {
     id: string;
     title: string;
     message: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    severity: 'low' | 'medium' | 'high';
     status: 'draft' | 'published' | 'archived';
     notify_email: boolean;
     notify_sms: boolean;
@@ -206,11 +397,11 @@ export interface Campaign {
     message: string;
     start_date: string;
     send_time: string;
-    channels: string;
+    channels: string[];
     status: 'draft' | 'scheduled' | 'live' | 'completed' | 'cancelled';
-    impressions?: number;
-    clicks?: number;
-    image_url?: string;
+    created_by: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface AlertDelivery {
@@ -231,6 +422,77 @@ export interface AlertView {
     user: string;
     user_email: string;
     viewed_at: string;
+}
+
+// Notification — matches GET /api/v1/notifications/
+export interface NotificationData {
+    id: string;
+    user?: string;
+    message: string;
+    type?: string;
+    is_read: boolean;
+    created_at: string;
+}
+
+// Audit Log — matches GET /api/v1/audit-logs/
+export interface AuditLog {
+    id: string;
+    actor: string | null;
+    actor_email: string | null;
+    action: string;
+    app_label: string;
+    model: string;
+    object_id: string;
+    changes: Record<string, any>;
+    created_at: string;
+}
+
+// Lesson Progress — matches GET /api/v1/lesson-progress/
+export interface LessonProgress {
+    id: string;
+    user: string;
+    lesson: string;
+    completed: boolean;
+    watched_seconds: number;
+    updated_at: string;
+}
+
+// Verify Certificate Response — matches GET /api/v1/certificates/verify/{id}/
+export interface VerifyCertificateResponse {
+    valid: boolean;
+    certificate_id?: string;
+    issued_at?: string;
+    user?: string;
+    course?: string;
+    detail?: string;
+}
+
+// Analytics Dashboard — matches GET /api/v1/analytics/dashboard/
+export interface AnalyticsDashboard {
+    users: {
+        total: number;
+        by_role: Record<string, number>;
+    };
+    courses: {
+        total: number;
+        by_status: Record<string, number>;
+    };
+    enrollments: {
+        total: number;
+        by_status: Record<string, number>;
+        average_progress: number;
+    };
+    certificates: {
+        total: number;
+    };
+    assessments: {
+        total_attempts: number;
+        average_score: number;
+    };
+    alerts: {
+        total: number;
+        published: number;
+    };
 }
 
 // Token Management Hook-like helpers for local storage
@@ -332,25 +594,10 @@ export async function apiFetch<T = any>(
     }
 }
 
-// API Functions
 
-// Organizations
-export const getOrganizations = (params?: Record<string, any>) => {
-    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
-    return apiFetch<PaginatedResponse<Organization>>(`/api/v1/organizations/${query}`);
-};
-
-export const createOrganization = (data: Partial<Organization>) =>
-    apiFetch<Organization>('/api/v1/organizations/', { method: 'POST', body: JSON.stringify(data) });
-
+// Organizations (singular getter — list/create/update/delete are below)
 export const getOrganization = (id: string) =>
     apiFetch<Organization>(`/api/v1/organizations/${id}/`);
-
-export const updateOrganization = (id: string, data: Partial<Organization>, patch = true) =>
-    apiFetch<Organization>(`/api/v1/organizations/${id}/`, { method: patch ? 'PATCH' : 'PUT', body: JSON.stringify(data) });
-
-export const deleteOrganization = (id: string) =>
-    apiFetch(`/api/v1/organizations/${id}/`, { method: 'DELETE' });
 
 // Payment Approvals
 export const getPaymentApprovals = (params?: Record<string, any>) => {
@@ -375,6 +622,24 @@ export const approvePaymentApproval = (id: string, data: any) =>
 
 export const rejectPaymentApproval = (id: string, data: any) =>
     apiFetch<PaymentApproval>(`/api/v1/payment-approvals/${id}/reject/`, { method: 'POST', body: JSON.stringify(data) });
+
+// Compliance Reports
+export const getComplianceReports = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<ComplianceReport>>(`/api/v1/compliance-reports/${query}`);
+};
+
+export const createComplianceReport = (data: Partial<ComplianceReport>) =>
+    apiFetch<ComplianceReport>('/api/v1/compliance-reports/', { method: 'POST', body: JSON.stringify(data) });
+
+export const getComplianceReport = (id: string) =>
+    apiFetch<ComplianceReport>(`/api/v1/compliance-reports/${id}/`);
+
+export const updateComplianceReport = (id: string, data: Partial<ComplianceReport>, patch = true) =>
+    apiFetch<ComplianceReport>(`/api/v1/compliance-reports/${id}/`, { method: patch ? 'PATCH' : 'PUT', body: JSON.stringify(data) });
+
+export const deleteComplianceReport = (id: string) =>
+    apiFetch(`/api/v1/compliance-reports/${id}/`, { method: 'DELETE' });
 
 // Resources
 export const getResources = (params?: Record<string, any>) => {
@@ -403,8 +668,10 @@ export const getTrainingRequests = (params?: Record<string, any>) => {
     return apiFetch<PaginatedResponse<TrainingRequest>>(`/api/v1/training-requests/${query}`);
 };
 
-export const createTrainingRequest = (data: Partial<TrainingRequest>) =>
-    apiFetch<TrainingRequest>('/api/v1/training-requests/', { method: 'POST', body: JSON.stringify(data) });
+// Per API docs: only send description + optional attachment_url.
+// The backend auto-assigns the caller's primary organization.
+export const createTrainingRequest = (payload: { description: string; attachment_url?: string }) =>
+    apiFetch<TrainingRequest>('/api/v1/training-requests/', { method: 'POST', body: JSON.stringify(payload) });
 
 export const getTrainingRequest = (id: string) =>
     apiFetch<TrainingRequest>(`/api/v1/training-requests/${id}/`);
@@ -415,11 +682,83 @@ export const updateTrainingRequest = (id: string, data: Partial<TrainingRequest>
 export const deleteTrainingRequest = (id: string) =>
     apiFetch(`/api/v1/training-requests/${id}/`, { method: 'DELETE' });
 
-export const approveTrainingRequest = (id: string, data?: any) =>
-    apiFetch<TrainingRequest>(`/api/v1/training-requests/${id}/approve/`, { method: 'POST', body: JSON.stringify(data || {}) });
+export const approveTrainingRequest = (id: string) =>
+    apiFetch<{ detail: string }>(`/api/v1/training-requests/${id}/approve/`, { method: 'POST', body: JSON.stringify({}) });
 
-export const rejectTrainingRequest = (id: string, data?: any) =>
-    apiFetch<TrainingRequest>(`/api/v1/training-requests/${id}/reject/`, { method: 'POST', body: JSON.stringify(data || {}) });
+export const rejectTrainingRequest = (id: string) =>
+    apiFetch<{ detail: string }>(`/api/v1/training-requests/${id}/reject/`, { method: 'POST', body: JSON.stringify({}) });
+
+// ──────────────────────────────────────────────────────────
+// Organization CRUD helpers
+// ──────────────────────────────────────────────────────────
+
+export const getOrganizations = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<Organization>>(`/api/v1/organizations/${query}`);
+};
+
+export const createOrganization = (data: { name: string; description?: string }) =>
+    apiFetch<Organization>('/api/v1/organizations/', { method: 'POST', body: JSON.stringify(data) });
+
+export const updateOrganization = (id: string, data: { name?: string; description?: string }) =>
+    apiFetch<Organization>(`/api/v1/organizations/${id}/`, { method: 'PATCH', body: JSON.stringify(data) });
+
+export const deleteOrganization = (id: string) =>
+    apiFetch(`/api/v1/organizations/${id}/`, { method: 'DELETE' });
+
+// ──────────────────────────────────────────────────────────
+// Organization Applications helpers
+// ──────────────────────────────────────────────────────────
+
+export const getOrgApplications = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<OrganizationApplication>>(`/api/v1/organization-applications/${query}`);
+};
+
+export const getOrgApplication = (id: string) =>
+    apiFetch<OrganizationApplication>(`/api/v1/organization-applications/${id}/`);
+
+export const createOrgApplication = (data: {
+    name: string;
+    description: string;
+    contact_email: string;
+    contact_phone: string;
+    address: string;
+    website?: string;
+}) =>
+    apiFetch<OrganizationApplication>('/api/v1/organization-applications/', { method: 'POST', body: JSON.stringify(data) });
+
+export const approveOrgApplication = (id: string) =>
+    apiFetch<{ detail: string; organization_id: string }>(`/api/v1/organization-applications/${id}/approve/`, { method: 'POST', body: JSON.stringify({}) });
+
+export const rejectOrgApplication = (id: string) =>
+    apiFetch<{ detail: string }>(`/api/v1/organization-applications/${id}/reject/`, { method: 'POST', body: JSON.stringify({}) });
+
+// ──────────────────────────────────────────────────────────
+// Memberships helpers
+// ──────────────────────────────────────────────────────────
+
+export const getMemberships = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<Membership>>(`/api/v1/memberships/${query}`);
+};
+
+export const createMembership = (data: {
+    user: string;
+    organization: string;
+    org_role?: 'admin' | 'member';
+    department?: string;
+    employee_id?: string;
+    is_primary?: boolean;
+}) =>
+    apiFetch<Membership>('/api/v1/memberships/', { method: 'POST', body: JSON.stringify(data) });
+
+export const updateMembership = (id: string, data: Partial<Membership>) =>
+    apiFetch<Membership>(`/api/v1/memberships/${id}/`, { method: 'PATCH', body: JSON.stringify(data) });
+
+export const deleteMembership = (id: string) =>
+    apiFetch(`/api/v1/memberships/${id}/`, { method: 'DELETE' });
+
 
 // Awareness Tools (SuperAdmin)
 export const getAwarenessTools = (params?: Record<string, any>) => {
@@ -447,12 +786,11 @@ export const toggleAwarenessToolStatus = (id: string, data: any = {}) =>
 
 export const getPublicAwarenessTools = (params?: Record<string, any>) => {
     const query = params ? `?${new URLSearchParams(params).toString()}` : '';
-    // User requested to use the superadmin endpoint for fetching tools
-    return apiFetch<PaginatedResponse<AwarenessTool>>(`/api/v1/superadmin/awareness-tools/${query}`);
+    return apiFetch<PaginatedResponse<AwarenessTool>>(`/api/v1/awareness-tools/${query}`);
 };
 
 export const recordAwarenessToolUsage = (data: { tool: string; action: string; metadata?: string }) =>
-    apiFetch<AwarenessToolUsage>('/api/v1/superadmin/awareness-tool-usages/', {
+    apiFetch<AwarenessToolUsage>('/api/v1/awareness-tools/record-usage/', {
         method: 'POST',
         body: JSON.stringify(data)
     });
@@ -564,8 +902,29 @@ export const getAlertViews = (params?: Record<string, any>) => {
 };
 
 // Enrollments
-export const getEnrollments = () =>
-    apiFetch<PaginatedResponse<Enrollment>>('/api/v1/enrollments/');
+export const getEnrollments = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<Enrollment>>(`/api/v1/enrollments/${query}`);
+};
+
+export const createEnrollment = (userId: string, courseId: string) =>
+    // Per API docs: only send user + course. Backend defaults progress=0, status=in_progress.
+    apiFetch<Enrollment>('/api/v1/enrollments/', {
+        method: 'POST',
+        body: JSON.stringify({ user: userId, course: courseId })
+    });
+
+// Keep old name as alias for backwards compat
+export const enrollInCourse = createEnrollment;
+
+export const updateEnrollment = (id: string, data: { progress?: number; status?: 'in_progress' | 'completed' }) =>
+    apiFetch<Enrollment>(`/api/v1/enrollments/${id}/`, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    });
+
+export const deleteEnrollment = (id: string) =>
+    apiFetch(`/api/v1/enrollments/${id}/`, { method: 'DELETE' });
 
 // Campaigns
 export const getCampaigns = (params?: Record<string, any>) => {
@@ -573,30 +932,20 @@ export const getCampaigns = (params?: Record<string, any>) => {
     return apiFetch<PaginatedResponse<Campaign>>(`/api/v1/campaigns/${query}`);
 };
 
-
-export const enrollInCourse = (courseId: string, userId: string) =>
-    apiFetch<Enrollment>('/api/v1/enrollments/', {
-        method: 'POST',
-        body: JSON.stringify({
-            user: userId,
-            course: courseId,
-            progress: 0,
-            status: 'in_progress'
-        })
-    });
-
-// Lesson Attempts
+// ──────────────────────────────────────────────────────────
+// Assessment submit/attempts — NOTE: endpoint is /videos/{lesson_id}/ (not /lessons/)
+// ──────────────────────────────────────────────────────────
 export const submitLessonAttempt = (lessonId: string, answers: Record<string, any>) =>
-    apiFetch(`/api/v1/lessons/${lessonId}/submit/`, {
+    apiFetch(`/api/v1/videos/${lessonId}/submit/`, {
         method: 'POST',
         body: JSON.stringify({ answers })
     });
 
 export const getLessonAttempts = (lessonId: string) =>
-    apiFetch(`/api/v1/lessons/${lessonId}/attempts/`);
+    apiFetch(`/api/v1/videos/${lessonId}/attempts/`);
 
 export const getLessonAttemptDetail = (lessonId: string, attemptId: string) =>
-    apiFetch(`/api/v1/lessons/${lessonId}/attempts/${attemptId}/`);
+    apiFetch(`/api/v1/videos/${lessonId}/attempts/${attemptId}/`);
 
 // Lessons
 export const getLessons = (params?: Record<string, any>) => {
@@ -634,7 +983,7 @@ export const updateCertificateExam = (id: string, data: Partial<CertificateExam>
 export const deleteCertificateExam = (id: string) =>
     apiFetch(`/api/v1/certificate-exams/${id}/`, { method: 'DELETE' });
 
-// Certificate Exam Attempts
+// Certificate Exam submit + attempts (exam-level, different from lesson attempts)
 export const submitCertificateExam = (examId: string, answers: Record<string, any>) =>
     apiFetch(`/api/v1/certificate-exams/${examId}/submit/`, {
         method: 'POST',
@@ -647,9 +996,312 @@ export const getCertificateExamAttempts = (examId: string) =>
 export const getCertificateExamAttemptDetail = (examId: string, attemptId: string) =>
     apiFetch(`/api/v1/certificate-exams/${examId}/attempts/${attemptId}/`);
 
-// Certificate Downloads
-export const downloadCertificate = (enrollmentId: string) =>
-    apiFetch(`/api/v1/enrollments/${enrollmentId}/certificate/`);
+// Course actions (super_admin only)
+export const assignCourseProvider = (courseId: string, providerId: string) =>
+    apiFetch<{ detail: string }>(`/api/v1/courses/${courseId}/assign-provider/`, {
+        method: 'POST',
+        body: JSON.stringify({ provider_id: providerId })
+    });
 
+export const assignCourseOrganization = (courseId: string, organizationId: string | null) =>
+    apiFetch<{ detail: string }>(`/api/v1/courses/${courseId}/assign-organization/`, {
+        method: 'POST',
+        body: JSON.stringify({ organization_id: organizationId })
+    });
 
+// Articles (legacy module content)
+export const getArticles = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<Article>>(`/api/v1/articles/${query}`);
+};
+
+export const createArticle = (data: { module: string; content: string; order?: number }) =>
+    apiFetch<Article>('/api/v1/articles/', { method: 'POST', body: JSON.stringify(data) });
+
+export const updateArticle = (id: string, data: Partial<Article>) =>
+    apiFetch<Article>(`/api/v1/articles/${id}/`, { method: 'PATCH', body: JSON.stringify(data) });
+
+export const deleteArticle = (id: string) =>
+    apiFetch(`/api/v1/articles/${id}/`, { method: 'DELETE' });
+
+// Certificates (read-only — auto-created on enrollment completion)
+export const getCertificates = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<Certificate>>(`/api/v1/certificates/${query}`);
+};
+
+export const getCertificate = (id: string) =>
+    apiFetch<Certificate>(`/api/v1/certificates/${id}/`);
+
+// ──────────────────────────────────────────────────────────
+// Auth helpers
+// ──────────────────────────────────────────────────────────
+
+// Change password — PUT /api/auth/change-password/
+export const changePassword = (oldPassword: string, newPassword: string) =>
+    apiFetch<{ detail: string }>('/api/auth/change-password/', {
+        method: 'PUT',
+        body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
+    });
+
+// Background profile — GET /api/auth/user/background-profile/
+export const getBackgroundProfile = () =>
+    apiFetch<BackgroundProfile>('/api/auth/user/background-profile/');
+
+// Background profile — PATCH /api/auth/user/background-profile/
+export const updateBackgroundProfile = (data: Partial<BackgroundProfile>) =>
+    apiFetch<BackgroundProfile>('/api/auth/user/background-profile/', {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+    });
+
+// Login — POST /api/auth/login/
+export const loginUser = (email: string, password: string) =>
+    apiFetch<LoginResponse>('/api/auth/login/', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+    });
+
+// Register — POST /api/auth/register/
+export interface RegisterPayload {
+    email: string;
+    password: string;
+    first_name?: string;
+    last_name?: string;
+    preferred_language?: string;
+}
+export const registerUser = (payload: RegisterPayload) =>
+    apiFetch('/api/auth/register/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+
+// Password reset request — POST /api/auth/password-reset/
+export const requestPasswordReset = (email: string) =>
+    apiFetch<{ detail: string; uid?: string; token?: string }>('/api/auth/password-reset/', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+    });
+
+// Password reset confirm — POST /api/auth/password-reset/confirm/
+export const confirmPasswordReset = (uid: string, token: string, newPassword: string) =>
+    apiFetch<{ detail: string }>('/api/auth/password-reset/confirm/', {
+        method: 'POST',
+        body: JSON.stringify({ uid, token, new_password: newPassword }),
+    });
+
+// ─────────────────────────────────────────────────────────────
+// Normalized Assessment System Helpers
+// ─────────────────────────────────────────────────────────────
+
+// ── Assessments ──────────────────────────────────────────────
+export const getAssessments = (params?: Record<string, any>) => {
+    const qs = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return apiFetch<{ count: number; results: Assessment[] }>(`/api/v1/assessments/${qs}`);
+};
+
+export const createAssessment = (data: {
+    lesson?: string;
+    certificate_exam?: string;
+    title?: string;
+    description?: string;
+    passing_score?: number;
+    time_limit_minutes?: number;
+    shuffle_questions?: boolean;
+}) => apiFetch<Assessment>('/api/v1/assessments/', { method: 'POST', body: JSON.stringify(data) });
+
+export const getAssessment = (id: string) =>
+    apiFetch<Assessment>(`/api/v1/assessments/${id}/`);
+
+export const updateAssessment = (id: string, data: Partial<{
+    title: string;
+    description: string;
+    passing_score: number;
+    time_limit_minutes: number;
+    shuffle_questions: boolean;
+    legacy_assessment_payload: object; // ⚠ hard-deletes all existing questions — use with caution
+}>) => apiFetch<Assessment>(`/api/v1/assessments/${id}/`, { method: 'PATCH', body: JSON.stringify(data) });
+
+export const deleteAssessment = (id: string) =>
+    apiFetch(`/api/v1/assessments/${id}/`, { method: 'DELETE' });
+
+// ── Assessment Attempt Actions ────────────────────────────────
+
+/** Always call resumeAssessment first; only startAssessment on 404 */
+export const startAssessment = (id: string) =>
+    apiFetch<AssessmentAttempt>(`/api/v1/assessments/${id}/start/`, { method: 'POST', body: '{}' });
+
+/** Returns 404 if no active attempt */
+export const resumeAssessment = (id: string) =>
+    apiFetch<AssessmentAttempt>(`/api/v1/assessments/${id}/resume/`);
+
+/** Save one answer or a batch without submitting */
+export const saveAssessmentProgress = (id: string, data: {
+    question_id?: string;
+    answer?: any;
+    current_question_index?: number;
+    answers?: Record<string, any>;
+}) => apiFetch<AssessmentAttempt>(`/api/v1/assessments/${id}/save-progress/`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+});
+
+/** Finalize and grade the active attempt */
+export const submitAssessment = (id: string, answers?: Record<string, any>) =>
+    apiFetch<AssessmentAttempt>(`/api/v1/assessments/${id}/submit/`, {
+        method: 'POST',
+        body: JSON.stringify({ answers: answers ?? {} }),
+    });
+
+/** Plain array of current user's attempts, newest first */
+export const getAssessmentAttempts = (id: string) =>
+    apiFetch<AssessmentAttempt[]>(`/api/v1/assessments/${id}/attempts/`);
+
+// ── Assessment Questions ──────────────────────────────────────
+
+export const getAssessmentQuestions = (params?: Record<string, any>) => {
+    const qs = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return apiFetch<{ count: number; results: AssessmentQuestion[] }>(`/api/v1/assessment-questions/${qs}`);
+};
+
+export const createAssessmentQuestion = (data: {
+    assessment: string;
+    type: QuestionType;
+    prompt: string;
+    order: number;
+    explanation?: string;
+    points?: number;
+    is_required?: boolean;
+    allow_multiple_selection?: boolean;
+    case_sensitive?: boolean;
+    correct_text_answer?: string;
+}) => apiFetch<AssessmentQuestion>('/api/v1/assessment-questions/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+});
+
+export const updateAssessmentQuestion = (id: string, data: Partial<{
+    prompt: string;
+    explanation: string;
+    points: number;
+    order: number;
+    is_required: boolean;
+    case_sensitive: boolean;
+    correct_text_answer: string;
+}>) => apiFetch<AssessmentQuestion>(`/api/v1/assessment-questions/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+});
+
+export const deleteAssessmentQuestion = (id: string) =>
+    apiFetch(`/api/v1/assessment-questions/${id}/`, { method: 'DELETE' });
+
+// ── Assessment Choices ────────────────────────────────────────
+
+export const getAssessmentChoices = (params?: Record<string, any>) => {
+    const qs = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return apiFetch<{ count: number; results: AssessmentChoice[] }>(`/api/v1/assessment-choices/${qs}`);
+};
+
+export const createAssessmentChoice = (data: {
+    question: string;
+    text: string;
+    order: number;
+    is_correct?: boolean;
+    value?: string;
+}) => apiFetch<AssessmentChoice>('/api/v1/assessment-choices/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+});
+
+export const updateAssessmentChoice = (id: string, data: Partial<{
+    text: string;
+    value: string;
+    is_correct: boolean;
+    order: number;
+}>) => apiFetch<AssessmentChoice>(`/api/v1/assessment-choices/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+});
+
+export const deleteAssessmentChoice = (id: string) =>
+    apiFetch(`/api/v1/assessment-choices/${id}/`, { method: 'DELETE' });
+
+// ──────────────────────────────────────────────────────────
+// Certificate Actions
+// ──────────────────────────────────────────────────────────
+export const verifyCertificate = (certificateId: string) =>
+    apiFetch<VerifyCertificateResponse>(`/api/v1/certificates/verify/${certificateId}/`);
+
+export const downloadCertificate = (id: string) =>
+    apiFetch<Blob>(`/api/v1/certificates/${id}/download/`, { method: 'GET' });
+
+export const generateCertificatePdf = (id: string) =>
+    apiFetch<Certificate>(`/api/v1/certificates/${id}/generate-pdf/`, { method: 'POST', body: JSON.stringify({}) });
+
+// ──────────────────────────────────────────────────────────
+// Lesson Progress
+// ──────────────────────────────────────────────────────────
+export const getLessonProgress = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<LessonProgress>>(`/api/v1/lesson-progress/${query}`);
+};
+
+export const createLessonProgress = (data: { lesson: string; completed?: boolean; watched_seconds?: number }) =>
+    apiFetch<LessonProgress>('/api/v1/lesson-progress/', { method: 'POST', body: JSON.stringify(data) });
+
+export const getLessonProgressDetail = (id: string) =>
+    apiFetch<LessonProgress>(`/api/v1/lesson-progress/${id}/`);
+
+export const updateLessonProgress = (id: string, data: Partial<{ completed: boolean; watched_seconds: number }>) =>
+    apiFetch<LessonProgress>(`/api/v1/lesson-progress/${id}/`, { method: 'PATCH', body: JSON.stringify(data) });
+
+export const deleteLessonProgress = (id: string) =>
+    apiFetch(`/api/v1/lesson-progress/${id}/`, { method: 'DELETE' });
+
+// ──────────────────────────────────────────────────────────
+// Audit Logs
+// ──────────────────────────────────────────────────────────
+export const getAuditLogs = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<AuditLog>>(`/api/v1/audit-logs/${query}`);
+};
+
+export const getAuditLog = (id: string) =>
+    apiFetch<AuditLog>(`/api/v1/audit-logs/${id}/`);
+
+// ──────────────────────────────────────────────────────────
+// Analytics Dashboard
+// ──────────────────────────────────────────────────────────
+export const getAnalyticsDashboard = () =>
+    apiFetch<AnalyticsDashboard>('/api/v1/analytics/dashboard/');
+
+// ──────────────────────────────────────────────────────────
+// Email Verification
+// ──────────────────────────────────────────────────────────
+export const verifyEmail = (uid: string, token: string) =>
+    apiFetch<{ detail: string }>('/api/auth/verify-email/', {
+        method: 'POST',
+        body: JSON.stringify({ uid, token }),
+    });
+
+export const resendVerificationEmail = (email: string) =>
+    apiFetch<{ detail: string }>('/api/auth/resend-verification/', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+    });
+
+// ──────────────────────────────────────────────────────────
+// Notifications — convenience wrappers
+// ──────────────────────────────────────────────────────────
+export const getNotifications = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<NotificationData>>(`/api/v1/notifications/${query}`);
+};
+
+export const markNotificationRead = (id: string) =>
+    apiFetch<{ detail: string }>(`/api/v1/notifications/${id}/mark_read/`, { method: 'POST', body: JSON.stringify({}) });
+
+export const markNotificationUnread = (id: string) =>
+    apiFetch<{ detail: string }>(`/api/v1/notifications/${id}/mark_unread/`, { method: 'POST', body: JSON.stringify({}) });
 

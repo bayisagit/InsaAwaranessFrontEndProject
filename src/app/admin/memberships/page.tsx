@@ -1,31 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { apiFetch } from '@/lib/api';
+import { getMemberships, createMembership, updateMembership, deleteMembership, getOrganizations, apiFetch, Membership, Organization } from '@/lib/api';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
-
-interface Membership {
-    id: string;
-    user: string;
-    organization: string;
-    org_role: 'admin' | 'member';
-    department: string;
-    employee_id: string;
-    is_primary: boolean;
-    joined_at: string;
-    user_email?: string; // Display aid
-    org_name?: string; // Display aid
-}
+import { toast } from 'react-hot-toast';
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; }
-interface Organization { id: string; name: string; }
 
 const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium";
+const ALLOWED_ROLES = ['super_admin', 'org_admin', 'course_provider'];
 
 export default function AdminMembershipsPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -38,6 +26,8 @@ export default function AdminMembershipsPage() {
     const [error, setError] = useState('');
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [filterOrg, setFilterOrg] = useState(''); // UUID or ''
+    const [filterRole, setFilterRole] = useState(''); // 'admin' | 'member' | ''
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const pageSize = 10;
@@ -62,18 +52,18 @@ export default function AdminMembershipsPage() {
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) router.push('/login');
-            else if (user?.role !== 'super_admin' && user?.role !== 'org_admin') router.push('/dashboard');
+            else if (!ALLOWED_ROLES.includes(user?.role || '')) router.push('/dashboard');
             else {
                 fetchRelatedData();
                 fetchMemberships();
             }
         }
-    }, [isAuthenticated, isLoading, user, router, page, searchTerm]);
+    }, [isAuthenticated, isLoading, user, router, page, searchTerm, filterOrg, filterRole]);
 
     const fetchRelatedData = async () => {
         const [uRes, oRes] = await Promise.all([
             apiFetch('/api/auth/users/?page_size=100'),
-            apiFetch('/api/v1/organizations/?page_size=100')
+            getOrganizations({ page_size: 100 })
         ]);
         if (uRes.data?.results) setUsers(uRes.data.results);
         else if (Array.isArray(uRes.data)) setUsers(uRes.data);
@@ -85,20 +75,24 @@ export default function AdminMembershipsPage() {
     const fetchMemberships = async () => {
         setIsFetching(true);
         setError('');
-        const query = new URLSearchParams({
+        const params: Record<string, any> = {
             page: page.toString(),
             page_size: pageSize.toString(),
-            search: searchTerm
-        }).toString();
+        };
+        if (searchTerm.trim()) params.search = searchTerm.trim();
+        // Org admins are automatically scoped by the backend, but we can
+        // pre-filter super_admins by org when a filter is selected.
+        if (filterOrg) params.organization = filterOrg;
+        if (filterRole) params.org_role = filterRole;
 
-        const { data, error: e } = await apiFetch(`/api/v1/memberships/?${query}`);
+        const { data, error: e } = await getMemberships(params);
         if (e) setError(e);
         else if (data?.results) {
             setMemberships(data.results);
             setTotalCount(data.count || 0);
         } else if (Array.isArray(data)) {
-            setMemberships(data);
-            setTotalCount(data.length);
+            setMemberships(data as Membership[]);
+            setTotalCount((data as Membership[]).length);
         }
         setIsFetching(false);
     };
@@ -135,16 +129,23 @@ export default function AdminMembershipsPage() {
         setIsActionLoading(true);
 
         const isEditing = !!selectedMembership;
-        const endpoint = `/api/v1/memberships/${isEditing ? `${selectedMembership.id}/` : ''}`;
+        const payload = {
+            user: form.user,
+            organization: form.organization,
+            org_role: form.org_role as 'admin' | 'member',
+            department: form.department || undefined,
+            employee_id: form.employee_id || undefined,
+            is_primary: form.is_primary,
+        };
 
-        const { error: apiErr, status } = await apiFetch(endpoint, {
-            method: isEditing ? 'PATCH' : 'POST',
-            body: JSON.stringify(form)
-        });
+        const { error: apiErr, status } = isEditing
+            ? await updateMembership(selectedMembership.id, payload)
+            : await createMembership(payload);
 
         if (apiErr || (status !== 200 && status !== 201)) {
             setActionError(apiErr || 'Failed to save membership.');
         } else {
+            toast.success(isEditing ? 'Membership updated.' : 'Membership created.');
             fetchMemberships();
             setIsModalOpen(false);
         }
@@ -159,9 +160,13 @@ export default function AdminMembershipsPage() {
     const confirmDelete = async () => {
         if (!itemToDelete) return;
         setIsActionLoading(true);
-        const { error: e, status } = await apiFetch(`/api/v1/memberships/${itemToDelete}/`, { method: 'DELETE' });
-        if (e || status !== 204) setError(e || 'Failed to delete.');
-        else fetchMemberships();
+        const { error: e, status } = await deleteMembership(itemToDelete);
+        if (e || status !== 204) {
+            toast.error(e || 'Failed to delete membership.');
+        } else {
+            toast.success('Membership removed.');
+            fetchMemberships();
+        }
         setIsDeleteModalOpen(false);
         setItemToDelete(null);
         setIsActionLoading(false);
@@ -182,7 +187,7 @@ export default function AdminMembershipsPage() {
         </div>
     );
 
-    if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin')) return null;
+    if (!user || !ALLOWED_ROLES.includes(user.role)) return null;
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
@@ -199,12 +204,34 @@ export default function AdminMembershipsPage() {
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
                 {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
-                <div className="mb-6 max-w-md">
-                    <Input
-                        placeholder="Search memberships..."
-                        value={searchTerm}
-                        onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
-                    />
+                {/* Filters */}
+                <div className="mb-6 flex flex-wrap gap-4 items-end">
+                    <div className="max-w-xs flex-1">
+                        <Input
+                            placeholder="Search by email, department, ID…"
+                            value={searchTerm}
+                            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                        />
+                    </div>
+                    {user.role === 'super_admin' && (
+                        <select
+                            className={SELECT_CLS + ' max-w-[220px]'}
+                            value={filterOrg}
+                            onChange={e => { setFilterOrg(e.target.value); setPage(1); }}
+                        >
+                            <option value="">All Organizations</option>
+                            {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                        </select>
+                    )}
+                    <select
+                        className={SELECT_CLS + ' max-w-[160px]'}
+                        value={filterRole}
+                        onChange={e => { setFilterRole(e.target.value); setPage(1); }}
+                    >
+                        <option value="">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="member">Member</option>
+                    </select>
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

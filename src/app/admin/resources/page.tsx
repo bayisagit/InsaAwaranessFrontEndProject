@@ -71,7 +71,7 @@ export default function AdminResourcesPage() {
                 fetchOrgs();
             }
         }
-    }, [isAuthenticated, isLoading, user, router, page, searchTerm]); // searchTerm here is for the main search bar, not filterSearchTerm
+    }, [isAuthenticated, isLoading, user, router, page]);
 
     const fetchOrgs = async () => {
         const { data } = await getOrganizations({ page_size: 100 });
@@ -202,7 +202,7 @@ export default function AdminResourcesPage() {
         });
     };
 
-    if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+    if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
     if (!user || (user.role !== 'super_admin' && user.role !== 'course_provider')) return null;
 
     const filteredResources = resources.filter(r => {
@@ -318,68 +318,75 @@ export default function AdminResourcesPage() {
                         </div>
                     </div> */}
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
-                                <tr>
-                                    <th className="px-6 py-4">Title</th>
-                                    <th className="px-6 py-4">Category</th>
-                                    <th className="px-6 py-4">Org</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {filteredResources.length === 0 ? (
-                                    <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">No resources found matching your criteria.</td></tr>
-                                ) : filteredResources.map(r => (
-                                    <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900">{r.title}</td>
-                                        <td className="px-6 py-4 text-gray-600 capitalize">{r.category}</td>
-                                        <td className="px-6 py-4 truncate max-w-[150px]">{getOrgName(r.organization)}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${r.status === 'published' ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600'
-                                                }`}>
-                                                {r.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            {r.status === 'draft' && canPublish && (
-                                                <button onClick={() => handlePublish(r.id)} className="text-green-600 hover:text-green-800 font-medium mr-3 transition-colors">Publish</button>
-                                            )}
-                                            <button onClick={() => openModal(r)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
-                                            <button onClick={() => handleDelete(r.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Pagination */}
-                    {totalCount > pageSize && !selectedOrgs.length && !selectedStatuses.length && !filterSearchTerm && (
-                        <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                            <span className="text-sm text-gray-500">Showing {resources.length} of {totalCount} resources</span>
-                            <div className="flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={page <= 1 || isFetching}
-                                    onClick={() => setPage(p => p - 1)}
-                                >
-                                    Previous
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={(page * pageSize) >= totalCount || isFetching}
-                                    onClick={() => setPage(p => p + 1)}
-                                >
-                                    Next
-                                </Button>
+                    <div className="relative">
+                        {isFetching && (
+                            <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
+                        )}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <table className="w-full text-left text-sm text-gray-500">
+                                <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-6 py-4">Title</th>
+                                        <th className="px-6 py-4">Category</th>
+                                        <th className="px-6 py-4">Org</th>
+                                        <th className="px-6 py-4">Status</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {filteredResources.length === 0 ? (
+                                        <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">No resources found matching your criteria.</td></tr>
+                                    ) : filteredResources.map(r => (
+                                        <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 font-medium text-gray-900">{r.title}</td>
+                                            <td className="px-6 py-4 text-gray-600 capitalize">{r.category}</td>
+                                            <td className="px-6 py-4 truncate max-w-[150px]">{getOrgName(r.organization)}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${r.status === 'published' ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600'
+                                                    }`}>
+                                                    {r.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                {r.status === 'draft' && canPublish && (
+                                                    <button onClick={() => handlePublish(r.id)} className="text-green-600 hover:text-green-800 font-medium mr-3 transition-colors">Publish</button>
+                                                )}
+                                                <button onClick={() => openModal(r)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                                <button onClick={() => handleDelete(r.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                    )}
+
+                        {/* Pagination */}
+                        {totalCount > pageSize && !selectedOrgs.length && !selectedStatuses.length && !filterSearchTerm && (
+                            <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
+                                <span className="text-sm text-gray-500">Showing {resources.length} of {totalCount} resources</span>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={page <= 1 || isFetching}
+                                        onClick={() => setPage(p => p - 1)}
+                                    >
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={(page * pageSize) >= totalCount || isFetching}
+                                        onClick={() => setPage(p => p + 1)}
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -94,8 +94,7 @@ export default function CourseExamDiscoveryPage() {
                 </header>
 
                 <AssessmentViewer
-                    certificateExam={exam}
-                    type="certificate"
+                    certificateExamId={exam.id}
                     onComplete={() => { /* results shown inline by AssessmentViewer */ }}
                 />
 

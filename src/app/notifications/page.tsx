@@ -4,14 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/Input';
-import { Button } from '@/components/Button';
+import { PageHeader } from '@/components/PageHeader';
+import { Pagination } from '@/components/Pagination';
+import { EmptyState } from '@/components/EmptyState';
+import { LinkifyText } from '@/components/LinkifyText';
 
 interface NotificationData {
     id: string;
     message: string;
     is_read: boolean;
     created_at: string;
-    notification_type?: string;
+    type?: string;
 }
 
 export default function NotificationsPage() {
@@ -75,19 +78,17 @@ export default function NotificationsPage() {
     if (authLoading || isLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <div aria-label="Loading" className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-4xl mx-auto px-6 lg:px-12 py-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Notifications</h1>
-                        <p className="text-gray-500 text-sm">Stay up to date with system alerts and updates.</p>
-                    </div>
+            <PageHeader
+                title="Notifications"
+                description="Stay up to date with system alerts and updates."
+                actions={
                     <div className="w-full md:w-64">
                         <Input
                             placeholder="Search messages..."
@@ -95,20 +96,24 @@ export default function NotificationsPage() {
                             onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                         />
                     </div>
-                </div>
-            </div>
+                }
+            />
 
-            <div className="max-w-4xl mx-auto px-6 lg:px-12 mt-8">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 mt-8">
                 {error && (
                     <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>
                 )}
 
                 {notifications.length === 0 ? (
-                    <div className="bg-white rounded-xl border border-gray-200 p-16 text-center shadow-sm">
-                        <div className="text-5xl mb-4 opacity-20">🔔</div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No notifications found</h3>
-                        <p className="text-gray-500 text-sm">Refine your search or check back later for updates.</p>
-                    </div>
+                    <EmptyState
+                        icon={
+                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                        }
+                        title="No notifications found"
+                        description="Refine your search or check back later for updates."
+                    />
                 ) : (
                     <div className="space-y-3">
                         {notifications.map((n) => (
@@ -119,7 +124,7 @@ export default function NotificationsPage() {
                                 <div className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${n.is_read ? 'bg-gray-200' : 'bg-primary'}`}></div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start gap-4">
-                                        <p className={`text-sm ${n.is_read ? 'text-gray-600' : 'text-gray-900 font-medium'}`}>{n.message}</p>
+                                        <p className={`text-sm ${n.is_read ? 'text-gray-600' : 'text-gray-900 font-medium'}`}><LinkifyText text={n.message} /></p>
                                         <button
                                             onClick={() => toggleReadStatus(n.id, n.is_read)}
                                             className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap ${n.is_read ? 'text-primary hover:bg-primary/5' : 'text-gray-400 hover:bg-gray-100'}`}
@@ -129,9 +134,9 @@ export default function NotificationsPage() {
                                         </button>
                                     </div>
                                     <div className="flex items-center gap-3 mt-2">
-                                        {n.notification_type && (
+                                        {n.type && (
                                             <span className="text-[10px] bg-gray-50 text-gray-500 px-2 py-0.5 rounded border border-gray-200 font-bold uppercase tracking-tight">
-                                                {n.notification_type.replace(/_/g, ' ')}
+                                                {n.type.replace(/_/g, ' ')}
                                             </span>
                                         )}
                                         <span className="text-[11px] text-gray-400 font-medium">{formatDate(n.created_at)}</span>
@@ -140,30 +145,14 @@ export default function NotificationsPage() {
                             </div>
                         ))}
 
-                        {/* Pagination */}
-                        {totalCount > pageSize && (
-                            <div className="mt-8 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                                <span className="text-sm text-gray-500">Showing {notifications.length} of {totalCount} alerts</span>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={page <= 1 || isLoading}
-                                        onClick={() => setPage(p => p - 1)}
-                                    >
-                                        Previous
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={(page * pageSize) >= totalCount || isLoading}
-                                        onClick={() => setPage(p => p + 1)}
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
+                        <Pagination
+                            page={page}
+                            pageSize={pageSize}
+                            totalCount={totalCount}
+                            isLoading={isLoading}
+                            onPageChange={setPage}
+                            label="notifications"
+                        />
                     </div>
                 )}
             </div>

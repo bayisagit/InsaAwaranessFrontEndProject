@@ -49,6 +49,10 @@ export default function AdminAlertsPage() {
     });
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const pageSize = 10;
 
     useEffect(() => {
         if (!isLoading && isAuthenticated && user?.role === 'super_admin') {
@@ -62,7 +66,7 @@ export default function AdminAlertsPage() {
             else if (user?.role !== 'super_admin') router.push('/dashboard');
             else fetchAlerts();
         }
-    }, [isAuthenticated, isLoading, user, router]);
+    }, [isAuthenticated, isLoading, user, router, page, searchTerm]);
 
     const fetchOrgs = async () => {
         const { data } = await apiFetch('/api/v1/organizations/');
@@ -72,10 +76,22 @@ export default function AdminAlertsPage() {
 
     const fetchAlerts = async () => {
         setIsFetching(true); setError('');
-        const { data, error: e } = await apiFetch('/api/v1/alerts/');
+        const params = new URLSearchParams({
+            page: page.toString(),
+            page_size: pageSize.toString(),
+            ordering: '-created_at'
+        });
+        if (searchTerm) params.set('search', searchTerm);
+        const { data, error: e } = await apiFetch(`/api/v1/alerts/?${params.toString()}`);
         if (e) setError(e);
-        else if (data?.results) setAlerts(data.results);
-        else if (Array.isArray(data)) setAlerts(data);
+        else if (data?.results) {
+            setAlerts(data.results);
+            setTotalCount(data.count || 0);
+        }
+        else if (Array.isArray(data)) {
+            setAlerts(data);
+            setTotalCount(data.length);
+        }
         setIsFetching(false);
     };
 
@@ -155,6 +171,17 @@ export default function AdminAlertsPage() {
             </div>
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
                 {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    <div className="flex-1">
+                        <Input
+                            placeholder="Search alerts by title or message..."
+                            value={searchTerm}
+                            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                        />
+                    </div>
+                </div>
+
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <table className="w-full text-left text-sm text-gray-500">
                         <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
@@ -172,10 +199,9 @@ export default function AdminAlertsPage() {
                                 <tr key={a.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest w-fit ${a.severity === 'critical' ? 'bg-red-50 text-red-700' :
-                                                a.severity === 'high' ? 'bg-orange-50 text-orange-700' :
-                                                    a.severity === 'medium' ? 'bg-yellow-50 text-yellow-700' :
-                                                        'bg-blue-50 text-blue-700'
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest w-fit ${a.severity === 'high' ? 'bg-red-50 text-red-700' :
+                                                a.severity === 'medium' ? 'bg-orange-50 text-orange-700' :
+                                                    'bg-blue-50 text-blue-700'
                                                 }`}>
                                                 {a.severity}
                                             </span>
@@ -204,6 +230,30 @@ export default function AdminAlertsPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {totalCount > pageSize && (
+                    <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
+                        <span className="text-sm text-gray-500">Showing {alerts.length} of {totalCount} alerts</span>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={page <= 1 || isFetching}
+                                onClick={() => setPage(p => p - 1)}
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={(page * pageSize) >= totalCount || isFetching}
+                                onClick={() => setPage(p => p + 1)}
+                            >
+                                Next
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedAlert ? 'Edit Alert' : 'Create Alert'}>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -224,7 +274,6 @@ export default function AdminAlertsPage() {
                                 <option value="low" className="text-gray-900">Low</option>
                                 <option value="medium" className="text-gray-900">Medium</option>
                                 <option value="high" className="text-gray-900">High</option>
-                                <option value="critical" className="text-gray-900">Critical</option>
                             </select>
                         </div>
                     </div>

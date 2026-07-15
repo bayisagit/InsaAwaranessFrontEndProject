@@ -8,6 +8,8 @@ interface AuthContextType {
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     isAuthenticated: boolean;
     isLoading: boolean;
+    /** True when the backend sets must_change_password=true (e.g. first-login forced change). */
+    mustChangePassword: boolean;
     logout: () => void;
     checkAuth: () => Promise<User | null>;
 }
@@ -63,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser,
         isAuthenticated: !!user,
         isLoading,
+        mustChangePassword: !!user?.must_change_password,
         logout,
         checkAuth,
     };

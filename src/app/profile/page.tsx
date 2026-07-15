@@ -4,9 +4,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { apiFetch } from '@/lib/api';
+import { getBackgroundProfile, updateBackgroundProfile, changePassword, clearTokens, BackgroundProfile } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-hot-toast';
+
 
 const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white";
 
@@ -57,24 +59,8 @@ const SectionHeader = ({ title }: { title: string }) => (
     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 pb-2 border-b border-gray-50">{title}</h3>
 );
 
-interface ProfileData {
-    id?: string;
-    phone_number?: string;
-    nationality?: string;
-    region?: string;
-    age_range?: string;
-    gender?: string;
-    education_level?: string;
-    field_of_study?: string;
-    institution_name?: string;
-    employment_status?: string;
-    employer_name?: string;
-    unemployment_description?: string;
-    professional_experience?: string;
-    enrollment_motivation?: string;
-    referral_source?: string;
-    is_information_confirmed?: boolean;
-}
+interface ProfileData extends Partial<BackgroundProfile> {}
+
 
 export default function ProfilePage() {
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -88,16 +74,19 @@ export default function ProfilePage() {
 
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
     const [isSavingPassword, setIsSavingPassword] = useState(false);
     const [passwordSuccess, setPasswordSuccess] = useState('');
     const [passwordError, setPasswordError] = useState('');
 
     const fetchProfile = useCallback(async () => {
         setIsLoadingProfile(true);
-        const { data, status } = await apiFetch('/api/auth/user/background-profile/');
+        const { data, status } = await getBackgroundProfile();
         if (status === 200 && data) {
             setProfileData(data);
-        } else if (status === 404) {
+        } else {
+            // Backend auto-creates a blank profile on first GET — just keep empty state
             setProfileData({
                 phone_number: '', nationality: '', region: '', age_range: '',
                 gender: '', education_level: '', field_of_study: '', institution_name: '',
@@ -108,6 +97,7 @@ export default function ProfilePage() {
         }
         setIsLoadingProfile(false);
     }, []);
+
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
@@ -127,36 +117,54 @@ export default function ProfilePage() {
     const handleProfileSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setProfileError(''); setProfileSuccess(''); setIsSavingProfile(true);
-        const method = profileData.id ? 'PUT' : 'POST';
-        const { error, status } = await apiFetch('/api/auth/user/background-profile/', {
-            method, body: JSON.stringify(profileData)
-        });
+        // Always use PATCH — the backend auto-creates the profile on first GET,
+        // so there is never a need for POST.
+        const { error, status } = await updateBackgroundProfile(profileData as Partial<BackgroundProfile>);
         if (error || (status !== 200 && status !== 201)) {
             setProfileError(error || 'Failed to update profile.');
+            toast.error(error || 'Failed to update profile.');
         } else {
             setProfileSuccess('Profile updated successfully.');
+            toast.success('Profile updated successfully.');
             setTimeout(() => setProfileSuccess(''), 5000);
             await fetchProfile();
         }
         setIsSavingProfile(false);
     };
 
+
     const handlePasswordSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setPasswordError(''); setPasswordSuccess(''); setIsSavingPassword(true);
-        const { error, status } = await apiFetch('/api/auth/change-password/', {
-            method: 'PUT',
-            body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
-        });
+
+        if (newPassword !== confirmPassword) {
+            setPasswordError('New passwords do not match.');
+            setIsSavingPassword(false);
+            return;
+        }
+        if (newPassword.length < 8) {
+            setPasswordError('New password must be at least 8 characters.');
+            setIsSavingPassword(false);
+            return;
+        }
+
+        const { error, status } = await changePassword(oldPassword, newPassword);
         if (error || status !== 200) {
-            setPasswordError(error || 'Failed to change password. Make sure old password is correct.');
+            const msg = error || 'Failed to change password. Make sure your current password is correct.';
+            setPasswordError(msg);
+            toast.error(msg);
         } else {
-            setPasswordSuccess('Password changed successfully.');
-            setTimeout(() => setPasswordSuccess(''), 5000);
-            setOldPassword(''); setNewPassword('');
+            toast.success('Password changed. Please sign in again.');
+            setPasswordSuccess('Password changed. Redirecting to login…');
+            // Per API docs: clear tokens after password change
+            setTimeout(() => {
+                clearTokens();
+                window.location.href = '/login';
+            }, 1500);
         }
         setIsSavingPassword(false);
     };
+
 
     if (authLoading || isLoadingProfile) {
         return (
@@ -180,6 +188,7 @@ export default function ProfilePage() {
         org_admin: 'Organization Administrator',
         course_provider: 'Course Provider',
         member: 'Learner',
+        public_user: 'Public User',
     };
 
     return (
@@ -241,6 +250,12 @@ export default function ProfilePage() {
                                         {user?.preferred_language || 'English'}
                                     </div>
                                 </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 block ml-1">Organization</label>
+                                    <div className="text-gray-900 font-bold bg-gray-50 px-5 py-4 rounded-2xl border border-gray-100 shadow-sm transition-all hover:bg-white hover:shadow-md cursor-default">
+                                        {user?.organization_name || (user?.role === 'public_user' ? 'INSA' : 'Not assigned')}
+                                    </div>
+                                </div>
                             </div>
                         </Card>
 
@@ -276,12 +291,38 @@ export default function ProfilePage() {
                                             <SectionHeader title="Contact & Demographic" />
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                                 <Input label="Phone Number" name="phone_number" value={profileData.phone_number || ''} onChange={handleProfileChange} required placeholder="+251 ..." />
-                                                <SelectField label="Nationality" name="nationality" value={profileData.nationality || ''} onChange={handleProfileChange} options={[{ value: 'ethiopia', label: 'Ethiopian' }, { value: 'other', label: 'Other' }]} />
-                                                <SelectField label="Region" name="region" value={profileData.region || ''} onChange={handleProfileChange} options={[{ value: 'addis_ababa', label: 'Addis Ababa' }, { value: 'afar', label: 'Afar' }, { value: 'amhara', label: 'Amhara' }, { value: 'benishangul_gumuz', label: 'Benishangul-Gumuz' }, { value: 'dire_dawa', label: 'Dire Dawa' }, { value: 'gambella', label: 'Gambella' }, { value: 'harari', label: 'Harari' }, { value: 'oromia', label: 'Oromia' }, { value: 'sidama', label: 'Sidama' }, { value: 'somali', label: 'Somali' }, { value: 'snnpr', label: 'SNNPR' }, { value: 'tigray', label: 'Tigray' }, { value: 'other', label: 'Other' }]} />
+                                                <SelectField label="Nationality" name="nationality" value={profileData.nationality || ''} onChange={handleProfileChange} options={[
+                                                    { value: 'ethiopia', label: 'Ethiopia' },
+                                                    { value: 'kenya', label: 'Kenya' },
+                                                    { value: 'rwanda', label: 'Rwanda' },
+                                                    { value: 'uganda', label: 'Uganda' },
+                                                    { value: 'other', label: 'Other' }
+                                                ]} />
+                                                {profileData.nationality === 'ethiopia' && (
+                                                <SelectField label="Region" name="region" value={profileData.region || ''} onChange={handleProfileChange} options={[
+                                                    { value: 'addis_ababa', label: 'Addis Ababa' },
+                                                    { value: 'afar', label: 'Afar' },
+                                                    { value: 'amhara', label: 'Amhara' },
+                                                    { value: 'benishangul_gumuz', label: 'Benishangul-Gumuz' },
+                                                    { value: 'central_ethiopia', label: 'Central Ethiopia' },
+                                                    { value: 'dire_dawa', label: 'Dire Dawa' },
+                                                    { value: 'gambela', label: 'Gambela' },
+                                                    { value: 'harari', label: 'Harari' },
+                                                    { value: 'oromia', label: 'Oromia' },
+                                                    { value: 'sidama', label: 'Sidama' },
+                                                    { value: 'somali', label: 'Somali' },
+                                                    { value: 'south_ethiopia', label: 'South Ethiopia' },
+                                                    { value: 'southwest_ethiopia', label: 'Southwest Ethiopia' },
+                                                    { value: 'tigray', label: 'Tigray' },
+                                                ]} />
+                                                )}
+
                                                 <div className="grid grid-cols-2 gap-6">
                                                     <SelectField label="Age Range" name="age_range" value={profileData.age_range || ''} onChange={handleProfileChange} options={[{ value: '13_17', label: '13–17' }, { value: '18_22', label: '18–22' }, { value: '23_25', label: '23–25' }, { value: '26_30', label: '26–30' }, { value: '31_35', label: '31–35' }, { value: '36_40', label: '36–40' }, { value: '41_plus', label: '41+' }]} />
-                                                    <SelectField label="Gender" name="gender" value={profileData.gender || ''} onChange={handleProfileChange} options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }, { value: 'prefer_not_to_say', label: 'Prefer not to say' }]} />
+                                                    {/* API only allows male/female */}
+                                                    <SelectField label="Gender" name="gender" value={profileData.gender || ''} onChange={handleProfileChange} options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }]} />
                                                 </div>
+
                                             </div>
                                         </div>
 
@@ -299,7 +340,9 @@ export default function ProfilePage() {
                                             </div>
                                         </div>
 
-                                        {profileData.employment_status === 'unemployed' && (
+                                        {/* unemployment_description: required for 'unemployed' OR 'other' per API docs */}
+                                        {(profileData.employment_status === 'unemployed' || profileData.employment_status === 'other') && (
+
                                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-2">
                                                 <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">Unemployment Description</label>
                                                 <textarea name="unemployment_description" value={profileData.unemployment_description || ''} onChange={(e) => setProfileData((prev) => ({ ...prev, unemployment_description: e.target.value }))} className="block w-full rounded-2xl border border-gray-200 py-4 px-5 text-sm shadow-sm focus:ring-4 focus:ring-primary/5 focus:border-primary focus:outline-none bg-gray-50/30 transition-all resize-none min-h-[120px]" placeholder="Could you briefly tell us more about your current status? This helps us provide relevant certifications." />
@@ -353,21 +396,33 @@ export default function ProfilePage() {
 
                                     <div className="space-y-4">
                                         <div className="p-4 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 flex items-center gap-4 transition-all hover:bg-white/10 hover:border-white/20">
-                                            <div className="h-10 w-10 bg-amber-400/20 rounded-2xl flex items-center justify-center text-xl shadow-inner shadow-amber-400/20">🏅</div>
+                                            <div className="h-10 w-10 bg-amber-400/20 rounded-2xl flex items-center justify-center shadow-inner shadow-amber-400/20">
+                                                <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                                </svg>
+                                            </div>
                                             <div className="flex flex-col">
                                                 <span className="text-xs font-black text-white tracking-tight">Phishing Hunter</span>
                                                 <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest mt-0.5">Gold Tier</span>
                                             </div>
                                         </div>
                                         <div className="p-4 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 flex items-center gap-4 transition-all hover:bg-white/10 hover:border-white/20">
-                                            <div className="h-10 w-10 bg-blue-400/20 rounded-2xl flex items-center justify-center text-xl shadow-inner shadow-blue-400/20">🛡️</div>
+                                            <div className="h-10 w-10 bg-blue-400/20 rounded-2xl flex items-center justify-center shadow-inner shadow-blue-400/20">
+                                                <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                                                </svg>
+                                            </div>
                                             <div className="flex flex-col">
                                                 <span className="text-xs font-black text-white tracking-tight">Password Shield</span>
                                                 <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest mt-0.5">Top 1% Learner</span>
                                             </div>
                                         </div>
                                         <div className="p-4 bg-black/20 backdrop-blur-2xl rounded-3xl border border-white/5 opacity-40 flex items-center gap-4 grayscale">
-                                            <div className="h-10 w-10 bg-white/5 rounded-2xl flex items-center justify-center text-xl">🔒</div>
+                                            <div className="h-10 w-10 bg-white/5 rounded-2xl flex items-center justify-center">
+                                                <svg className="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                                </svg>
+                                            </div>
                                             <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">Secret Achievement</span>
                                         </div>
                                     </div>
@@ -399,8 +454,9 @@ export default function ProfilePage() {
                                     )}
                                 </AnimatePresence>
                                 <div className="space-y-5">
-                                    <Input label="Current Password" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required placeholder="••••••••" />
-                                    <Input label="New Password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required placeholder="••••••••" />
+                                    <Input label="Current Password" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required placeholder="••••••••" showPasswordToggle />
+                                    <Input label="New Password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required placeholder="••••••••" showPasswordToggle />
+                                    <Input label="Confirm New Password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder="••••••••" showPasswordToggle />
                                 </div>
                                 <Button variant="primary" type="submit" disabled={isSavingPassword} className="w-full py-4 rounded-2xl mt-4 shadow-xl shadow-primary/20 font-bold hover:scale-[1.02] active:scale-[0.98] transition-all">
                                     {isSavingPassword ? 'Securing...' : 'Update Password'}

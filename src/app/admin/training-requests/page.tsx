@@ -1,194 +1,251 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { getTrainingRequests, apiFetch, TrainingRequest, approveTrainingRequest, rejectTrainingRequest } from '@/lib/api';
+import {
+    getTrainingRequests,
+    createTrainingRequest,
+    approveTrainingRequest,
+    rejectTrainingRequest,
+    TrainingRequest,
+} from '@/lib/api';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
-import { Input } from '@/components/Input';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
+import { toast } from 'react-hot-toast';
+
+// Roles that can VIEW training requests (org-scoped on backend)
+const VIEW_ROLES = ['super_admin', 'org_admin', 'course_provider', 'member'];
+// Roles that can SUBMIT a training request
+const SUBMIT_ROLES = ['super_admin', 'org_admin', 'course_provider', 'member'];
+// Only super_admin can approve/reject
+type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
+
+const STATUS_COLORS = {
+    pending: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    approved: 'bg-green-50 text-green-700 border-green-200',
+    rejected: 'bg-red-50 text-red-700 border-red-200',
+};
 
 export default function AdminTrainingRequestsPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
     const router = useRouter();
+
     const [requests, setRequests] = useState<TrainingRequest[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState('');
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        description: '',
-        attachment_url: '',
-        organization: ''
-    });
-    const [organizations, setOrganizations] = useState<any[]>([]);
+    const [createLoading, setCreateLoading] = useState(false);
+    const [createError, setCreateError] = useState('');
+    const [formData, setFormData] = useState({ description: '', attachment_url: '' });
 
-    useEffect(() => {
-        if (!isLoading) {
-            if (!isAuthenticated) router.push('/login');
-            else if (user?.role !== 'super_admin' && user?.role !== 'org_admin') router.push('/dashboard');
-            else {
-                fetchAll();
-                fetchOrganizations();
-            }
-        }
-    }, [isAuthenticated, isLoading, user, router]);
+    // Reject confirm
+    const [rejectTargetId, setRejectTargetId] = useState<string | null>(null);
+    const [isRejectConfirmOpen, setIsRejectConfirmOpen] = useState(false);
 
-    const fetchOrganizations = async () => {
-        const { data } = await apiFetch('/api/v1/organizations/');
-        if (data?.results) setOrganizations(data.results);
-        else if (Array.isArray(data)) setOrganizations(data);
-    };
-
-    const fetchAll = async () => {
+    const fetchAll = useCallback(async (filter: StatusFilter = statusFilter) => {
         setIsFetching(true);
         setError('');
-
-        const orgId = user?.role === 'org_admin'
-            ? ((user as any).organization_id || (user as any).organization || (organizations.length === 1 ? organizations[0].id : undefined))
-            : undefined;
-
-        const params: any = {};
-        if (orgId) params.organization = orgId;
+        const params: Record<string, any> = {};
+        if (filter !== 'all') params.status = filter;
 
         const { data, error: e } = await getTrainingRequests(params);
         if (e) {
             setError(e);
         } else if (data) {
-            const allRequests = data.results || (Array.isArray(data) ? data : []);
-            setRequests(allRequests);
+            setRequests(data.results ?? (Array.isArray(data) ? data : []));
+            setTotalCount(data.count ?? 0);
         }
         setIsFetching(false);
-    };
+    }, [statusFilter]);
 
     useEffect(() => {
-        if (organizations.length > 0 && user?.role === 'org_admin' && !requests.length) {
-            fetchAll();
+        if (!isLoading) {
+            if (!isAuthenticated) router.push('/login');
+            else if (!VIEW_ROLES.includes(user?.role || '')) router.push('/dashboard');
+            else fetchAll(statusFilter);
         }
-    }, [organizations]);
+    }, [isAuthenticated, isLoading, user, router, statusFilter]);
 
     const handleApprove = async (id: string) => {
         setActionLoading(id);
         const { error: e, status } = await approveTrainingRequest(id);
-        if (e || (status !== 200 && status !== 201)) setError(e || 'Failed to approve request.');
-        else fetchAll();
+        if (e || status !== 200) {
+            toast.error(e || 'Failed to approve request.');
+        } else {
+            toast.success('Training request approved.');
+            fetchAll(statusFilter);
+        }
         setActionLoading(null);
     };
 
-    const handleReject = async (id: string) => {
-        setActionLoading(id);
-        const { error: e, status } = await rejectTrainingRequest(id);
-        if (e || (status !== 200 && status !== 201)) setError(e || 'Failed to reject request.');
-        else fetchAll();
+    const handleRejectConfirm = async () => {
+        if (!rejectTargetId) return;
+        setActionLoading(rejectTargetId);
+        const { error: e, status } = await rejectTrainingRequest(rejectTargetId);
+        if (e || status !== 200) {
+            toast.error(e || 'Failed to reject request.');
+        } else {
+            toast.success('Training request rejected.');
+            fetchAll(statusFilter);
+        }
+        setIsRejectConfirmOpen(false);
+        setRejectTargetId(null);
         setActionLoading(null);
     };
 
     const handleCreateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setActionLoading('create');
+        setCreateError('');
+        setCreateLoading(true);
 
-        const payload: any = {
-            description: formData.description,
-            organization: formData.organization,
-            attachment_url: formData.attachment_url || undefined,
-            r_context: {
-                user_id: user?.id,
-                user_role: user?.role,
-                org_id_from_user: (user as any).organization_id || (user as any).organization,
-                available_orgs_count: organizations.length,
-                first_org_id: organizations[0]?.id
-            }
+        if (!formData.description.trim()) {
+            setCreateError('Description is required.');
+            setCreateLoading(false);
+            return;
+        }
+
+        // Per API docs: DO NOT send organization, created_by, status, etc.
+        // Backend auto-assigns the caller's primary organization.
+        const payload: { description: string; attachment_url?: string } = {
+            description: formData.description.trim(),
+            ...(formData.attachment_url ? { attachment_url: formData.attachment_url } : {}),
         };
 
-        const { data, error: err, status } = await apiFetch('/api/v1/training-requests/', {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
+        const { error: err, status } = await createTrainingRequest(payload);
 
         if (err || (status !== 200 && status !== 201)) {
-            setError(err || (data ? JSON.stringify(data) : 'Failed to create training request.'));
+            setCreateError(err || 'Failed to submit training request.');
         } else {
+            toast.success('Training request submitted successfully!');
             setIsCreateModalOpen(false);
-            setFormData({ description: '', attachment_url: '', organization: '' });
-            fetchAll();
+            setFormData({ description: '', attachment_url: '' });
+            fetchAll(statusFilter);
         }
-        setActionLoading(null);
+        setCreateLoading(false);
     };
 
-    if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
-    if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin')) return null;
+    const canSubmit = SUBMIT_ROLES.includes(user?.role || '');
+    const canApproveReject = user?.role === 'super_admin';
+
+    if (isLoading) return (
+        <div className="flex justify-center items-center min-h-[50vh]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        </div>
+    );
+    if (!user || !VIEW_ROLES.includes(user.role)) return null;
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
+            {/* Header */}
             <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Training Requests</h1>
-                        <p className="text-gray-500">Review and approve organizational training requests.</p>
+                        <p className="text-gray-500">
+                            {canApproveReject
+                                ? 'Review and approve organizational training requests.'
+                                : 'Submit and track your organization\'s training requests.'}
+                        </p>
                     </div>
-                    <div>
-                        {user?.role !== 'super_admin' && (
-                            <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>Submit New Request</Button>
-                        )}
-                    </div>
+                    {canSubmit && (
+                        <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+                            + Submit Request
+                        </Button>
+                    )}
+                </div>
+
+                {/* Status filter tabs */}
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 flex gap-0 border-t border-gray-100">
+                    {(['all', 'pending', 'approved', 'rejected'] as StatusFilter[]).map(tab => (
+                        <button
+                            key={tab}
+                            onClick={() => setStatusFilter(tab)}
+                            className={`px-5 py-3 text-sm font-semibold capitalize border-b-2 transition-colors ${
+                                statusFilter === tab
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                            }`}
+                        >
+                            {tab === 'all' ? 'All' : tab}
+                        </button>
+                    ))}
                 </div>
             </div>
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
+
+            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
                 {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
-                <div className="space-y-4">
-                    {requests.length === 0 ? (
-                        <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
-                            <div className="text-4xl mb-4">📋</div>
-                            <p className="font-medium text-gray-900">No training requests yet.</p>
-                            <p className="text-gray-500 text-sm mt-1">Organizations can submit training requests from their portal.</p>
-                        </div>
-                    ) : (
-                        requests.map(req => (
+
+                {isFetching ? (
+                    <div className="space-y-4">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+                                <div className="h-5 bg-gray-100 rounded w-1/3 mb-3" />
+                                <div className="h-4 bg-gray-100 rounded w-2/3 mb-2" />
+                                <div className="h-3 bg-gray-100 rounded w-1/4" />
+                            </div>
+                        ))}
+                    </div>
+                ) : requests.length === 0 ? (
+                    <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
+                        <div className="text-4xl mb-4">📋</div>
+                        <p className="font-medium text-gray-900">
+                            {statusFilter === 'all' ? 'No training requests yet.' : `No ${statusFilter} requests.`}
+                        </p>
+                        <p className="text-gray-500 text-sm mt-1">
+                            {canSubmit ? 'Submit a request using the button above.' : 'Training requests from your organization will appear here.'}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {requests.map(req => (
                             <div key={req.id} className="bg-white rounded-xl border border-gray-200 p-6">
                                 <div className="flex items-start justify-between gap-4">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold text-gray-900">{req.title || 'Training Request'}</h3>
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${req.status === 'approved' ? 'bg-green-50 text-green-700' :
-                                                req.status === 'rejected' ? 'bg-red-50 text-red-700' :
-                                                    'bg-yellow-50 text-yellow-700'
-                                                }`}>
-                                                {req.status || 'pending'}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${STATUS_COLORS[req.status] ?? 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                                                {req.status}
+                                            </span>
+                                            <span className="text-xs text-gray-400">
+                                                {new Date(req.created_at).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        {req.description && <p className="text-sm text-gray-600 mb-3">{req.description}</p>}
+                                        <p className="text-gray-700 text-sm leading-relaxed mb-3 line-clamp-3">
+                                            {req.description}
+                                        </p>
                                         {req.attachment_url && (
-                                            <div className="mb-4">
-                                                <a
-                                                    href={req.attachment_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:underline bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10 transition-colors"
-                                                >
-                                                    <span>📎</span> View Attachment
-                                                </a>
-                                            </div>
+                                            <a
+                                                href={req.attachment_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:underline bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10 transition-colors"
+                                            >
+                                                <span>📎</span> View Attachment
+                                            </a>
                                         )}
-                                        <div className="flex items-center gap-4 text-xs text-gray-400">
-                                            {req.organization_name && <span>Organization: <strong>{req.organization_name}</strong></span>}
-                                            {req.created_at && <span>{new Date(req.created_at).toLocaleDateString()}</span>}
-                                        </div>
                                     </div>
-                                    {(req.status === 'pending' || !req.status) && user?.role === 'super_admin' && (
+                                    {canApproveReject && req.status === 'pending' && (
                                         <div className="flex gap-2 shrink-0">
                                             <Button
                                                 variant="primary"
+                                                size="sm"
                                                 disabled={!!actionLoading}
                                                 onClick={() => handleApprove(req.id)}
                                             >
-                                                {actionLoading === req.id ? '...' : 'Approve'}
+                                                {actionLoading === req.id ? '…' : 'Approve'}
                                             </Button>
                                             <Button
                                                 variant="outline"
+                                                size="sm"
                                                 className="text-red-500 hover:text-red-700 border-red-200 hover:border-red-300"
                                                 disabled={!!actionLoading}
-                                                onClick={() => handleReject(req.id)}
+                                                onClick={() => { setRejectTargetId(req.id); setIsRejectConfirmOpen(true); }}
                                             >
                                                 Reject
                                             </Button>
@@ -196,63 +253,78 @@ export default function AdminTrainingRequestsPage() {
                                     )}
                                 </div>
                             </div>
-                        ))
-                    )}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
+            {/* Create Modal */}
             <Modal
                 isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
+                onClose={() => { setIsCreateModalOpen(false); setCreateError(''); }}
                 title="Submit Training Request"
             >
                 <form onSubmit={handleCreateSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
-                        <select
-                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
-                            value={formData.organization}
-                            onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                            required
-                        >
-                            <option value="">Select Organization</option>
-                            {organizations.map(org => (
-                                <option key={org.id} value={org.id}>{org.name}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {createError && (
+                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{createError}</div>
+                    )}
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Description <span className="text-primary">*</span>
+                        </label>
                         <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px]"
-                            placeholder="Describe the training requirements..."
+                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-none"
+                            placeholder="Describe the training requirements, topics, number of employees, and expected outcomes…"
                             value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
                             required
+                            disabled={createLoading}
                         />
                     </div>
 
                     <div className="space-y-1">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Supporting Document (Optional PDF)</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Supporting Document <span className="text-gray-400 font-normal">(optional)</span>
+                        </label>
                         <CloudinaryUpload
-                            onUploadSuccess={(url) => setFormData({ ...formData, attachment_url: url })}
+                            onUploadSuccess={(url) => setFormData(f => ({ ...f, attachment_url: url }))}
                         />
                         {formData.attachment_url && (
-                            <p className="text-[10px] text-green-600 font-medium">File uploaded successfully ✓</p>
+                            <p className="text-[11px] text-green-600 font-medium mt-1">✓ File uploaded successfully</p>
                         )}
                     </div>
 
+                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
+                        Your request will be automatically linked to your organization and submitted for Super Admin review.
+                    </div>
+
                     <div className="pt-4 flex justify-end gap-3">
-                        <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)} disabled={!!actionLoading}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => { setIsCreateModalOpen(false); setCreateError(''); }}
+                            disabled={createLoading}
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" variant="primary" disabled={!!actionLoading}>
-                            {actionLoading === 'create' ? 'Submitting...' : 'Submit Request'}
+                        <Button type="submit" variant="primary" disabled={createLoading}>
+                            {createLoading ? 'Submitting…' : 'Submit Request'}
                         </Button>
                     </div>
                 </form>
             </Modal>
+
+            {/* Reject Confirm */}
+            <ConfirmModal
+                isOpen={isRejectConfirmOpen}
+                onClose={() => { setIsRejectConfirmOpen(false); setRejectTargetId(null); }}
+                onConfirm={handleRejectConfirm}
+                title="Reject Training Request"
+                message="Are you sure you want to reject this training request? The submitting organization will need to re-submit if they wish to proceed."
+                confirmText="Reject"
+                isLoading={!!actionLoading}
+            />
         </div>
     );
 }
