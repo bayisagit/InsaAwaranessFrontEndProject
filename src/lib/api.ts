@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://insaawaranessbackend-1.onrender.com';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://insaawaranessbackendproject.onrender.com';
 // Types
 
 // Login response — matches POST /api/auth/login/ 200 OK
