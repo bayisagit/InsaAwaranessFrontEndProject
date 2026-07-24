@@ -16,6 +16,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 import { toast } from 'react-hot-toast';
 
 const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white";
@@ -41,6 +42,7 @@ export default function AdminReportsPage() {
     const pageSize = 10;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
     const [selected, setSelected] = useState<ComplianceReport | null>(null);
@@ -100,21 +102,31 @@ export default function AdminReportsPage() {
 
     const getOrgName = (id: string) => orgs.find(o => o.id === id)?.name || id;
 
-    const openModal = (item?: ComplianceReport) => {
+    const openModal = (item: ComplianceReport) => {
         setActionError('');
-        if (item) {
-            setSelected(item);
-            setForm({
-                organization: item.organization || '',
-                title: item.title,
-                status: item.status,
-                report_data: item.report_data ? JSON.stringify(item.report_data, null, 2) : '{}'
-            });
-        } else {
-            setSelected(null);
-            setForm({ organization: '', title: '', status: 'draft', report_data: '{}' });
-        }
+        setIsCreateExpanded(false);
+        setSelected(item);
+        setForm({
+            organization: item.organization || '',
+            title: item.title,
+            status: item.status,
+            report_data: item.report_data ? JSON.stringify(item.report_data, null, 2) : '{}'
+        });
         setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
+            setSelected(null);
+            setForm({
+                organization: user?.role === 'org_admin' ? (user.organization_id || '') : '',
+                title: '',
+                status: 'draft',
+                report_data: '{}'
+            });
+        }
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -147,7 +159,11 @@ export default function AdminReportsPage() {
         } else {
             toast.success(isEditing ? 'Report updated successfully!' : 'Report created successfully!');
             fetchReports();
-            setIsModalOpen(false);
+            if (isEditing) {
+                setIsModalOpen(false);
+            } else {
+                setIsCreateExpanded(false);
+            }
         }
         setIsActionLoading(false);
     };
@@ -182,9 +198,6 @@ export default function AdminReportsPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Compliance Reports</h1>
                         <p className="text-gray-500">Manage organizational compliance and training reports.</p>
                     </div>
-                    {canWrite && (
-                        <Button variant="primary" onClick={() => openModal()}>Create Report</Button>
-                    )}
                 </div>
             </div>
 
@@ -200,6 +213,66 @@ export default function AdminReportsPage() {
                         />
                     </div>
                 </div>
+
+                {canWrite && (
+                    <ExpandableCreateSection
+                        title="Create Report"
+                        isOpen={isCreateExpanded}
+                        onToggle={toggleCreate}
+                    >
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+
+                            <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
+
+                            <div className="grid grid-cols-2 gap-4">
+                                {user?.role === 'org_admin' ? (
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-red-500">*</span></label>
+                                        <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                            {user.organization_name || 'Your Organization'}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-red-500">*</span></label>
+                                        <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
+                                            <option value="">Select Organization</option>
+                                            {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                                    <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value as ComplianceReport['status'] })} disabled={isActionLoading}>
+                                        <option value="draft">Draft</option>
+                                        <option value="submitted">Submitted</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Report Data (JSON)</label>
+                                <textarea
+                                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[150px] resize-y"
+                                    placeholder='{ "findings": [], "summary": "" }'
+                                    value={form.report_data}
+                                    onChange={e => setForm({ ...form, report_data: e.target.value })}
+                                    disabled={isActionLoading}
+                                />
+                            </div>
+
+                            <div className="pt-4 flex justify-end gap-3">
+                                <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
+                                <Button type="submit" variant="primary" disabled={isActionLoading}>
+                                    {isActionLoading ? 'Saving...' : 'Create Report'}
+                                </Button>
+                            </div>
+                        </form>
+                    </ExpandableCreateSection>
+                )}
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <table className="w-full text-left text-sm text-gray-500">
@@ -265,20 +338,29 @@ export default function AdminReportsPage() {
                 )}
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selected ? 'Edit Report' : 'Create Report'}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Report">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
 
-                    <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} />
+                    <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-red-500">*</span></label>
-                            <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
-                                <option value="">Select Organization</option>
-                                {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
-                            </select>
-                        </div>
+                        {user?.role === 'org_admin' ? (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-red-500">*</span></label>
+                                <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                    {user.organization_name || 'Your Organization'}
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-red-500">*</span></label>
+                                <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
+                                    <option value="">Select Organization</option>
+                                    {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                                </select>
+                            </div>
+                        )}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
                             <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value as ComplianceReport['status'] })} disabled={isActionLoading}>
@@ -304,7 +386,7 @@ export default function AdminReportsPage() {
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
-                            {isActionLoading ? 'Saving...' : selected ? 'Save Changes' : 'Create Report'}
+                            {isActionLoading ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>

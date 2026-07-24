@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Geist } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
+import { NavigationWrapper } from "@/components/NavigationWrapper";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <body className={`${inter.className} min-h-screen bg-white text-gray-900 flex flex-col antialiased`}>
         <a
           href="#main-content"
@@ -33,11 +38,13 @@ export default function RootLayout({
         </a>
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "PLACEHOLDER_CLIENT_ID"}>
           <AuthProvider>
-            <Header />
-            <main id="main-content" className="flex-1 flex flex-col outline-none" tabIndex={-1}>
-              {children}
-            </main>
-            <Footer />
+            <TooltipProvider>
+              <NavigationWrapper Header={<Header />} Footer={<Footer />}>
+                <main id="main-content" className="flex-1 flex flex-col outline-none w-full" tabIndex={-1}>
+                  {children}
+                </main>
+              </NavigationWrapper>
+            </TooltipProvider>
             <Toaster
               position="top-right"
               toastOptions={{

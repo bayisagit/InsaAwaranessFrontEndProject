@@ -222,17 +222,6 @@ export interface Lesson {
     updated_at?: string;
 }
 
-export interface CertificateExam {
-    id: string;
-    course: string;
-    title: string;
-    passing_score: number;
-    assessment_type: 'multiple' | 'true_false' | 'matching';
-    assessment_payload: AssessmentPayload | string;
-    order: number;
-    created_at?: string;
-    updated_at?: string;
-}
 
 export interface Course {
     id: string;
@@ -243,12 +232,12 @@ export interface Course {
     assigned_by?: string | null;
     organization?: string | null;
     language: string;
-    level?: string;  // Backend field is 'level', not 'difficulty'
+    level?: string;
     is_active?: boolean;
     status: 'draft' | 'published' | 'archived';
     thumbnail_url?: string;
     modules?: CourseModule[];
-    certificate_exams?: CertificateExam[];
+    course_exams?: Assessment[];
     created_at: string;
 }
 
@@ -321,8 +310,9 @@ export interface AssessmentQuestion {
 export interface Assessment {
     id: string;
     lesson: string | null;
-    certificate_exam: string | null;
-    parent_type: 'lesson' | 'certificate_exam';
+    module: string | null;
+    course: string | null;
+    parent_type: 'lesson_assessment' | 'module_quiz' | 'course_exam';
     title: string;
     description: string;
     passing_score: number;
@@ -578,12 +568,11 @@ export async function apiFetch<T = any>(
         const data = isJson ? await response.json() : null;
 
         if (!response.ok) {
-            // Try to extract an error message
             const errorMessage = data && typeof data === 'object'
-                ? Object.values(data).flat().join(', ') // Usually DRF sends { "field": ["error"] }
+                ? Object.values(data).flat().join(', ')
                 : (data?.detail || data?.message || response.statusText);
 
-            return { error: errorMessage || 'An error occurred', status: response.status };
+            return { data, error: errorMessage || 'An error occurred', status: response.status };
         }
 
         return { data, status: response.status };
@@ -963,36 +952,6 @@ export const updateLesson = (id: string, data: Partial<Lesson>, patch = true) =>
 export const deleteLesson = (id: string) =>
     apiFetch(`/api/v1/lessons/${id}/`, { method: 'DELETE' });
 
-// Certificate Exams
-export const getCertificateExams = (params?: Record<string, any>) => {
-    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
-    return apiFetch<PaginatedResponse<CertificateExam>>(`/api/v1/certificate-exams/${query}`);
-};
-
-export const createCertificateExam = (data: Partial<CertificateExam>) =>
-    apiFetch<CertificateExam>('/api/v1/certificate-exams/', { method: 'POST', body: JSON.stringify(data) });
-
-export const getCertificateExam = (id: string) =>
-    apiFetch<CertificateExam>(`/api/v1/certificate-exams/${id}/`);
-
-export const updateCertificateExam = (id: string, data: Partial<CertificateExam>, patch = true) =>
-    apiFetch<CertificateExam>(`/api/v1/certificate-exams/${id}/`, { method: patch ? 'PATCH' : 'PUT', body: JSON.stringify(data) });
-
-export const deleteCertificateExam = (id: string) =>
-    apiFetch(`/api/v1/certificate-exams/${id}/`, { method: 'DELETE' });
-
-// Certificate Exam submit + attempts (exam-level, different from lesson attempts)
-export const submitCertificateExam = (examId: string, answers: Record<string, any>) =>
-    apiFetch(`/api/v1/certificate-exams/${examId}/submit/`, {
-        method: 'POST',
-        body: JSON.stringify({ answers })
-    });
-
-export const getCertificateExamAttempts = (examId: string) =>
-    apiFetch(`/api/v1/certificate-exams/${examId}/attempts/`);
-
-export const getCertificateExamAttemptDetail = (examId: string, attemptId: string) =>
-    apiFetch(`/api/v1/certificate-exams/${examId}/attempts/${attemptId}/`);
 
 // Course actions (super_admin only)
 export const assignCourseProvider = (courseId: string, providerId: string) =>
@@ -1100,7 +1059,9 @@ export const getAssessments = (params?: Record<string, any>) => {
 
 export const createAssessment = (data: {
     lesson?: string;
-    certificate_exam?: string;
+    module?: string;
+    course?: string;
+    parent_type?: 'lesson_assessment' | 'module_quiz' | 'course_exam';
     title?: string;
     description?: string;
     passing_score?: number;

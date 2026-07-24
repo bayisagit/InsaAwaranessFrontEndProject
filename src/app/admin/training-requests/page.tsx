@@ -11,8 +11,8 @@ import {
     TrainingRequest,
 } from '@/lib/api';
 import { Button } from '@/components/Button';
-import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { toast } from 'react-hot-toast';
 
@@ -40,7 +40,7 @@ export default function AdminTrainingRequestsPage() {
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [createLoading, setCreateLoading] = useState(false);
     const [createError, setCreateError] = useState('');
     const [formData, setFormData] = useState({ description: '', attachment_url: '' });
@@ -100,6 +100,14 @@ export default function AdminTrainingRequestsPage() {
         setActionLoading(null);
     };
 
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setCreateError('');
+            setFormData({ description: '', attachment_url: '' });
+        }
+        setIsCreateExpanded(!isCreateExpanded);
+    };
+
     const handleCreateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setCreateError('');
@@ -124,7 +132,7 @@ export default function AdminTrainingRequestsPage() {
             setCreateError(err || 'Failed to submit training request.');
         } else {
             toast.success('Training request submitted successfully!');
-            setIsCreateModalOpen(false);
+            setIsCreateExpanded(false);
             setFormData({ description: '', attachment_url: '' });
             fetchAll(statusFilter);
         }
@@ -154,11 +162,6 @@ export default function AdminTrainingRequestsPage() {
                                 : 'Submit and track your organization\'s training requests.'}
                         </p>
                     </div>
-                    {canSubmit && (
-                        <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
-                            + Submit Request
-                        </Button>
-                    )}
                 </div>
 
                 {/* Status filter tabs */}
@@ -181,6 +184,67 @@ export default function AdminTrainingRequestsPage() {
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
                 {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+
+                {canSubmit && (
+                    <div className="mb-6">
+                        <ExpandableCreateSection
+                            title="Submit Request"
+                            isOpen={isCreateExpanded}
+                            onToggle={toggleCreate}
+                        >
+                            <form onSubmit={handleCreateSubmit} className="space-y-4">
+                                {createError && (
+                                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{createError}</div>
+                                )}
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Description <span className="text-primary">*</span>
+                                    </label>
+                                    <textarea
+                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
+                                        placeholder="Describe the training requirements, topics, number of employees, and expected outcomes…"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
+                                        required
+                                        disabled={createLoading}
+                                        autoFocus
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Supporting Document <span className="text-gray-400 font-normal">(optional)</span>
+                                    </label>
+                                    <CloudinaryUpload
+                                        onUploadSuccess={(url) => setFormData(f => ({ ...f, attachment_url: url }))}
+                                    />
+                                    {formData.attachment_url && (
+                                        <p className="text-[11px] text-green-600 font-medium mt-1">✓ File uploaded successfully</p>
+                                    )}
+                                </div>
+
+                                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
+                                    Your request will be automatically linked to your organization and submitted for Super Admin review.
+                                </div>
+
+                                <div className="pt-4 flex justify-end gap-3">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => { setIsCreateExpanded(false); setCreateError(''); }}
+                                        disabled={createLoading}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" variant="primary" disabled={createLoading}>
+                                        {createLoading ? 'Submitting…' : 'Submit Request'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </ExpandableCreateSection>
+                    </div>
+                )}
 
                 {isFetching ? (
                     <div className="space-y-4">
@@ -257,63 +321,6 @@ export default function AdminTrainingRequestsPage() {
                     </div>
                 )}
             </div>
-
-            {/* Create Modal */}
-            <Modal
-                isOpen={isCreateModalOpen}
-                onClose={() => { setIsCreateModalOpen(false); setCreateError(''); }}
-                title="Submit Training Request"
-            >
-                <form onSubmit={handleCreateSubmit} className="space-y-4">
-                    {createError && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{createError}</div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            Description <span className="text-primary">*</span>
-                        </label>
-                        <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-none"
-                            placeholder="Describe the training requirements, topics, number of employees, and expected outcomes…"
-                            value={formData.description}
-                            onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                            required
-                            disabled={createLoading}
-                        />
-                    </div>
-
-                    <div className="space-y-1">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            Supporting Document <span className="text-gray-400 font-normal">(optional)</span>
-                        </label>
-                        <CloudinaryUpload
-                            onUploadSuccess={(url) => setFormData(f => ({ ...f, attachment_url: url }))}
-                        />
-                        {formData.attachment_url && (
-                            <p className="text-[11px] text-green-600 font-medium mt-1">✓ File uploaded successfully</p>
-                        )}
-                    </div>
-
-                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
-                        Your request will be automatically linked to your organization and submitted for Super Admin review.
-                    </div>
-
-                    <div className="pt-4 flex justify-end gap-3">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => { setIsCreateModalOpen(false); setCreateError(''); }}
-                            disabled={createLoading}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" variant="primary" disabled={createLoading}>
-                            {createLoading ? 'Submitting…' : 'Submit Request'}
-                        </Button>
-                    </div>
-                </form>
-            </Modal>
 
             {/* Reject Confirm */}
             <ConfirmModal

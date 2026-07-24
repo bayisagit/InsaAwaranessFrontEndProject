@@ -72,8 +72,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
             const { data } = await getAssessments({ lesson: lessonId, page_size: 1 });
             id = data?.results?.[0]?.id;
         } else if (!id && certificateExamId) {
-            const { data } = await getAssessments({ certificate_exam: certificateExamId, page_size: 1 });
-            id = data?.results?.[0]?.id;
+            id = certificateExamId;
         }
 
         if (!id) { setLoadError('No assessment found for this lesson.'); setIsLoading(false); return; }

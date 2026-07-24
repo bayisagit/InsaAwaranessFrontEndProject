@@ -23,11 +23,11 @@ export function SupportCTA({
 
             <div className="relative z-10 max-w-2xl mx-auto">
                 <h3 className="text-2xl font-bold mb-4">{title}</h3>
-                <p className="text-gray-400 mb-8 text-sm leading-relaxed">
+                <p className="text-gray-100 mb-8 text-base md:text-lg leading-relaxed font-medium">
                     {description}
                 </p>
                 <Link href={buttonHref}>
-                    <Button className="bg-white text-black hover:bg-gray-100 transition-colors">
+                    <Button variant="social" className="bg-white text-black hover:bg-gray-100 transition-colors">
                         {buttonText} &rarr;
                     </Button>
                 </Link>

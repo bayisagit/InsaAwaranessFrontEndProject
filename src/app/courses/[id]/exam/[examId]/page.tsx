@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getCertificateExam, CertificateExam } from '@/lib/api';
+import { getAssessment, Assessment } from '@/lib/api';
 import { AssessmentViewer } from '@/components/AssessmentViewer';
 
-export default function CertificateExamPage() {
+export default function CourseExamPage() {
     const { id: courseId, examId } = useParams<{ id: string; examId: string }>();
     const router = useRouter();
-    const [exam, setExam] = useState<CertificateExam | null>(null);
+    const [exam, setExam] = useState<Assessment | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -19,7 +19,7 @@ export default function CertificateExamPage() {
 
     const fetchExam = async () => {
         setIsLoading(true);
-        const { data, error: err } = await getCertificateExam(examId);
+        const { data, error: err } = await getAssessment(examId);
         if (err) setError(err);
         else if (data) setExam(data);
         setIsLoading(false);
@@ -66,7 +66,7 @@ export default function CertificateExamPage() {
 
                 <main>
                     <AssessmentViewer
-                        certificateExamId={examId}
+                        assessmentId={examId}
                         onComplete={() => { /* results shown inline by AssessmentViewer */ }}
                     />
                 </main>

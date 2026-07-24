@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { apiFetch, getCertificateExams, CertificateExam } from '@/lib/api';
+import { apiFetch, getAssessments, getAssessment, Assessment } from '@/lib/api';
 import { AssessmentViewer } from '@/components/AssessmentViewer';
 
 export default function CourseExamDiscoveryPage() {
     const { id: courseId } = useParams<{ id: string }>();
     const router = useRouter();
-    const [exam, setExam] = useState<CertificateExam | null>(null);
+    const [exam, setExam] = useState<Assessment | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
 
@@ -20,8 +20,8 @@ export default function CourseExamDiscoveryPage() {
     const findExam = async () => {
         setIsLoading(true);
 
-        // Try direct listing first (works if user has admin/provider role)
-        const listRes = await getCertificateExams({ course: courseId, page_size: 10 });
+        // Try listing course exams via unified assessments endpoint
+        const listRes = await getAssessments({ course: courseId, parent_type: 'course_exam', page_size: 10 });
         const results = (listRes.data as any)?.results ?? (Array.isArray(listRes.data) ? listRes.data : []);
 
         if (Array.isArray(results) && results.length > 0) {
@@ -30,11 +30,12 @@ export default function CourseExamDiscoveryPage() {
             return;
         }
 
-        // Fallback: try a learner-accessible endpoint (some APIs expose exam info via enrollment/course)
+        // Fallback: get course_exams from course detail
         const courseRes = await apiFetch<any>(`/api/v1/courses/${courseId}/`);
-        const certExamId = courseRes.data?.certificate_exam?.id ?? courseRes.data?.certificate_exam;
-        if (certExamId) {
-            const examRes = await apiFetch<CertificateExam>(`/api/v1/certificate-exams/${certExamId}/`);
+        const courseExams = courseRes.data?.course_exams ?? [];
+        const courseExam = Array.isArray(courseExams) ? courseExams[0] : null;
+        if (courseExam?.id) {
+            const examRes = await getAssessment(courseExam.id);
             if (examRes.data) {
                 setExam(examRes.data);
                 setIsLoading(false);
@@ -94,7 +95,7 @@ export default function CourseExamDiscoveryPage() {
                 </header>
 
                 <AssessmentViewer
-                    certificateExamId={exam.id}
+                    assessmentId={exam.id}
                     onComplete={() => { /* results shown inline by AssessmentViewer */ }}
                 />
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
+import { AboutSection } from '@/components/sections/AboutSection';
+import { ContactSection } from '@/components/sections/ContactSection';
 
 export default function Home() {
   return (
@@ -203,19 +205,31 @@ export default function Home() {
         </div>
       </section>
 
+      <AboutSection variant="home" />
+      <ContactSection variant="home" />
+
       {/* CTA Footer Section */}
-      <section className="py-24 bg-secondary px-4 sm:px-6 lg:px-8 text-center text-white">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Join the National Cyber Defense</h2>
-          <p className="mt-4 text-gray-400 text-lg">
+      <section className="relative py-24 bg-secondary px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+        {/* Subtle gradient overlay to ensure contrast against background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60 pointer-events-none" />
+        
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <h2 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl drop-shadow-md">
+            Join the National Cyber Defense
+          </h2>
+          <p className="mt-6 text-xl text-gray-100 max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
             Cybersecurity is a shared responsibility. Equip yourself with the knowledge to identify threats and protect our nation&apos;s digital way of life.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/signup" aria-label="Create a free account">
-              <Button variant="primary" size="lg" className="w-full sm:w-auto">Create Free Account</Button>
+              <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                Create Free Account
+              </Button>
             </Link>
             <Link href="/resources" aria-label="Explore cybersecurity resources">
-              <Button variant="ghost" size="lg" className="w-full sm:w-auto text-white border border-gray-600 hover:bg-gray-800">Explore Resources</Button>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
+                Explore Resources
+              </Button>
             </Link>
           </div>
         </div>

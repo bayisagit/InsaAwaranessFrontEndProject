@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 import { toast } from 'react-hot-toast';
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; }
@@ -33,6 +34,7 @@ export default function AdminMembershipsPage() {
     const pageSize = 10;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
     const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
@@ -97,19 +99,24 @@ export default function AdminMembershipsPage() {
         setIsFetching(false);
     };
 
-    const openModal = (m?: Membership) => {
+    const openModal = (m: Membership) => {
         setActionError('');
-        if (m) {
-            setSelectedMembership(m);
-            setForm({
-                user: m.user,
-                organization: m.organization,
-                org_role: m.org_role,
-                department: m.department || '',
-                employee_id: m.employee_id || '',
-                is_primary: m.is_primary
-            });
-        } else {
+        setIsCreateExpanded(false);
+        setSelectedMembership(m);
+        setForm({
+            user: m.user,
+            organization: m.organization,
+            org_role: m.org_role,
+            department: m.department || '',
+            employee_id: m.employee_id || '',
+            is_primary: m.is_primary
+        });
+        setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
             setSelectedMembership(null);
             setForm({
                 user: '',
@@ -120,7 +127,7 @@ export default function AdminMembershipsPage() {
                 is_primary: false
             });
         }
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -147,7 +154,11 @@ export default function AdminMembershipsPage() {
         } else {
             toast.success(isEditing ? 'Membership updated.' : 'Membership created.');
             fetchMemberships();
-            setIsModalOpen(false);
+            if (isEditing) {
+                setIsModalOpen(false);
+            } else {
+                setIsCreateExpanded(false);
+            }
         }
         setIsActionLoading(false);
     };
@@ -197,7 +208,6 @@ export default function AdminMembershipsPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Memberships</h1>
                         <p className="text-gray-500">Manage user roles and departmental links within organizations.</p>
                     </div>
-                    <Button variant="primary" onClick={() => openModal()}>Link User</Button>
                 </div>
             </div>
 
@@ -233,6 +243,101 @@ export default function AdminMembershipsPage() {
                         <option value="member">Member</option>
                     </select>
                 </div>
+
+                <ExpandableCreateSection
+                    title="Link User"
+                    isOpen={isCreateExpanded}
+                    onToggle={toggleCreate}
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">User</label>
+                            <select
+                                className={SELECT_CLS}
+                                value={form.user}
+                                onChange={e => setForm({ ...form, user: e.target.value })}
+                                disabled={isActionLoading}
+                                required
+                                autoFocus
+                            >
+                                <option value="" disabled>Select a user</option>
+                                {users.map(u => (
+                                    <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.email})</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                            <select
+                                className={SELECT_CLS}
+                                value={form.organization}
+                                onChange={e => setForm({ ...form, organization: e.target.value })}
+                                disabled={isActionLoading}
+                                required
+                            >
+                                <option value="" disabled>Select organization</option>
+                                {orgs.map(o => (
+                                    <option key={o.id} value={o.id}>{o.name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Org Role</label>
+                                <select
+                                    className={SELECT_CLS}
+                                    value={form.org_role}
+                                    onChange={e => setForm({ ...form, org_role: e.target.value as any })}
+                                    disabled={isActionLoading}
+                                    required
+                                >
+                                    <option value="member">Member</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div className="flex items-center pt-6">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                        checked={form.is_primary}
+                                        onChange={e => setForm({ ...form, is_primary: e.target.checked })}
+                                        disabled={isActionLoading}
+                                    />
+                                    <span className="text-sm font-semibold text-gray-700">Set as Primary</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input
+                                label="Department"
+                                value={form.department}
+                                onChange={e => setForm({ ...form, department: e.target.value })}
+                                disabled={isActionLoading}
+                                placeholder="e.g., IT Security"
+                            />
+                            <Input
+                                label="Employee ID"
+                                value={form.employee_id}
+                                onChange={e => setForm({ ...form, employee_id: e.target.value })}
+                                disabled={isActionLoading}
+                                placeholder="e.g., INSA-1234"
+                            />
+                        </div>
+
+                        <div className="pt-4 flex justify-end gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
+                            <Button type="submit" variant="primary" disabled={isActionLoading}>
+                                {isActionLoading ? 'Saving...' : 'Link User'}
+                            </Button>
+                        </div>
+                    </form>
+                </ExpandableCreateSection>
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <table className="w-full text-left text-sm text-gray-500">
@@ -305,7 +410,7 @@ export default function AdminMembershipsPage() {
                 )}
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedMembership ? 'Edit Membership' : 'Add Membership'}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Membership">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
 
@@ -315,7 +420,7 @@ export default function AdminMembershipsPage() {
                             className={SELECT_CLS}
                             value={form.user}
                             onChange={e => setForm({ ...form, user: e.target.value })}
-                            disabled={isActionLoading || !!selectedMembership}
+                            disabled={true}
                             required
                         >
                             <option value="" disabled>Select a user</option>
@@ -331,7 +436,7 @@ export default function AdminMembershipsPage() {
                             className={SELECT_CLS}
                             value={form.organization}
                             onChange={e => setForm({ ...form, organization: e.target.value })}
-                            disabled={isActionLoading || !!selectedMembership}
+                            disabled={true}
                             required
                         >
                             <option value="" disabled>Select organization</option>
@@ -389,7 +494,7 @@ export default function AdminMembershipsPage() {
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
-                            {isActionLoading ? 'Saving...' : selectedMembership ? 'Save Changes' : 'Link User'}
+                            {isActionLoading ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>

@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 interface ArticleData {
     id: string;
@@ -36,6 +37,7 @@ export default function AdminArticlesPage() {
 
     const [actionError, setActionError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [selectedArticle, setSelectedArticle] = useState<ArticleData | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -99,17 +101,21 @@ export default function AdminArticlesPage() {
         setIsFetching(false);
     };
 
-    const handleOpenModal = (article?: ArticleData) => {
+    const handleOpenModal = (article: ArticleData) => {
         setActionError('');
-        if (article) {
-            setSelectedArticle(article);
-            setFormData({ module: article.module, content: article.content, order: article.order });
-        } else {
+        setIsCreateExpanded(false);
+        setSelectedArticle(article);
+        setFormData({ module: article.module, content: article.content, order: article.order });
+        setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
             setSelectedArticle(null);
             setFormData({ module: '', content: '', order: 0 });
         }
-
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleCloseModal = () => {
@@ -143,7 +149,11 @@ export default function AdminArticlesPage() {
             setActionError(apiError || `Failed to ${isEditing ? 'update' : 'create'} article.`);
         } else {
             fetchArticles();
-            handleCloseModal();
+            if (isEditing) {
+                handleCloseModal();
+            } else {
+                setIsCreateExpanded(false);
+            }
         }
         setIsActionLoading(false);
     };
@@ -192,9 +202,6 @@ export default function AdminArticlesPage() {
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Articles Management</h1>
                         <p className="text-gray-500">Manage training module articles and content.</p>
-                    </div>
-                    <div>
-                        <Button variant="primary" onClick={() => handleOpenModal()}>Add New Article</Button>
                     </div>
                 </div>
             </div>
@@ -316,6 +323,71 @@ export default function AdminArticlesPage() {
                 <div className="flex-1">
                     {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
+                    <ExpandableCreateSection
+                        title="Add New Article"
+                        isOpen={isCreateExpanded}
+                        onToggle={toggleCreate}
+                    >
+                        <form onSubmit={handleFormSubmit} className="space-y-4">
+                            {actionError && (
+                                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
+                                    {actionError}
+                                </div>
+                            )}
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Module <span className="text-red-500">*</span></label>
+                                <select
+                                    className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium"
+                                    value={formData.module}
+                                    onChange={(e) => setFormData({ ...formData, module: e.target.value })}
+                                    required
+                                    disabled={isActionLoading}
+                                    autoFocus
+                                >
+                                    <option value="">Select Module</option>
+                                    {modules.map(m => (
+                                        <option key={m.id} value={m.id}>{m.title}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    Article Content <span className="text-primary">*</span>
+                                </label>
+                                <textarea
+                                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
+                                    value={formData.content}
+                                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                    required
+                                    disabled={isActionLoading}
+                                    placeholder="Enter article content here..."
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Display Order</label>
+                                <input
+                                    type="number"
+                                    className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none"
+                                    value={formData.order}
+                                    onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                                    disabled={isActionLoading}
+                                />
+                            </div>
+
+                            <div className="pt-4 flex justify-end gap-3">
+                                <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>
+                                    Cancel
+                                </Button>
+                                <Button type="submit" variant="primary" disabled={isActionLoading}>
+                                    {isActionLoading ? 'Saving...' : 'Create Article'}
+                                </Button>
+                            </div>
+                        </form>
+                    </ExpandableCreateSection>
+
                     <div className="relative">
                         {isFetching && (
                             <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
@@ -357,7 +429,7 @@ export default function AdminArticlesPage() {
             <Modal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                title={selectedArticle ? "Edit Article" : "Add New Article"}
+                title="Edit Article"
             >
                 <form onSubmit={handleFormSubmit} className="space-y-4">
                     {actionError && (
@@ -374,6 +446,7 @@ export default function AdminArticlesPage() {
                             onChange={(e) => setFormData({ ...formData, module: e.target.value })}
                             required
                             disabled={isActionLoading}
+                            autoFocus
                         >
                             <option value="">Select Module</option>
                             {modules.map(m => (
@@ -413,7 +486,7 @@ export default function AdminArticlesPage() {
                             Cancel
                         </Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
-                            {isActionLoading ? 'Saving...' : selectedArticle ? 'Save Changes' : 'Create Article'}
+                            {isActionLoading ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>

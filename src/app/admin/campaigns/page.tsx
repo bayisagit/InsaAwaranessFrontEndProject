@@ -10,6 +10,7 @@ import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { PageHeader } from '@/components/PageHeader';
 import { Pagination } from '@/components/Pagination';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 interface Organization {
     id: string;
@@ -27,9 +28,10 @@ export default function AdminCampaignsPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const pageSize = 10;
+    const [pageSize, setPageSize] = useState(10);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
     const [selected, setSelected] = useState<Campaign | null>(null);
@@ -85,24 +87,29 @@ export default function AdminCampaignsPage() {
         setIsFetching(false);
     };
 
-    const openModal = (item?: Campaign) => {
+    const openModal = (item: Campaign) => {
         setActionError('');
-        if (item) {
-            setSelected(item);
-            setForm({
-                organization: item.organization || '',
-                title: item.title,
-                message: item.message,
-                start_date: item.start_date.split('T')[0],
-                send_time: item.send_time ? (item.send_time.includes('T') ? item.send_time.split('T')[1].substring(0, 5) : item.send_time.substring(0, 5)) : '',
-                channels: Array.isArray(item.channels) ? item.channels.join(', ') : item.channels || '',
-                status: item.status || 'draft'
-            });
-        } else {
+        setIsCreateExpanded(false);
+        setSelected(item);
+        setForm({
+            organization: item.organization || '',
+            title: item.title,
+            message: item.message,
+            start_date: item.start_date.split('T')[0],
+            send_time: item.send_time ? (item.send_time.includes('T') ? item.send_time.split('T')[1].substring(0, 5) : item.send_time.substring(0, 5)) : '',
+            channels: Array.isArray(item.channels) ? item.channels.join(', ') : item.channels || '',
+            status: item.status || 'draft'
+        });
+        setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
             setSelected(null);
             setForm({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: '', status: 'draft' });
         }
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -115,7 +122,14 @@ export default function AdminCampaignsPage() {
         };
         const { error: apiErr, status } = await apiFetch(endpoint, { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(payload) });
         if (apiErr || (status !== 200 && status !== 201)) setActionError(apiErr || 'Failed to save.');
-        else { fetchAll(); setIsModalOpen(false); }
+        else { 
+            fetchAll(); 
+            if (isEditing) {
+                setIsModalOpen(false); 
+            } else {
+                setIsCreateExpanded(false);
+            }
+        }
         setIsActionLoading(false);
     };
 
@@ -143,7 +157,6 @@ export default function AdminCampaignsPage() {
             <PageHeader
                 title="Campaigns Management"
                 description="Manage national cybersecurity awareness campaigns."
-                actions={<Button variant="primary" onClick={() => openModal()}>Add Campaign</Button>}
             />
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
                 {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
@@ -157,6 +170,60 @@ export default function AdminCampaignsPage() {
                         />
                     </div>
                 </div>
+
+                <ExpandableCreateSection
+                    title="Add New Campaign"
+                    isOpen={isCreateExpanded}
+                    onToggle={toggleCreate}
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                        <Input label="Campaign Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            {user?.role === 'org_admin' ? (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                    <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                        {user.organization_name || 'Your Organization'}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                    <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
+                                        <option value="" className="text-gray-900">Select Organization</option>
+                                        {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
+                                    </select>
+                                </div>
+                            )}
+                            <Input label="Channels (comma-separated)" placeholder="e.g. email, sms" value={form.channels} onChange={e => setForm({ ...form, channels: e.target.value })} required disabled={isActionLoading} />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input label="Start Date" type="date" value={form.start_date} onChange={e => setForm({ ...form, start_date: e.target.value })} required disabled={isActionLoading} />
+                            <Input label="Send Time" type="time" value={form.send_time} onChange={e => setForm({ ...form, send_time: e.target.value })} required disabled={isActionLoading} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                            <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
+                                <option value="draft" className="text-gray-900">Draft</option>
+                                <option value="scheduled" className="text-gray-900">Scheduled</option>
+                                <option value="live" className="text-gray-900">Live</option>
+                                <option value="completed" className="text-gray-900">Completed</option>
+                                <option value="cancelled" className="text-gray-900">Cancelled</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Campaign Message</label>
+                            <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
+                        </div>
+                        <div className="pt-4 flex justify-end gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
+                            <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Create Campaign'}</Button>
+                        </div>
+                    </form>
+                </ExpandableCreateSection>
 
                 <div className="relative">
                     {isFetching && (
@@ -216,19 +283,28 @@ export default function AdminCampaignsPage() {
                     </div>
                 </div>
             </div>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selected ? 'Edit Campaign' : 'Add Campaign'}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Campaign">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
-                    <Input label="Campaign Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} />
+                    <Input label="Campaign Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
-                            <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
-                                <option value="" className="text-gray-900">Select Organization</option>
-                                {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
-                            </select>
-                        </div>
+                        {user?.role === 'org_admin' ? (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                    {user.organization_name || 'Your Organization'}
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
+                                    <option value="" className="text-gray-900">Select Organization</option>
+                                    {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
+                                </select>
+                            </div>
+                        )}
                         <Input label="Channels (comma-separated)" placeholder="e.g. email, sms" value={form.channels} onChange={e => setForm({ ...form, channels: e.target.value })} required disabled={isActionLoading} />
                     </div>
 
@@ -252,7 +328,7 @@ export default function AdminCampaignsPage() {
                     </div>
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
-                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : selected ? 'Save Changes' : 'Create Campaign'}</Button>
+                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Save Changes'}</Button>
                     </div>
                 </form>
             </Modal>

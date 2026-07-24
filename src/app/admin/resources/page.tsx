@@ -10,6 +10,7 @@ import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { toast } from 'react-hot-toast';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium";
 
@@ -27,6 +28,7 @@ export default function AdminResourcesPage() {
     const [totalCount, setTotalCount] = useState(0);
     const pageSize = 10;
     const [isModalOpen, setIsModalOpen] = useState(false); // For Add/Edit Resource
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
     const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
@@ -72,6 +74,17 @@ export default function AdminResourcesPage() {
             }
         }
     }, [isAuthenticated, isLoading, user, router, page]);
+
+    // Handle URL parameters for continuous creation workflow
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const create = params.get('create');
+            if (create === 'true') {
+                setIsCreateExpanded(true);
+            }
+        }
+    }, []);
 
     const fetchOrgs = async () => {
         const { data } = await getOrganizations({ page_size: 100 });
@@ -119,24 +132,37 @@ export default function AdminResourcesPage() {
         }
     };
 
-    const openModal = (res?: Resource) => {
+    const openModal = (res: Resource) => {
         setActionError('');
-        if (res) {
-            setSelectedResource(res);
-            setForm({
-                organization: res.organization,
-                title: res.title,
-                content: res.content,
-                file_url: res.file_url,
-                category: res.category,
-                audience: res.audience,
-                status: res.status
-            });
-        } else {
-            setSelectedResource(null);
-            setForm({ organization: '', title: '', content: '', file_url: '', category: '', audience: '', status: 'draft' });
-        }
+        setIsCreateExpanded(false);
+        setSelectedResource(res);
+        setForm({
+            organization: res.organization,
+            title: res.title,
+            content: res.content,
+            file_url: res.file_url,
+            category: res.category,
+            audience: res.audience,
+            status: res.status
+        });
         setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
+            setSelectedResource(null);
+            setForm({ 
+                organization: selectedOrgs.length === 1 ? selectedOrgs[0] : (orgs.length === 1 ? orgs[0].id : ''), 
+                title: '', 
+                content: '', 
+                file_url: '', 
+                category: '', 
+                audience: '', 
+                status: 'draft' 
+            });
+        }
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -161,7 +187,11 @@ export default function AdminResourcesPage() {
         else {
             toast.success(selectedResource ? 'Resource updated successfully!' : 'Resource created successfully!');
             fetchResources();
-            setIsModalOpen(false);
+            if (isEditing) {
+                setIsModalOpen(false);
+            } else {
+                setIsCreateExpanded(false);
+            }
         }
         setIsActionLoading(false);
     };
@@ -227,7 +257,6 @@ export default function AdminResourcesPage() {
                     </div>
                     <div className="flex gap-3">
                         <Button variant="outline" onClick={() => fetchResources()}>Refresh</Button>
-                        <Button variant="primary" onClick={() => openModal()}>Add Resource</Button>
                     </div>
                 </div>
             </div>
@@ -307,16 +336,60 @@ export default function AdminResourcesPage() {
                 <div className="flex-1">
                     {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
-                    {/* Filters - Removed as they are now in the sidebar */}
-                    {/* <div className="flex flex-col md:flex-row gap-4 mb-6">
-                        <div className="flex-1">
-                            <Input
-                                placeholder="Search resources by title or category..."
-                                value={searchTerm}
-                                onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                    <ExpandableCreateSection
+                        title="Add New Resource"
+                        isOpen={isCreateExpanded}
+                        onToggle={toggleCreate}
+                    >
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-red-500">*</span></label>
+                                    <select
+                                        className={SELECT_CLS}
+                                        value={form.organization}
+                                        onChange={e => setForm({ ...form, organization: e.target.value })}
+                                        required
+                                        disabled={isActionLoading}
+                                    >
+                                        <option value="">Select Organization</option>
+                                        {orgs.map(o => (
+                                            <option key={o.id} value={o.id}>{o.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Content</label>
+                                <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none min-h-[100px] resize-y" placeholder="Enter resource description or content..." value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} disabled={isActionLoading} />
+                            </div>
+                            <CloudinaryUpload
+                                label="Resource File"
+                                resourceType="auto"
+                                value={form.file_url}
+                                onUploadSuccess={(url) => setForm({ ...form, file_url: url })}
+                                className="mb-4"
                             />
-                        </div>
-                    </div> */}
+                            <div className="grid grid-cols-3 gap-3">
+                                <Input label="Category" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} required disabled={isActionLoading} />
+                                <Input label="Audience" value={form.audience} onChange={e => setForm({ ...form, audience: e.target.value })} required disabled={isActionLoading} />
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                                    <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} disabled={isActionLoading}>
+                                        <option value="draft">Draft</option>
+                                        {canPublish && <option value="published">Published</option>}
+                                    </select>
+                                    {!canPublish && <p className="text-[10px] text-gray-500 mt-1">Contact admin for publishing.</p>}
+                                </div>
+                            </div>
+                            <div className="pt-4 flex justify-end gap-3">
+                                <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
+                                <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Add Resource'}</Button>
+                            </div>
+                        </form>
+                    </ExpandableCreateSection>
 
                     <div className="relative">
                         {isFetching && (
@@ -390,11 +463,11 @@ export default function AdminResourcesPage() {
                 </div>
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedResource ? 'Edit Resource' : 'Add Resource'}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Resource">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} />
+                        <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-red-500">*</span></label>
                             <select
@@ -436,7 +509,7 @@ export default function AdminResourcesPage() {
                     </div>
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
-                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : selectedResource ? 'Save Changes' : 'Add Resource'}</Button>
+                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Save Changes'}</Button>
                     </div>
                 </form>
             </Modal>

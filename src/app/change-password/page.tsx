@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { changePassword, clearTokens } from '@/lib/api';
+import { changePassword } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 
@@ -22,7 +22,7 @@ const getPasswordScore = (pass: string) => {
 };
 
 export default function ChangePasswordPage() {
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, isAuthenticated, isLoading: authLoading, checkAuth } = useAuth();
     const router = useRouter();
 
     const [oldPassword, setOldPassword] = useState('');
@@ -76,11 +76,9 @@ export default function ChangePasswordPage() {
             return;
         }
 
-        toast.success('Password changed successfully. Please sign in again.');
-
-        // Per API docs: clear tokens after password change and redirect to login
-        clearTokens();
-        setTimeout(() => router.replace('/login'), 1200);
+        toast.success('Password changed successfully.');
+        await checkAuth();
+        router.replace('/');
     };
 
     if (authLoading) {

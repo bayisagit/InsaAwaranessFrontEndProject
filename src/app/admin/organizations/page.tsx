@@ -14,6 +14,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 import { toast } from 'react-hot-toast';
 
 const PAGE_SIZE = 15;
@@ -30,6 +31,7 @@ export default function AdminOrganizationsPage() {
     const [error, setError] = useState('');
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
     const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
@@ -73,16 +75,21 @@ export default function AdminOrganizationsPage() {
         }, 300);
     };
 
-    const openModal = (org?: Organization) => {
+    const openModal = (org: Organization) => {
         setActionError('');
-        if (org) {
-            setSelectedOrg(org);
-            setForm({ name: org.name, description: org.description || '' });
-        } else {
+        setIsCreateExpanded(false);
+        setSelectedOrg(org);
+        setForm({ name: org.name, description: org.description || '' });
+        setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
             setSelectedOrg(null);
             setForm({ name: '', description: '' });
         }
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -106,7 +113,11 @@ export default function AdminOrganizationsPage() {
             setActionError(apiErr || 'Failed to save organization.');
         } else {
             toast.success(selectedOrg ? 'Organization updated.' : 'Organization created.');
-            setIsModalOpen(false);
+            if (selectedOrg) {
+                setIsModalOpen(false);
+            } else {
+                setIsCreateExpanded(false);
+            }
             fetchOrgs(page, searchTerm);
         }
         setIsActionLoading(false);
@@ -152,7 +163,6 @@ export default function AdminOrganizationsPage() {
                             {totalCount > 0 ? `${totalCount} organization${totalCount !== 1 ? 's' : ''} registered` : 'Manage organizations on the platform.'}
                         </p>
                     </div>
-                    <Button variant="primary" onClick={() => openModal()}>+ Add Organization</Button>
                 </div>
             </div>
 
@@ -167,6 +177,45 @@ export default function AdminOrganizationsPage() {
                         onChange={(e) => handleSearchChange(e.target.value)}
                     />
                 </div>
+
+                <ExpandableCreateSection
+                    title="Add Organization"
+                    isOpen={isCreateExpanded}
+                    onToggle={toggleCreate}
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {actionError && (
+                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>
+                        )}
+                        <Input
+                            label="Organization Name"
+                            value={form.name}
+                            onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                            required
+                            disabled={isActionLoading}
+                            placeholder="e.g., INSA Federal Agency"
+                            autoFocus
+                        />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-gray-400 font-normal">(optional)</span></label>
+                            <textarea
+                                className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white resize-none min-h-[80px]"
+                                placeholder="Brief description of this organization's purpose…"
+                                value={form.description}
+                                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                                disabled={isActionLoading}
+                            />
+                        </div>
+                        <div className="pt-4 flex justify-end gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" variant="primary" disabled={isActionLoading}>
+                                {isActionLoading ? 'Saving…' : 'Create Organization'}
+                            </Button>
+                        </div>
+                    </form>
+                </ExpandableCreateSection>
 
                 {/* Table */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -248,11 +297,11 @@ export default function AdminOrganizationsPage() {
                 )}
             </div>
 
-            {/* Create/Edit Modal */}
+            {/* Edit Modal */}
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={selectedOrg ? 'Edit Organization' : 'Add Organization'}
+                title="Edit Organization"
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && (
@@ -265,6 +314,7 @@ export default function AdminOrganizationsPage() {
                         required
                         disabled={isActionLoading}
                         placeholder="e.g., INSA Federal Agency"
+                        autoFocus
                     />
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-gray-400 font-normal">(optional)</span></label>
@@ -281,7 +331,7 @@ export default function AdminOrganizationsPage() {
                             Cancel
                         </Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
-                            {isActionLoading ? 'Saving…' : selectedOrg ? 'Save Changes' : 'Create Organization'}
+                            {isActionLoading ? 'Saving…' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>

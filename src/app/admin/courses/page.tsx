@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
     getCourses, createCourse, updateCourse, deleteCourse,
     getOrganizations, assignCourseProvider, assignCourseOrganization,
@@ -14,6 +15,7 @@ import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { toast } from 'react-hot-toast';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; role: string; }
 
@@ -47,6 +49,10 @@ export default function AdminCoursesPage() {
     // Delete confirm
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+
+    // Expandable Create
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
+    const [createdCourseId, setCreatedCourseId] = useState<string | null>(null);
 
     // Assign Provider modal
     const [isAssignProviderOpen, setIsAssignProviderOpen] = useState(false);
@@ -94,6 +100,8 @@ export default function AdminCoursesPage() {
     const openModal = (course?: Course) => {
         setActionError('');
         if (course) {
+            setIsCreateExpanded(false);
+            setCreatedCourseId(null);
             setSelectedCourse(course);
             setForm({
                 title: course.title,
@@ -106,16 +114,23 @@ export default function AdminCoursesPage() {
                 is_active: course.is_active !== false,
                 thumbnail_url: course.thumbnail_url || ''
             });
-        } else {
+            setIsModalOpen(true);
+        }
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
             setSelectedCourse(null);
+            setCreatedCourseId(null);
             setForm({
                 title: '', description: '',
                 organization: '',
                 course_provider: user?.role === 'course_provider' ? (user?.id || '') : '',
                 language: 'en', level: 'Beginner', status: 'draft', is_active: true, thumbnail_url: ''
             });
+            setActionError('');
         }
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -147,7 +162,7 @@ export default function AdminCoursesPage() {
             }
         }
 
-        const { error: apiErr } = isEditing
+        const { data, error: apiErr } = isEditing
             ? await updateCourse(selectedCourse!.id, payload)
             : await createCourse(payload);
 
@@ -156,7 +171,15 @@ export default function AdminCoursesPage() {
         } else {
             toast.success(isEditing ? 'Course updated.' : 'Course created.');
             fetchCourses();
-            setIsModalOpen(false);
+            if (isEditing) {
+                setIsModalOpen(false);
+            } else {
+                if (data?.id) {
+                    setCreatedCourseId(data.id);
+                } else {
+                    setIsCreateExpanded(false);
+                }
+            }
         }
         setIsActionLoading(false);
     };
@@ -220,9 +243,107 @@ export default function AdminCoursesPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Courses Management</h1>
                         <p className="text-gray-500">Create and manage cybersecurity training courses.</p>
                     </div>
-                    <Button variant="primary" onClick={() => openModal()}>+ Add Course</Button>
                 </div>
             </div>
+
+            <ExpandableCreateSection
+                title="Add New Course"
+                isOpen={isCreateExpanded}
+                onToggle={toggleCreate}
+                isSuccess={!!createdCourseId}
+                successTitle="Course Created Successfully!"
+                successDescription="Great! You can now start building the structure of your course."
+                nextSteps={createdCourseId ? [
+                    { label: 'Add a Module', href: `/admin/modules?create=true&courseId=${createdCourseId}`, icon: '📂' },
+                    { label: 'Add Course Exam', href: `/admin/assessments?create=true&parent_type=course_exam&courseId=${createdCourseId}`, variant: 'secondary', icon: '🎓' }
+                ] : []}
+            >
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+
+                    <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
+
+                    <CloudinaryUpload
+                        label="Course Thumbnail"
+                        folder="lms-course-thumbnails"
+                        resourceType="image"
+                        value={form.thumbnail_url || ''}
+                        onUploadSuccess={url => setForm({ ...form, thumbnail_url: url })}
+                        disabled={isActionLoading}
+                    />
+                    {form.thumbnail_url && (
+                        <div className="rounded-xl overflow-hidden border border-gray-200 h-32 w-48 mt-2">
+                            <img src={form.thumbnail_url} alt="Thumbnail" className="w-full h-full object-cover" />
+                        </div>
+                    )}
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <textarea
+                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px] resize-y"
+                            placeholder="Course description…"
+                            value={form.description}
+                            onChange={e => setForm({ ...form, description: e.target.value })}
+                            disabled={isActionLoading}
+                        />
+                    </div>
+
+                    {isSuperAdmin && (
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-gray-400 font-normal">(optional)</span></label>
+                            <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
+                                <option value="">None</option>
+                                {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                            </select>
+                        </div>
+                    )}
+
+                    {isSuperAdmin && (
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Course Provider <span className="text-primary">*</span></label>
+                            <select className={SELECT_CLS} value={form.course_provider} onChange={e => setForm({ ...form, course_provider: e.target.value })} disabled={isActionLoading} required>
+                                <option value="">Select provider</option>
+                                {providers.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>)}
+                            </select>
+                            {providers.length === 0 && <p className="text-[10px] text-red-500 mt-1">No course provider users found.</p>}
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
+                            <select className={SELECT_CLS} value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} disabled={isActionLoading}>
+                                <option value="en">English (en)</option>
+                                <option value="am">Amharic (am)</option>
+                                <option value="om">Oromo (om)</option>
+                                <option value="so">Somali (so)</option>
+                                <option value="ti">Tigrinya (ti)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Level</label>
+                            <select className={SELECT_CLS} value={form.level} onChange={e => setForm({ ...form, level: e.target.value })} disabled={isActionLoading}>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                            <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="pt-4 flex justify-end gap-3">
+                        <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
+                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving…' : 'Create Course'}</Button>
+                    </div>
+                </form>
+            </ExpandableCreateSection>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10 flex flex-col lg:flex-row gap-8">
                 {/* Sidebar Filter */}
@@ -298,7 +419,9 @@ export default function AdminCoursesPage() {
                                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
                                                     </div>
                                                 )}
-                                                <span>{c.title}</span>
+                                                <Link href={`/admin/courses/${c.id}`} className="hover:text-primary transition-colors hover:underline">
+                                                    <span>{c.title}</span>
+                                                </Link>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 capitalize">{c.level || '—'}</td>
@@ -315,21 +438,21 @@ export default function AdminCoursesPage() {
                                                 <button onClick={() => handleStatusUpdate(c.id, 'published')} className="text-green-600 hover:text-green-800 font-medium transition-colors" disabled={isActionLoading}>Publish</button>
                                             )}
                                             {isSuperAdmin && c.status === 'published' && (
-                                                <button onClick={() => handleStatusUpdate(c.id, 'archived')} className="text-gray-500 hover:text-gray-700 font-medium transition-colors" disabled={isActionLoading}>Archive</button>
+                                                <button onClick={() => handleStatusUpdate(c.id, 'archived')} className="px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-700 rounded-md text-xs font-bold transition-colors" disabled={isActionLoading}>Archive</button>
                                             )}
                                             {/* Course provider can publish their own draft */}
                                             {user.role === 'course_provider' && c.status === 'draft' && c.course_provider === user.id && (
-                                                <button onClick={() => handleStatusUpdate(c.id, 'published')} className="text-green-600 hover:text-green-800 font-medium transition-colors" disabled={isActionLoading}>Publish</button>
+                                                <button onClick={() => handleStatusUpdate(c.id, 'published')} className="px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-md text-xs font-bold transition-colors" disabled={isActionLoading}>Publish</button>
                                             )}
-                                            <button onClick={() => openModal(c)} className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Edit</button>
+                                            <button onClick={() => openModal(c)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
                                             {isSuperAdmin && (
                                                 <>
-                                                    <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="text-purple-600 hover:text-purple-800 font-medium transition-colors">Provider</button>
-                                                    <button onClick={() => { setAssignOrgCourse(c); setSelectedOrg(c.organization || ''); setIsAssignOrgOpen(true); }} className="text-teal-600 hover:text-teal-800 font-medium transition-colors">Org</button>
+                                                    <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-md text-xs font-bold transition-colors">Provider</button>
+                                                    <button onClick={() => { setAssignOrgCourse(c); setSelectedOrg(c.organization || ''); setIsAssignOrgOpen(true); }} className="px-3 py-1.5 bg-teal-50 text-teal-600 hover:bg-teal-100 hover:text-teal-700 rounded-md text-xs font-bold transition-colors">Org</button>
                                                 </>
                                             )}
-                                            <button onClick={() => { router.push(`/admin/assessments?course=${c.id}`); }} className="text-primary hover:text-primary-hover font-medium transition-colors">Exam</button>
-                                            <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
+                                            <button onClick={() => { router.push(`/admin/assessments?course=${c.id}`); }} className="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary-hover rounded-md text-xs font-bold transition-colors">Exam</button>
+                                            <button onClick={() => handleDelete(c.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -341,12 +464,12 @@ export default function AdminCoursesPage() {
                 </div>
             </div>
 
-            {/* Create / Edit Modal */}
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedCourse ? 'Edit Course' : 'Add Course'}>
+            {/* Edit Modal */}
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Course">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
 
-                    <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} />
+                    <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                     <CloudinaryUpload
                         label="Course Thumbnail"
@@ -373,26 +496,13 @@ export default function AdminCoursesPage() {
                         />
                     </div>
 
-                    {/* Organization — super_admin create only (backend rejects if course_provider sends it) */}
-                    {isSuperAdmin && !selectedCourse && (
+                    {isSuperAdmin && (
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-gray-400 font-normal">(optional)</span></label>
                             <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
                                 <option value="">None</option>
                                 {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
                             </select>
-                        </div>
-                    )}
-
-                    {/* Course Provider — super_admin create only */}
-                    {isSuperAdmin && !selectedCourse && (
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Course Provider <span className="text-primary">*</span></label>
-                            <select className={SELECT_CLS} value={form.course_provider} onChange={e => setForm({ ...form, course_provider: e.target.value })} disabled={isActionLoading} required>
-                                <option value="">Select provider</option>
-                                {providers.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>)}
-                            </select>
-                            {providers.length === 0 && <p className="text-[10px] text-red-500 mt-1">No course provider users found.</p>}
                         </div>
                     )}
 
@@ -427,7 +537,7 @@ export default function AdminCoursesPage() {
 
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
-                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving…' : selectedCourse ? 'Save Changes' : 'Create Course'}</Button>
+                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving…' : 'Save Changes'}</Button>
                     </div>
                 </form>
             </Modal>

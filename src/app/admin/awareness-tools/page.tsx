@@ -15,6 +15,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 import Link from 'next/link';
 
 export default function AdminAwarenessToolsPage() {
@@ -24,6 +25,7 @@ export default function AdminAwarenessToolsPage() {
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedTool, setSelectedTool] = useState<AwarenessTool | null>(null);
     const [isActionLoading, setIsActionLoading] = useState(false);
@@ -63,16 +65,20 @@ export default function AdminAwarenessToolsPage() {
         setIsFetching(false);
     };
 
-    const handleOpenModal = (tool: AwarenessTool | null = null) => {
-        if (tool) {
-            setSelectedTool(tool);
-            setFormData({
-                name: tool.name,
-                description: tool.description,
-                status: tool.status,
-                config: tool.config ? JSON.stringify(tool.config, null, 2) : '{}'
-            });
-        } else {
+    const handleOpenModal = (tool: AwarenessTool) => {
+        setIsCreateExpanded(false);
+        setSelectedTool(tool);
+        setFormData({
+            name: tool.name,
+            description: tool.description,
+            status: tool.status,
+            config: tool.config ? JSON.stringify(tool.config, null, 2) : '{}'
+        });
+        setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
             setSelectedTool(null);
             setFormData({
                 name: '',
@@ -80,8 +86,9 @@ export default function AdminAwarenessToolsPage() {
                 status: 'enabled',
                 config: '{}'
             });
+            setError('');
         }
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -108,7 +115,11 @@ export default function AdminAwarenessToolsPage() {
             setError(err);
             setIsActionLoading(false);
         } else {
-            setIsModalOpen(false);
+            if (selectedTool) {
+                setIsModalOpen(false);
+            } else {
+                setIsCreateExpanded(false);
+            }
             fetchTools();
             setIsActionLoading(false);
         }
@@ -149,7 +160,6 @@ export default function AdminAwarenessToolsPage() {
                         <Link href="/admin/awareness-tools/usage">
                             <Button variant="outline">View Usage Logs</Button>
                         </Link>
-                        <Button variant="primary" onClick={() => handleOpenModal()}>Add New Tool</Button>
                     </div>
                 </div>
             </div>
@@ -166,6 +176,59 @@ export default function AdminAwarenessToolsPage() {
                         />
                     </div>
                 </div>
+
+                <ExpandableCreateSection
+                    title="Add New Tool"
+                    isOpen={isCreateExpanded}
+                    onToggle={toggleCreate}
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <Input
+                            label="Tool Name"
+                            placeholder="e.g. Phishing Simulation"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            required
+                            autoFocus
+                        />
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
+                            <textarea
+                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[100px]"
+                                placeholder="Briefly describe what this tool does..."
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Status</label>
+                            <select
+                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
+                                value={formData.status}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.value as 'enabled' | 'disabled' })}
+                            >
+                                <option value="enabled">Enabled</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Configuration (JSON)</label>
+                            <textarea
+                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[150px]"
+                                placeholder='{ "key": "value" }'
+                                value={formData.config}
+                                onChange={(e) => setFormData({ ...formData, config: e.target.value })}
+                            />
+                        </div>
+                        <div className="pt-4 flex justify-end gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)}>Cancel</Button>
+                            <Button type="submit" variant="primary" disabled={isActionLoading}>
+                                {isActionLoading ? 'Saving...' : 'Create Tool'}
+                            </Button>
+                        </div>
+                    </form>
+                </ExpandableCreateSection>
 
                 <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
@@ -259,7 +322,7 @@ export default function AdminAwarenessToolsPage() {
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={selectedTool ? 'Edit Awareness Tool' : 'Add Awareness Tool'}
+                title="Edit Awareness Tool"
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
@@ -268,6 +331,7 @@ export default function AdminAwarenessToolsPage() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
+                        autoFocus
                     />
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
@@ -302,7 +366,7 @@ export default function AdminAwarenessToolsPage() {
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
-                            {isActionLoading ? 'Saving...' : (selectedTool ? 'Update Tool' : 'Create Tool')}
+                            {isActionLoading ? 'Saving...' : 'Update Tool'}
                         </Button>
                     </div>
                 </form>

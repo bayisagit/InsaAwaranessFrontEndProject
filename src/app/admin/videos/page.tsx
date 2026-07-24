@@ -9,6 +9,7 @@ import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 interface ModuleOption { id: string; title: string; }
 
@@ -20,6 +21,7 @@ export default function AdminVideosPage() {
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
     const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -56,21 +58,31 @@ export default function AdminVideosPage() {
         setIsFetching(false);
     };
 
-    const openModal = (video?: Video) => {
+    const openModal = (video: Video) => {
         setActionError('');
-        if (video) {
-            setSelectedVideo(video);
-            setForm({
-                module: video.module,
-                video_url: video.video_url,
-                duration: video.duration,
-                order: video.order
-            });
-        } else {
-            setSelectedVideo(null);
-            setForm({ module: '', video_url: '', duration: 0, order: 0 });
-        }
+        setIsCreateExpanded(false);
+        setSelectedVideo(video);
+        setForm({
+            module: video.module,
+            video_url: video.video_url,
+            duration: video.duration,
+            order: video.order
+        });
         setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
+            setSelectedVideo(null);
+            setForm({ 
+                module: selectedModules.length === 1 ? selectedModules[0] : (modules.length > 0 ? modules[0].id : ''), 
+                video_url: '', 
+                duration: 0, 
+                order: 0 
+            });
+        }
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -81,7 +93,14 @@ export default function AdminVideosPage() {
             : await createVideo(form);
 
         if (apiErr) { setActionError(apiErr || 'Failed to save video.'); }
-        else { fetchVideos(); setIsModalOpen(false); }
+        else { 
+            fetchVideos(); 
+            if (isEditing) {
+                setIsModalOpen(false); 
+            } else {
+                setIsCreateExpanded(false);
+            }
+        }
         setIsActionLoading(false);
     };
 
@@ -120,7 +139,6 @@ export default function AdminVideosPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Videos Management</h1>
                         <p className="text-gray-500">Add and manage training videos for modules.</p>
                     </div>
-                    <Button variant="primary" onClick={() => openModal()}>Add Video</Button>
                 </div>
             </div>
 
@@ -178,6 +196,46 @@ export default function AdminVideosPage() {
                 <div className="flex-1">
                     {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
 
+                    <ExpandableCreateSection
+                        title="Add New Video"
+                        isOpen={isCreateExpanded}
+                        onToggle={toggleCreate}
+                    >
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Module <span className="text-red-500">*</span></label>
+                                <select
+                                    className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium"
+                                    value={form.module}
+                                    onChange={e => setForm({ ...form, module: e.target.value })}
+                                    required
+                                    disabled={isActionLoading}
+                                >
+                                    <option value="">Select Module</option>
+                                    {modules.map(m => (
+                                        <option key={m.id} value={m.id}>{m.title}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <CloudinaryUpload
+                                label="Video File"
+                                resourceType="video"
+                                value={form.video_url}
+                                onUploadSuccess={(url) => setForm({ ...form, video_url: url })}
+                                className="mb-4"
+                            />
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Duration (seconds)" type="number" value={form.duration.toString()} onChange={e => setForm({ ...form, duration: parseInt(e.target.value) || 0 })} required disabled={isActionLoading} />
+                                <Input label="Display Order" type="number" value={form.order.toString()} onChange={e => setForm({ ...form, order: parseInt(e.target.value) || 0 })} required disabled={isActionLoading} />
+                            </div>
+                            <div className="pt-4 flex justify-end gap-3">
+                                <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
+                                <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Add Video'}</Button>
+                            </div>
+                        </form>
+                    </ExpandableCreateSection>
+
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <table className="w-full text-left text-sm text-gray-500">
                             <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
@@ -214,7 +272,7 @@ export default function AdminVideosPage() {
                 </div>
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedVideo ? 'Edit Video' : 'Add Video'}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Video">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
                     <div>
@@ -245,7 +303,7 @@ export default function AdminVideosPage() {
                     </div>
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
-                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : selectedVideo ? 'Save Changes' : 'Add Video'}</Button>
+                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Save Changes'}</Button>
                     </div>
                 </form>
             </Modal>

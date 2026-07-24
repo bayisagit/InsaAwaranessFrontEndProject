@@ -38,16 +38,16 @@ export const Footer: React.FC = () => {
                     <h4 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">Platform</h4>
                     <ul className="space-y-3 text-sm text-gray-500">
                         <li><Link href="/" className="hover:text-primary">Home</Link></li>
-                        <li><Link href="/training" className="hover:text-primary">Training Library</Link></li>
+                        <li><Link href="/resources" className="hover:text-primary">Training Resources</Link></li>
                         <li><Link href="/resources" className="hover:text-primary">Resources</Link></li>
-                        <li><Link href="/dashboard" className="hover:text-primary">News & Alerts</Link></li>
+                        <li><Link href="/alerts" className="hover:text-primary">News & Alerts</Link></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wider">Support</h4>
                     <ul className="space-y-3 text-sm text-gray-500">
-                        <li><Link href="/contact" className="hover:text-primary">Help Center</Link></li>
+                        <li><Link href="/tools" className="hover:text-primary">Tools</Link></li>
                         <li><Link href="/contact" className="hover:text-primary">Contact Us</Link></li>
                         <li><Link href="/contact" className="hover:text-primary">Report an Incident</Link></li>
                     </ul>

@@ -30,6 +30,7 @@ const adminGroups = [
         links: [
             { label: 'Users', href: '/admin/users' },
             { label: 'Organizations', href: '/admin/organizations', roles: ['super_admin'] },
+            { label: 'Org Applications', href: '/admin/organization-applications', roles: ['super_admin'] },
             { label: 'Training Requests', href: '/admin/training-requests' },
             { label: 'Payment Approvals', href: '/admin/payment-approvals', roles: ['super_admin'] },
         ]
@@ -198,40 +199,25 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
             </div>
 
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-                {!isAnyAdmin && (
-                    <>
-                        {!isAuthenticated && <NavLink href="/" exact>Home</NavLink>}
-                        {isAuthenticated && <NavLink href="/dashboard">Dashboard</NavLink>}
-                        <NavLink href="/courses">Courses</NavLink>
-                        <NavLink href="/resources">Resources</NavLink>
-                        <NavLink href="/tools">Tools</NavLink>
-                        <NavLink href="/alerts">Alerts</NavLink>
-                        <NavLink href="/campaigns">Campaigns</NavLink>
-                        {isAuthenticated && <NavLink href="/certificates">Certificates</NavLink>}
-                        {isAuthenticated && <NavLink href="/notifications">Notifications</NavLink>}
-                    </>
-                )}
-
-                {isAuthenticated && isAnyAdmin && (
-                    <>
-                        <Link href="/admin" className={`relative py-2 hover:text-primary transition-colors ${pathname === '/admin' ? 'text-primary font-bold' : ''}`}>
-                            {user.role === 'super_admin' ? 'Admin Dashboard' : user.role === 'org_admin' ? 'Org Dashboard' : 'Provider Dashboard'}
-                            {pathname === '/admin' && (
-                                <motion.div layoutId="navbar-underline" className="absolute left-0 right-0 -bottom-1 h-0.5 bg-primary rounded-full" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
-                            )}
-                        </Link>
-                        {adminGroups
-                            .filter(group => !group.roles || group.roles.includes(user.role))
-                            .map(group => {
-                                const filteredLinks = group.links.filter(link => !link.roles || link.roles.includes(user.role));
-                                if (filteredLinks.length === 0) return null;
-                                return (
-                                    <NavDropdown key={group.label} label={group.label} links={filteredLinks} active={filteredLinks.some(l => pathname?.startsWith(l.href))} />
-                                );
-                            })
-                        }
-                    </>
-                )}
+                <NavLink href="/" exact>Home</NavLink>
+                <NavLink href="/about">About</NavLink>
+                <NavLink href="/contact">Contact</NavLink>
+                <NavLink href="/courses">Courses</NavLink>
+                <NavLink href="/resources">Resources</NavLink>
+                <NavDropdown label="Awareness" links={[
+                    { label: 'All Topics', href: '/awareness' },
+                    { label: 'Phishing Protection', href: '/awareness/phishing-protection' },
+                    { label: 'Password Hygiene', href: '/awareness/password-hygiene' },
+                    { label: 'Secure Browsing', href: '/awareness/secure-browsing' },
+                    { label: 'Data Privacy', href: '/awareness/data-privacy' },
+                    { label: 'Incident Response', href: '/awareness/incident-response' },
+                    { label: 'Cyber Hygiene Basics', href: '/awareness/cyber-hygiene-basics' },
+                ]} active={['/awareness'].some(href => pathname?.startsWith(href))} />
+                <NavDropdown label="Tools" links={[
+                    { label: 'Tools Hub', href: '/tools' },
+                    { label: 'Alerts', href: '/alerts' },
+                    { label: 'Campaigns', href: '/campaigns' },
+                ]} active={['/tools', '/alerts', '/campaigns'].some(href => pathname?.startsWith(href))} />
             </nav>
 
             <div className="flex items-center gap-3">
@@ -239,15 +225,20 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
                     {rightAction || (
                         isAuthenticated ? (
                             <div className="flex items-center gap-4">
-                                <Link href="/profile" className="text-sm font-medium text-gray-700 hover:text-primary transition-colors">Profile</Link>
+                                <Link href={isAnyAdmin ? "/admin" : "/dashboard"} className="text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors px-4 py-1.5 rounded-full">Dashboard</Link>
                                 <button onClick={handleLogout} className="text-sm font-medium text-primary hover:transition-colors border border-primary px-4 py-1.5 rounded-full cursor-pointer hover:bg-red-50 transition-colors">
                                     Logout
                                 </button>
                             </div>
                         ) : (
-                            <Link href="/login" className="text-sm font-medium bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full transition-colors shadow-sm">
-                                Sign In
-                            </Link>
+                            <>
+                                <Link href="/apply" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors px-4 py-1.5 border border-gray-300 hover:border-primary rounded-full">
+                                    Apply
+                                </Link>
+                                <Link href="/login" className="text-sm font-medium bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full transition-colors shadow-sm">
+                                    Sign In
+                                </Link>
+                            </>
                         )
                     )}
                 </div>
@@ -289,47 +280,35 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
                             className="fixed top-16 right-0 bottom-0 w-80 max-w-[85vw] bg-white border-l border-gray-200 z-50 overflow-y-auto shadow-2xl md:hidden"
                         >
                             <div className="py-4">
-                                {!isAnyAdmin ? (
                                     <div className="space-y-1">
-                                        {!isAuthenticated && <MobileNavItem href="/" onClick={closeMobile}>Home</MobileNavItem>}
-                                        {isAuthenticated && <MobileNavItem href="/dashboard" onClick={closeMobile}>Dashboard</MobileNavItem>}
+                                        <MobileNavItem href="/" onClick={closeMobile}>Home</MobileNavItem>
+                                        <MobileNavItem href="/about" onClick={closeMobile}>About</MobileNavItem>
+                                        <MobileNavItem href="/contact" onClick={closeMobile}>Contact</MobileNavItem>
                                         <MobileNavItem href="/courses" onClick={closeMobile}>Courses</MobileNavItem>
                                         <MobileNavItem href="/resources" onClick={closeMobile}>Resources</MobileNavItem>
+                                        <MobileNavItem href="/awareness" onClick={closeMobile}>Awareness</MobileNavItem>
                                         <MobileNavItem href="/tools" onClick={closeMobile}>Tools</MobileNavItem>
                                         <MobileNavItem href="/alerts" onClick={closeMobile}>Alerts</MobileNavItem>
                                         <MobileNavItem href="/campaigns" onClick={closeMobile}>Campaigns</MobileNavItem>
-                                        {isAuthenticated && <MobileNavItem href="/certificates" onClick={closeMobile}>Certificates</MobileNavItem>}
-                                        {isAuthenticated && <MobileNavItem href="/notifications" onClick={closeMobile}>Notifications</MobileNavItem>}
                                     </div>
-                                ) : (
-                                    <div className="space-y-1">
-                                        <MobileNavItem href="/admin" onClick={closeMobile}>
-                                            {user?.role === 'super_admin' ? 'Admin Dashboard' : user?.role === 'org_admin' ? 'Org Dashboard' : 'Provider Dashboard'}
-                                        </MobileNavItem>
-                                        <div className="border-t border-gray-100 my-2" />
-                                        {adminGroups
-                                            .filter(group => !group.roles || group.roles.includes(user?.role || ''))
-                                            .map(group => {
-                                                const filteredLinks = group.links.filter(link => !link.roles || link.roles.includes(user?.role || ''));
-                                                if (filteredLinks.length === 0) return null;
-                                                return <MobileSection key={group.label} label={group.label} links={filteredLinks} onClick={closeMobile} />;
-                                            })
-                                        }
-                                    </div>
-                                )}
 
                                 <div className="border-t border-gray-100 mt-4 pt-4 px-6 space-y-3">
                                     {isAuthenticated ? (
                                         <>
-                                            <Link href="/profile" onClick={closeMobile} className="block text-sm font-medium text-gray-700 hover:text-primary transition-colors">Profile</Link>
+                                            <Link href={isAnyAdmin ? "/admin" : "/dashboard"} onClick={closeMobile} className="block text-center text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors px-5 py-2.5 rounded-full mb-3">Dashboard</Link>
                                             <button onClick={() => { closeMobile(); handleLogout(); }} className="w-full text-sm font-medium text-primary border border-primary px-4 py-2 rounded-full hover:bg-red-50 transition-colors cursor-pointer">
                                                 Logout
                                             </button>
                                         </>
                                     ) : (
-                                        <Link href="/login" onClick={closeMobile} className="block text-center text-sm font-medium bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full transition-colors shadow-sm">
-                                            Sign In
-                                        </Link>
+                                        <>
+                                            <Link href="/apply" onClick={closeMobile} className="block text-center text-sm font-medium text-gray-700 hover:text-primary transition-colors px-5 py-2.5 border border-gray-300 hover:border-primary rounded-full mb-3">
+                                                Apply
+                                            </Link>
+                                            <Link href="/login" onClick={closeMobile} className="block text-center text-sm font-medium bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full transition-colors shadow-sm">
+                                                Sign In
+                                            </Link>
+                                        </>
                                     )}
                                 </div>
                             </div>

@@ -163,8 +163,8 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
+        <div className="w-full pb-10">
+            <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-primary mb-1">Welcome back, {user?.first_name || 'User'}.</h1>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
+            <div className="max-w-7xl mx-auto mt-8">
                 {error && (
                     <div role="alert" className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl mb-8 flex items-center justify-between">
                         <span>{error}</span>

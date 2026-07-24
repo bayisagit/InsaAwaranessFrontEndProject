@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 interface Alert {
     id: string;
@@ -36,6 +37,7 @@ export default function AdminAlertsPage() {
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [actionError, setActionError] = useState('');
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
@@ -95,19 +97,24 @@ export default function AdminAlertsPage() {
         setIsFetching(false);
     };
 
-    const openModal = (alert?: Alert) => {
+    const openModal = (alert: Alert) => {
         setActionError('');
-        if (alert) {
-            setSelectedAlert(alert);
-            setForm({
-                title: alert.title || '',
-                message: alert.message || '',
-                severity: alert.severity || 'low',
-                organization: alert.organization || '',
-                notify_email: alert.notify_email ?? true,
-                notify_sms: alert.notify_sms ?? true
-            });
-        } else {
+        setIsCreateExpanded(false);
+        setSelectedAlert(alert);
+        setForm({
+            title: alert.title || '',
+            message: alert.message || '',
+            severity: alert.severity || 'low',
+            organization: alert.organization || '',
+            notify_email: alert.notify_email ?? true,
+            notify_sms: alert.notify_sms ?? true
+        });
+        setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
             setSelectedAlert(null);
             setForm({
                 title: '',
@@ -118,7 +125,7 @@ export default function AdminAlertsPage() {
                 notify_sms: true
             });
         }
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleSubmit = async (ev: React.FormEvent) => {
@@ -127,7 +134,14 @@ export default function AdminAlertsPage() {
         const endpoint = `/api/v1/alerts/${isEditing ? `${selectedAlert!.id}/` : ''}`;
         const { error: apiErr, status } = await apiFetch(endpoint, { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(form) });
         if (apiErr || (status !== 200 && status !== 201)) setActionError(apiErr || 'Failed to save.');
-        else { fetchAlerts(); setIsModalOpen(false); }
+        else { 
+            fetchAlerts(); 
+            if (isEditing) {
+                setIsModalOpen(false); 
+            } else {
+                setIsCreateExpanded(false);
+            }
+        }
         setIsActionLoading(false);
     };
 
@@ -166,7 +180,6 @@ export default function AdminAlertsPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Alerts Management</h1>
                         <p className="text-gray-500">Create and publish cybersecurity advisories.</p>
                     </div>
-                    <Button variant="primary" onClick={() => openModal()}>Create Alert</Button>
                 </div>
             </div>
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
@@ -181,6 +194,55 @@ export default function AdminAlertsPage() {
                         />
                     </div>
                 </div>
+
+                <ExpandableCreateSection
+                    title="Create Alert"
+                    isOpen={isCreateExpanded}
+                    onToggle={toggleCreate}
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                        <Input label="Alert Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
+                                    <option value="" className="text-gray-900">Select Organization</option>
+                                    {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Severity</label>
+                                <select className={SELECT_CLS} value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value })} disabled={isActionLoading}>
+                                    <option value="low" className="text-gray-900">Low</option>
+                                    <option value="medium" className="text-gray-900">Medium</option>
+                                    <option value="high" className="text-gray-900">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-6 py-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" checked={form.notify_email} onChange={e => setForm({ ...form, notify_email: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" />
+                                <span className="text-sm text-gray-700 font-medium">Notify via Email</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" checked={form.notify_sms} onChange={e => setForm({ ...form, notify_sms: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" />
+                                <span className="text-sm text-gray-700 font-medium">Notify via SMS</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Message Content</label>
+                            <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter alert message details..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
+                        </div>
+                        <div className="pt-4 flex justify-end gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
+                            <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Create Alert'}</Button>
+                        </div>
+                    </form>
+                </ExpandableCreateSection>
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <table className="w-full text-left text-sm text-gray-500">
@@ -255,10 +317,10 @@ export default function AdminAlertsPage() {
                     </div>
                 )}
             </div>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedAlert ? 'Edit Alert' : 'Create Alert'}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Alert">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
-                    <Input label="Alert Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} />
+                    <Input label="Alert Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -295,7 +357,7 @@ export default function AdminAlertsPage() {
                     </div>
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
-                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : selectedAlert ? 'Save Changes' : 'Create Alert'}</Button>
+                        <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Save Changes'}</Button>
                     </div>
                 </form>
             </Modal>

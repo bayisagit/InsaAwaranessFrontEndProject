@@ -46,7 +46,7 @@ const Card = ({ children, title, subtitle, icon }: { children: React.ReactNode, 
                     {icon && <span className="text-primary">{icon}</span>}
                     {title}
                 </h2>
-                {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+                {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
             </div>
         </div>
         <div className="p-8">
@@ -56,7 +56,7 @@ const Card = ({ children, title, subtitle, icon }: { children: React.ReactNode, 
 );
 
 const SectionHeader = ({ title }: { title: string }) => (
-    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 pb-2 border-b border-gray-50">{title}</h3>
+    <h3 className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-6 pb-2 border-b border-gray-100">{title}</h3>
 );
 
 interface ProfileData extends Partial<BackgroundProfile> {}
@@ -206,19 +206,19 @@ export default function ProfilePage() {
 
                     <div className="relative flex flex-col md:flex-row items-center gap-8">
                         <div className="relative group">
-                            <div className="h-32 w-32 rounded-3xl bg-gradient-to-br from-primary to-rose-700 flex items-center justify-center text-white text-4xl font-bold shadow-2xl group-hover:scale-105 transition-transform duration-300">
+                            <div className="h-32 w-32 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-4xl font-bold shadow-2xl group-hover:scale-105 transition-transform duration-300">
                                 {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
                             </div>
                         </div>
 
                         <div className="text-center md:text-left">
-                            <h1 className="text-4xl font-black text-white mb-3 tracking-tight">{user?.first_name} {user?.last_name}</h1>
+                            <h1 className="text-4xl font-black text-gray-900 mb-3 tracking-tight">{user?.first_name} {user?.last_name}</h1>
                             <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                                <span className="px-5 py-2 bg-primary rounded-2xl text-xs font-bold text-white uppercase tracking-wider shadow-lg shadow-primary/30">
+                                <span className="px-5 py-2 bg-primary/10 border border-primary/20 rounded-2xl text-xs font-semibold text-primary uppercase tracking-wider shadow-sm">
                                     {roleLabel[user?.role || ''] || user?.role}
                                 </span>
-                                <span className="px-5 py-2 bg-white/10 backdrop-blur-xl rounded-2xl text-xs font-bold text-gray-200 uppercase tracking-wider border border-white/10 flex items-center gap-2">
-                                    <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.5)]"></span>
+                                <span className="px-5 py-2 bg-white rounded-2xl text-xs font-bold text-gray-900 uppercase tracking-wider border border-gray-200 flex items-center gap-2 shadow-sm">
+                                    <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
                                     {user?.email}
                                 </span>
                             </div>
@@ -239,19 +239,19 @@ export default function ProfilePage() {
                             <SectionHeader title="Basic Details" />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 block ml-1">Email Address</label>
+                                    <label className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em] mb-1 block ml-1">Email Address</label>
                                     <div className="text-gray-900 font-bold bg-gray-50 px-5 py-4 rounded-2xl border border-gray-100 shadow-sm transition-all hover:bg-white hover:shadow-md cursor-default">
                                         {user?.email}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 block ml-1">Preferred Language</label>
+                                    <label className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em] mb-1 block ml-1">Preferred Language</label>
                                     <div className="text-gray-900 font-bold bg-gray-50 px-5 py-4 rounded-2xl border border-gray-100 shadow-sm transition-all hover:bg-white hover:shadow-md cursor-default capitalize">
                                         {user?.preferred_language || 'English'}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 block ml-1">Organization</label>
+                                    <label className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em] mb-1 block ml-1">Organization</label>
                                     <div className="text-gray-900 font-bold bg-gray-50 px-5 py-4 rounded-2xl border border-gray-100 shadow-sm transition-all hover:bg-white hover:shadow-md cursor-default">
                                         {user?.organization_name || (user?.role === 'public_user' ? 'INSA' : 'Not assigned')}
                                     </div>
@@ -355,7 +355,7 @@ export default function ProfilePage() {
                                             </div>
                                             <div className="text-sm leading-6">
                                                 <label htmlFor="is_info" className="font-bold text-gray-900 cursor-pointer">Confirmation of Accuracy</label>
-                                                <p className="text-gray-500 font-medium">I understand that providing accurate information ensures I receive the correct certifications and course recommendations.</p>
+                                                <p className="text-gray-600 font-medium">I understand that providing accurate information ensures I receive the correct certifications and course recommendations.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -378,56 +378,56 @@ export default function ProfilePage() {
                             <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className="bg-secondary rounded-[2.5rem] p-9 text-white shadow-2xl shadow-secondary/30 relative overflow-hidden group"
+                                className="bg-secondary rounded-[2.5rem] p-9 text-gray-900 shadow-2xl shadow-secondary/30 relative overflow-hidden group border border-gray-100"
                             >
-                                <div className="absolute top-0 right-0 h-40 w-40 bg-primary/20 rounded-full -mr-20 -mt-20 blur-3xl transition-all group-hover:bg-primary/30"></div>
+                                <div className="absolute top-0 right-0 h-40 w-40 bg-primary/10 rounded-full -mr-20 -mt-20 blur-3xl transition-all group-hover:bg-primary/20"></div>
                                 <div className="absolute bottom-0 left-0 h-40 w-40 bg-blue-500/10 rounded-full -ml-20 -mb-20 blur-3xl"></div>
 
                                 <div className="relative z-10">
                                     <div className="flex items-center justify-between mb-8">
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-white/50">Leaderboard Stats</h3>
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500">Leaderboard Stats</h3>
                                         <div className="h-2 w-2 bg-primary rounded-full animate-ping"></div>
                                     </div>
 
                                     <div className="flex items-baseline gap-3 mb-10">
-                                        <span className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70">1,250</span>
+                                        <span className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-600">1,250</span>
                                         <span className="text-sm font-black text-primary tracking-widest uppercase">Points</span>
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="p-4 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 flex items-center gap-4 transition-all hover:bg-white/10 hover:border-white/20">
-                                            <div className="h-10 w-10 bg-amber-400/20 rounded-2xl flex items-center justify-center shadow-inner shadow-amber-400/20">
-                                                <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <div className="p-4 bg-white rounded-3xl border border-gray-100 flex items-center gap-4 transition-all hover:shadow-md hover:border-gray-200">
+                                            <div className="h-10 w-10 bg-amber-50 rounded-2xl flex items-center justify-center border border-amber-100">
+                                                <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                                                 </svg>
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-xs font-black text-white tracking-tight">Phishing Hunter</span>
-                                                <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest mt-0.5">Gold Tier</span>
+                                                <span className="text-xs font-black text-gray-900 tracking-tight">Phishing Hunter</span>
+                                                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">Gold Tier</span>
                                             </div>
                                         </div>
-                                        <div className="p-4 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 flex items-center gap-4 transition-all hover:bg-white/10 hover:border-white/20">
-                                            <div className="h-10 w-10 bg-blue-400/20 rounded-2xl flex items-center justify-center shadow-inner shadow-blue-400/20">
-                                                <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <div className="p-4 bg-white rounded-3xl border border-gray-100 flex items-center gap-4 transition-all hover:shadow-md hover:border-gray-200">
+                                            <div className="h-10 w-10 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
+                                                <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                                                 </svg>
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-xs font-black text-white tracking-tight">Password Shield</span>
-                                                <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest mt-0.5">Top 1% Learner</span>
+                                                <span className="text-xs font-black text-gray-900 tracking-tight">Password Shield</span>
+                                                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">Top 1% Learner</span>
                                             </div>
                                         </div>
-                                        <div className="p-4 bg-black/20 backdrop-blur-2xl rounded-3xl border border-white/5 opacity-40 flex items-center gap-4 grayscale">
-                                            <div className="h-10 w-10 bg-white/5 rounded-2xl flex items-center justify-center">
-                                                <svg className="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <div className="p-4 bg-gray-50 rounded-3xl border border-gray-100 flex items-center gap-4 grayscale opacity-80">
+                                            <div className="h-10 w-10 bg-gray-100 rounded-2xl flex items-center justify-center">
+                                                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                                 </svg>
                                             </div>
-                                            <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">Secret Achievement</span>
+                                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">Secret Achievement</span>
                                         </div>
                                     </div>
 
-                                    <button className="w-full mt-8 py-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all group-hover:border-white/10 active:scale-95">
+                                    <button className="w-full mt-8 py-4 bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] transition-all hover:shadow-sm active:scale-95">
                                         View Full Progress
                                     </button>
                                 </div>

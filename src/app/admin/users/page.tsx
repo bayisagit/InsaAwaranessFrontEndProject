@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white disabled:opacity-75 disabled:bg-gray-100 disabled:cursor-not-allowed";
 
@@ -29,6 +30,7 @@ export default function AdminUsersPage() {
     const [error, setError] = useState('');
     const [actionError, setActionError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateExpanded, setIsCreateExpanded] = useState(false);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -81,20 +83,25 @@ export default function AdminUsersPage() {
         setIsFetching(false);
     };
 
-    const handleOpenModal = (targetUser?: UserData) => {
+    const openModal = (targetUser: UserData) => {
         setActionError('');
-        if (targetUser) {
-            setSelectedUser(targetUser);
-            setFormData({
-                first_name: targetUser.first_name,
-                last_name: targetUser.last_name,
-                email: targetUser.email,
-                password: '', // Leave blank for edit unless changing
-                role: targetUser.role || 'member',
-                organization_id: '', // Role-specific creation only usually
-                preferred_language: 'en'
-            });
-        } else {
+        setIsCreateExpanded(false);
+        setSelectedUser(targetUser);
+        setFormData({
+            first_name: targetUser.first_name,
+            last_name: targetUser.last_name,
+            email: targetUser.email,
+            password: '', // Leave blank for edit unless changing
+            role: targetUser.role || 'member',
+            organization_id: '', // Role-specific creation only usually
+            preferred_language: 'en'
+        });
+        setIsModalOpen(true);
+    };
+
+    const toggleCreate = () => {
+        if (!isCreateExpanded) {
+            setActionError('');
             setSelectedUser(null);
             setFormData({
                 first_name: '',
@@ -106,7 +113,7 @@ export default function AdminUsersPage() {
                 preferred_language: 'en'
             });
         }
-        setIsModalOpen(true);
+        setIsCreateExpanded(!isCreateExpanded);
     };
 
     const handleCloseModal = () => {
@@ -150,8 +157,10 @@ export default function AdminUsersPage() {
             last_name: formData.last_name,
             email: formData.email,
             preferred_language: formData.preferred_language,
-            organization_id: formData.organization_id
         };
+        if (formData.organization_id) {
+            payload.organization_id = formData.organization_id;
+        }
 
         // For regular user creation (if any) or editing, we might need password/role
         if (endpoint === '/api/auth/users/' || isEditing) {
@@ -172,7 +181,11 @@ export default function AdminUsersPage() {
                 alert(`User created successfully!\nDefault Password: ${data.default_password}`);
             }
             fetchUsers();
-            handleCloseModal();
+            if (isEditing) {
+                handleCloseModal();
+            } else {
+                setIsCreateExpanded(false);
+            }
         }
         setIsActionLoading(false);
     };
@@ -220,9 +233,6 @@ export default function AdminUsersPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
                         <p className="text-gray-500">Manage all registered users, permissions, and roles.</p>
                     </div>
-                    <div>
-                        <Button variant="primary" onClick={() => handleOpenModal()}>Add New User</Button>
-                    </div>
                 </div>
             </div>
 
@@ -232,6 +242,140 @@ export default function AdminUsersPage() {
                         {error}
                     </div>
                 )}
+
+                <ExpandableCreateSection
+                    title="Add New User"
+                    isOpen={isCreateExpanded}
+                    onToggle={toggleCreate}
+                >
+                    <form onSubmit={handleFormSubmit} className="space-y-4">
+                        {actionError && (
+                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
+                                {actionError}
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input
+                                label="First Name"
+                                name="first_name"
+                                value={formData.first_name}
+                                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                                required
+                                disabled={isActionLoading}
+                                autoFocus
+                            />
+                            <Input
+                                label="Last Name"
+                                name="last_name"
+                                value={formData.last_name}
+                                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                                required
+                                disabled={isActionLoading}
+                            />
+                        </div>
+
+                        <Input
+                            label="Email Address"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            required
+                            disabled={isActionLoading}
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            {user?.role === 'org_admin' ? (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Organization
+                                    </label>
+                                    <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                        {user.organization_name || 'Your Organization'}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Organization
+                                    </label>
+                                    <select
+                                        className={SELECT_CLS}
+                                        value={formData.organization_id}
+                                        onChange={(e) => setFormData({ ...formData, organization_id: e.target.value })}
+                                        disabled={isActionLoading}
+                                        required={formData.role !== 'course_provider'}
+                                    >
+                                        <option value="">Select Organization</option>
+                                        {organizations.map(org => (
+                                            <option key={org.id} value={org.id}>{org.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    Language
+                                </label>
+                                <select
+                                    className={SELECT_CLS}
+                                    value={formData.preferred_language}
+                                    onChange={(e) => setFormData({ ...formData, preferred_language: e.target.value })}
+                                    disabled={isActionLoading}
+                                >
+                                    <option value="en">English</option>
+                                    <option value="am">Amharic</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                User Role
+                            </label>
+                            {user?.role === 'org_admin' ? (
+                                <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium">
+                                    Member
+                                </div>
+                            ) : (
+                                <select
+                                    className={SELECT_CLS}
+                                    value={formData.role}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                    disabled={isActionLoading}
+                                >
+                                    <option value="member">Member</option>
+                                    <option value="course_provider">Course Provider</option>
+                                    <option value="org_admin">Organization Admin</option>
+                                    <option value="super_admin">Super Admin</option>
+                                    <option value="user">Regular User</option>
+                                </select>
+                            )}
+                        </div>
+
+                        {formData.role === 'user' && (
+                            <Input
+                                label="Password"
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                required={true}
+                                disabled={isActionLoading}
+                            />
+                        )}
+
+                        <div className="pt-4 flex justify-end gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" variant="primary" disabled={isActionLoading}>
+                                {isActionLoading ? 'Saving...' : 'Create User'}
+                            </Button>
+                        </div>
+                    </form>
+                </ExpandableCreateSection>
 
                 {/* User Table */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -272,8 +416,8 @@ export default function AdminUsersPage() {
                                             </td>
                                             <td className="px-6 py-4 text-right whitespace-nowrap">
                                                 <div className="flex items-center justify-end gap-2">
-                                                <button onClick={() => handleOpenModal(u)} className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Edit</button>
-                                                <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
+                                                <button onClick={() => openModal(u)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors inline-block">Edit</button>
+                                                <button onClick={() => handleDeleteUser(u.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors inline-block">Delete</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -288,7 +432,7 @@ export default function AdminUsersPage() {
             <Modal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                title={selectedUser ? "Edit User" : "Add New User"}
+                title="Edit User"
             >
                 <form onSubmit={handleFormSubmit} className="space-y-4">
                     {actionError && (
@@ -305,6 +449,7 @@ export default function AdminUsersPage() {
                             onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                             required
                             disabled={isActionLoading}
+                            autoFocus
                         />
                         <Input
                             label="Last Name"
@@ -325,42 +470,6 @@ export default function AdminUsersPage() {
                         required
                         disabled={isActionLoading}
                     />
-
-                    {!selectedUser && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                    Organization
-                                </label>
-                                <select
-                                    className={SELECT_CLS}
-                                    value={formData.organization_id}
-                                    onChange={(e) => setFormData({ ...formData, organization_id: e.target.value })}
-                                    disabled={isActionLoading}
-                                    required
-                                >
-                                    <option value="">Select Organization</option>
-                                    {organizations.map(org => (
-                                        <option key={org.id} value={org.id}>{org.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                    Language
-                                </label>
-                                <select
-                                    className={SELECT_CLS}
-                                    value={formData.preferred_language}
-                                    onChange={(e) => setFormData({ ...formData, preferred_language: e.target.value })}
-                                    disabled={isActionLoading}
-                                >
-                                    <option value="en">English</option>
-                                    <option value="am">Amharic</option>
-                                </select>
-                            </div>
-                        </div>
-                    )}
 
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -386,24 +495,22 @@ export default function AdminUsersPage() {
                         )}
                     </div>
 
-                    {(formData.role === 'user' || selectedUser) && (
-                        <Input
-                            label={selectedUser ? "New Password (Optional)" : "Password"}
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            required={!selectedUser && formData.role === 'user'}
-                            disabled={isActionLoading}
-                        />
-                    )}
+                    <Input
+                        label="New Password (Optional)"
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        required={false}
+                        disabled={isActionLoading}
+                    />
 
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isActionLoading}>
                             Cancel
                         </Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
-                            {isActionLoading ? 'Saving...' : selectedUser ? 'Save Changes' : 'Create User'}
+                            {isActionLoading ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>
