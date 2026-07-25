@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { registerUser, resendVerificationEmail } from '@/lib/api';
+import { registerUser, loginWithGoogle, setTokens, resendVerificationEmail } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 
 const LANGUAGE_OPTIONS = [
     { value: 'en', label: 'English' },
@@ -57,7 +59,55 @@ export default function SignupPage() {
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
+    const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
+    const { checkAuth } = useAuth();
+
+    const handleSocialLogin = (data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }) => {
+        setTokens({ access: data.access, refresh: data.refresh });
+        checkAuth().then(() => {
+            const mustChange = data.must_change_password || data.user?.must_change_password;
+            if (mustChange) { router.push('/change-password'); return; }
+            if (data.dashboard_route) {
+                const routeMap: Record<string, string> = {
+                    '/dashboard/super-admin': '/admin',
+                    '/dashboard/organization': '/admin',
+                    '/dashboard/course-provider': '/admin',
+                    '/dashboard/member': '/dashboard',
+                    '/dashboard/public': '/dashboard',
+                };
+                router.push(routeMap[data.dashboard_route] ?? data.dashboard_route);
+            } else {
+                const role = data.user?.role;
+                router.push(role === 'super_admin' || role === 'org_admin' || role === 'course_provider' ? '/admin' : '/dashboard');
+            }
+        });
+    };
+
+    const handleGoogleSuccess = useCallback(async (credentialResponse: CredentialResponse) => {
+        setSocialLoading('google');
+        const { data, error: apiError } = await loginWithGoogle(credentialResponse.credential || '');
+        if (apiError || !data) {
+            toast.error(apiError || 'Google sign-in failed.');
+            setSocialLoading(null);
+            return;
+        }
+        toast.success(`Welcome, ${data.user.first_name || 'User'}!`);
+        handleSocialLogin(data);
+        setSocialLoading(null);
+    }, [router, checkAuth]);
+
+    const handleGoogleError = useCallback(() => {
+        toast.error('Google sign-in was cancelled or failed.');
+    }, []);
+
+    const handleGitHubSignup = useCallback(() => {
+        setSocialLoading('github');
+        const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || '';
+        const redirectUri = `${window.location.origin}/auth/callback?provider=github`;
+        const githubUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user:email,read:user`;
+        window.location.href = githubUrl;
+    }, []);
 
     const passStrength = getPasswordScore(password);
 
@@ -196,6 +246,46 @@ export default function SignupPage() {
                 <div className="max-w-md w-full mx-auto">
                     <h2 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h2>
                     <p className="text-gray-500 text-sm mb-8">Enter your details to access the secure portal.</p>
+
+                    {/* Social Signup Buttons */}
+                    <div className="space-y-3 mb-6">
+                        <div className="relative">
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleError}
+                                theme="outline"
+                                size="large"
+                                shape="rectangular"
+                                width="100%"
+                                text="signup_with"
+                            />
+                        </div>
+                        <Button
+                            variant="social"
+                            fullWidth
+                            className="py-3 rounded-lg"
+                            onClick={handleGitHubSignup}
+                            loading={socialLoading === 'github'}
+                            iconLeft={
+                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                                </svg>
+                            }
+                        >
+                            Sign up with GitHub
+                        </Button>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-200" />
+                        </div>
+                        <div className="relative flex justify-center">
+                            <span className="bg-white px-3 text-xs text-gray-400 font-medium">OR</span>
+                        </div>
+                    </div>
+
                     <form className="space-y-5" onSubmit={handleSubmit} method="POST">
                         {fieldErrors.non_field && (
                             <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-start gap-2">

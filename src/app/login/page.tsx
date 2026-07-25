@@ -1,100 +1,99 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { loginUser, setTokens } from '@/lib/api';
+import { loginUser, loginWithGoogle, setTokens } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
+
+function handlePostLogin(data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }, router: ReturnType<typeof useRouter>, checkAuth: () => Promise<any>) {
+    setTokens({ access: data.access, refresh: data.refresh });
+    checkAuth().then(() => {
+        const mustChange = data.must_change_password || data.user?.must_change_password;
+        if (mustChange) { router.push('/change-password'); return; }
+        const nextParam = new URLSearchParams(window.location.search).get('next');
+        if (nextParam) { router.push(nextParam); return; }
+        if (data.dashboard_route) {
+            const routeMap: Record<string, string> = {
+                '/dashboard/super-admin': '/admin',
+                '/dashboard/organization': '/admin',
+                '/dashboard/course-provider': '/admin',
+                '/dashboard/member': '/dashboard',
+                '/dashboard/public': '/dashboard',
+            };
+            router.push(routeMap[data.dashboard_route] ?? data.dashboard_route);
+        } else {
+            const role = data.user?.role;
+            router.push(role === 'super_admin' || role === 'org_admin' || role === 'course_provider' ? '/admin' : '/dashboard');
+        }
+    });
+}
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
     const { checkAuth } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-
-        if (!email.trim()) {
-            setError('Please enter your email address.');
-            return;
-        }
-        if (!password) {
-            setError('Please enter your password.');
-            return;
-        }
-
+        if (!email.trim()) { setError('Please enter your email address.'); return; }
+        if (!password) { setError('Please enter your password.'); return; }
         setIsLoading(true);
-
         const { data, error: apiError, status } = await loginUser(email.trim(), password);
-
         if (apiError || status !== 200) {
-            const errorMsg = apiError || 'Invalid credentials. Please check your email and password.';
+            const errorMsg = apiError || 'Invalid credentials.';
             setError(errorMsg);
             toast.error(errorMsg);
             setIsLoading(false);
             return;
         }
-
         if (data?.access) {
-            // Store tokens
-            setTokens({ access: data.access, refresh: data.refresh });
-
-            // Re-hydrate user state from /api/auth/me/
-            await checkAuth();
-
             toast.success(`Welcome back, ${data.user.first_name || 'User'}!`);
-
-            // ── must_change_password guard ──────────────────────────────────
-            // Backend blocks all endpoints (except bypass ones) until password is changed.
-            const mustChange = data.must_change_password || data.user?.must_change_password;
-            if (mustChange) {
-                router.push('/change-password');
-                return;
-            }
-
-            // ── next query param (return-to after login) ────────────────────
-            const nextParam = new URLSearchParams(window.location.search).get('next');
-            if (nextParam) {
-                router.push(nextParam);
-                return;
-            }
-
-            // ── Role-based dashboard redirect ───────────────────────────────
-            // Use dashboard_route from backend response when available, otherwise derive from role.
-            if (data.dashboard_route) {
-                // Normalise legacy backend routes to existing frontend routes
-                const routeMap: Record<string, string> = {
-                    '/dashboard/super-admin': '/admin',
-                    '/dashboard/organization': '/admin',
-                    '/dashboard/course-provider': '/admin',
-                    '/dashboard/member': '/dashboard',
-                    '/dashboard/public': '/dashboard',
-                };
-                const mapped = routeMap[data.dashboard_route] ?? data.dashboard_route;
-                router.push(mapped);
-            } else {
-                // Fallback: derive from role
-                const role = data.user?.role;
-                if (role === 'super_admin' || role === 'org_admin' || role === 'course_provider') {
-                    router.push('/admin');
-                } else {
-                    router.push('/dashboard');
-                }
-            }
+            handlePostLogin(data, router, checkAuth);
         }
+        setIsLoading(false);
     };
+
+    const handleGoogleSuccess = useCallback(async (credentialResponse: CredentialResponse) => {
+        setSocialLoading('google');
+        setError('');
+        const { data, error: apiError } = await loginWithGoogle(credentialResponse.credential || '');
+        if (apiError || !data) {
+            setError(apiError || 'Google sign-in failed.');
+            toast.error(apiError || 'Google sign-in failed.');
+            setSocialLoading(null);
+            return;
+        }
+        toast.success(`Welcome, ${data.user.first_name || 'User'}!`);
+        handlePostLogin(data, router, checkAuth);
+        setSocialLoading(null);
+    }, [router, checkAuth]);
+
+    const handleGoogleError = useCallback(() => {
+        setError('Google sign-in was cancelled or failed.');
+        toast.error('Google sign-in was cancelled or failed.');
+    }, []);
+
+    const handleGitHubLogin = useCallback(() => {
+        setSocialLoading('github');
+        const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || '';
+        const redirectUri = `${window.location.origin}/auth/callback?provider=github`;
+        const githubUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user:email,read:user`;
+        window.location.href = githubUrl;
+    }, []);
 
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
             <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
-                {/* Brand mark */}
                 <div className="flex justify-center mb-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                         <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center">
@@ -103,10 +102,49 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back 👋</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
                 <p className="text-sm font-medium text-gray-600 mb-8 max-w-xs mx-auto">
                     Secure Access To The National Cyber Resilience Portal
                 </p>
+
+                {/* Social Login Buttons */}
+                <div className="space-y-3 mb-6">
+                    <div className="relative">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={handleGoogleError}
+                            theme="outline"
+                            size="large"
+                            shape="rectangular"
+                            width="100%"
+                            text="continue_with"
+                        />
+                    </div>
+                    <Button
+                        variant="social"
+                        fullWidth
+                        className="py-3 rounded-lg"
+                        onClick={handleGitHubLogin}
+                        loading={socialLoading === 'github'}
+                        iconLeft={
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                            </svg>
+                        }
+                    >
+                        Continue with GitHub
+                    </Button>
+                </div>
+
+                {/* Divider */}
+                <div className="relative mb-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center">
+                        <span className="bg-white px-3 text-xs text-gray-400 font-medium">OR</span>
+                    </div>
+                </div>
 
                 <form className="space-y-5 text-left" onSubmit={handleSubmit} method="POST">
                     {error && (

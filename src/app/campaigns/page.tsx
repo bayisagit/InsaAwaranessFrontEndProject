@@ -6,6 +6,7 @@ import { getCampaigns, Campaign } from '@/lib/api';
 import { EmptyState } from '@/components/EmptyState';
 import { CardSkeleton } from '@/components/LoadingSkeleton';
 import { LinkifyText } from '@/components/LinkifyText';
+import { PageHero } from '@/components/PageHero';
 
 
 
@@ -56,16 +57,12 @@ export default function CampaignsPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-[#0f172a] relative overflow-hidden py-24">
-                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10 text-center">
-                    <span className="inline-block px-3 py-1 bg-primary/20 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest mb-4 border border-primary/30">National Initiative</span>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Security Awareness Campaigns</h1>
-                    <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
-                        Join our nation-wide efforts to foster a culture of digital resilience. Participate in active campaigns to earn exclusive rewards and certificates.
-                    </p>
-                </div>
-            </div>
+            <PageHero
+                badge="National Initiative"
+                title="Security Awareness Campaigns"
+                description="Join our nation-wide efforts to foster a culture of digital resilience. Participate in active campaigns to earn exclusive rewards and certificates."
+                center
+            />
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 mt-16">
                 {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-8">{error}</div>}

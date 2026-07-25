@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
+import { PageHero } from '@/components/PageHero';
 
 const questions = [
     {
@@ -108,20 +109,18 @@ export default function SelfAssessmentPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-4xl mx-auto px-6 lg:px-12 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-1">Knowledge Assessment</h1>
-                        <p className="text-sm text-gray-500">Benchmark your cybersecurity posture.</p>
-                    </div>
+            <PageHero
+                title="Knowledge Assessment"
+                description="Benchmark your cybersecurity posture."
+                actions={
                     <div className="flex items-center gap-4">
-                        <span className="text-sm font-bold text-primary font-mono">{((currentStep + 1) / questions.length * 100).toFixed(0)}%</span>
-                        <div className="w-40 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <span className="text-sm font-bold text-white font-mono">{((currentStep + 1) / questions.length * 100).toFixed(0)}%</span>
+                        <div className="w-40 h-2 bg-white/20 rounded-full overflow-hidden">
                             <div className="h-full bg-primary transition-all duration-300" style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}></div>
                         </div>
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             <div className="max-w-3xl mx-auto px-6 mt-20">
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-10 md:p-16">

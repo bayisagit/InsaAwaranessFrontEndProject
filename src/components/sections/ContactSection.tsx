@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
+import { PageHero } from '@/components/PageHero';
 
 interface ContactSectionProps {
     variant?: 'full' | 'home';
@@ -64,15 +65,11 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
 
     return (
         <div className="flex flex-col bg-white min-h-screen">
-            {/* Header */}
-            <section className="py-20 px-6 text-center bg-gray-50 border-b border-gray-100">
-                <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">
-                    How can we help you?
-                </h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Whether you have questions about our cybersecurity training, need technical support, or want to report a suspicious activity, our team is ready to assist.
-                </p>
-            </section>
+            <PageHero
+                title="How can we help you?"
+                description="Whether you have questions about our cybersecurity training, need technical support, or want to report a suspicious activity, our team is ready to assist."
+                center
+            />
 
             <section className="py-16 px-6 lg:px-8 max-w-6xl mx-auto w-full flex flex-col md:flex-row gap-16">
                 {/* Left Side - Info */}

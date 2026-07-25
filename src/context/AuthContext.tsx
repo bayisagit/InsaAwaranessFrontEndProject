@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, apiFetch, clearTokens, getTokens } from '@/lib/api';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { User, apiFetch, clearTokens, getTokens, logoutUser } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
@@ -54,11 +54,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
     }, []);
 
-    const logout = () => {
+    const logout = useCallback(async () => {
+        const tokens = getTokens();
+        if (tokens?.refresh) {
+            await logoutUser(tokens.refresh).catch(() => {});
+        }
         clearTokens();
         setUser(null);
         window.location.href = '/login';
-    };
+    }, []);
 
     const value = {
         user,

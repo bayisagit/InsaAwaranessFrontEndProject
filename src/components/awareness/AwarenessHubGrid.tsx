@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { awarenessTopics } from '@/lib/awarenessData';
+import { PageHero } from '@/components/PageHero';
 
 const colorMap: Record<string, { border: string; bg: string; iconBg: string; text: string }> = {
     red: { border: 'border-red-500', bg: 'bg-red-50', iconBg: 'bg-red-100', text: 'text-red-600' },
@@ -14,20 +15,12 @@ const colorMap: Record<string, { border: string; bg: string; iconBg: string; tex
 export function AwarenessHubGrid() {
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <section className="bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 sm:py-24 text-center">
-                    <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 inline-block">
-                        KNOWLEDGE HUB
-                    </span>
-                    <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl mb-4">
-                        Awareness Topics
-                    </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                        Explore practical guides and actionable steps to protect yourself and your organization from the most common cyber threats.
-                    </p>
-                </div>
-            </section>
+            <PageHero
+                badge="KNOWLEDGE HUB"
+                title="Awareness Topics"
+                description="Explore practical guides and actionable steps to protect yourself and your organization from the most common cyber threats."
+                center
+            />
 
             {/* Grid */}
             <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16">

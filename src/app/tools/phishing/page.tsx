@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
+import { PageHero } from '@/components/PageHero';
 
 const scenarios = [
     {
@@ -86,23 +87,21 @@ export default function PhishingSimulationPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-5xl mx-auto px-6 lg:px-12 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Phishing Simulation</h1>
-                        <p className="text-sm text-gray-500">Test your ability to spot malicious emails.</p>
-                    </div>
+            <PageHero
+                title="Phishing Simulation"
+                description="Test your ability to spot malicious emails."
+                actions={
                     <div className="flex items-center gap-4">
                         <div className="text-right">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Progress</span>
-                            <span className="font-bold text-primary">{currentStep + 1} / {scenarios.length}</span>
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest block">Progress</span>
+                            <span className="font-bold text-white">{currentStep + 1} / {scenarios.length}</span>
                         </div>
-                        <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
                             <div className="h-full bg-primary transition-all duration-500" style={{ width: `${((currentStep + 1) / scenarios.length) * 100}%` }}></div>
                         </div>
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             <div className="max-w-4xl mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Email Interface */}

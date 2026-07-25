@@ -6,7 +6,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/Input';
 import { Button } from '@/components/Button';
-import { PageHeader } from '@/components/PageHeader';
 import { Pagination } from '@/components/Pagination';
 import { EmptyState } from '@/components/EmptyState';
 import { CardSkeleton } from '@/components/LoadingSkeleton';
@@ -103,19 +102,23 @@ export default function DashboardCertificatesPage() {
 
     return (
         <div className="pb-20">
-            <PageHeader
-                title="My Certificates"
-                description="View and download your earned cybersecurity certifications."
-                actions={
-                    <div className="w-full max-w-md">
+            <section className="bg-white border-b border-gray-100">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 text-center">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">
+                        My Certificates
+                    </h1>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                        View and download your earned cybersecurity certifications.
+                    </p>
+                    <div className="max-w-md mx-auto">
                         <Input
                             placeholder="Search certificates by ID..."
                             value={searchTerm}
                             onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                         />
                     </div>
-                }
-            />
+                </div>
+            </section>
 
             {isLoadingCertificates ? (
                 <div className="max-w-5xl mx-auto pt-10">

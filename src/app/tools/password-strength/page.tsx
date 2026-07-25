@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
+import { PageHero } from '@/components/PageHero';
 
 export default function PasswordStrengthPage() {
     const [password, setPassword] = useState('');
@@ -52,17 +53,13 @@ export default function PasswordStrengthPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-4xl mx-auto px-6 lg:px-12 py-10 text-center">
-                    <Link href="/dashboard" className="text-sm text-gray-500 hover:text-primary mb-4 inline-flex items-center gap-1 transition-colors">
-                        ← Back to Dashboard
-                    </Link>
-                    <h1 className="text-3xl font-extrabold text-gray-900 mt-2">Password Strength Checker</h1>
-                    <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-                        High-strength passwords are your first line of defense. Test your password resilience against modern brute-force techniques.
-                    </p>
-                </div>
-            </div>
+            <PageHero
+                breadcrumbBack={{ label: 'Back to Dashboard', href: '/dashboard' }}
+                title="Password Strength Checker"
+                description="High-strength passwords are your first line of defense. Test your password resilience against modern brute-force techniques."
+                center
+                size="sm"
+            />
 
             <div className="max-w-2xl mx-auto px-6 mt-12">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">

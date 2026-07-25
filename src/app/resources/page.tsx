@@ -77,7 +77,7 @@ export default function ResourcesPage() {
                 description="Equip yourself with the latest guides, tools, and policy frameworks."
                 className="w-full text-center"
             />
-            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-12 -mt-4 mb-8">
+            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-12 -mt-0 mb-12">
                 <form onSubmit={handleSearch} className="max-w-xl mx-auto flex bg-white border border-gray-200 rounded-full p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary transition-all">
                     <div className="pl-4 flex items-center text-gray-400">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">

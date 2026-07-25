@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/Button';
-import { PageHeader } from '@/components/PageHeader';
 import { EmptyState } from '@/components/EmptyState';
 import { Skeleton } from '@/components/LoadingSkeleton';
 import { LinkifyText } from '@/components/LinkifyText';
@@ -56,23 +55,29 @@ export default function DashboardAlertsPage() {
 
     return (
         <div className="pb-20">
-            <PageHeader
-                title="Cybersecurity Alerts"
-                description="Real-time advisories on active threats and vulnerabilities."
-                actions={
-                    <div className="flex bg-gray-100 p-1 rounded-xl shadow-inner">
-                        {['all', 'high', 'medium', 'low'].map((s) => (
-                            <button
-                                key={s}
-                                onClick={() => setFilter(s)}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${filter === s ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                            >
-                                {s}
-                            </button>
-                        ))}
+            <section className="bg-white border-b border-gray-100">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 text-center">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">
+                        Cybersecurity Alerts
+                    </h1>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                        Real-time advisories on active threats and vulnerabilities.
+                    </p>
+                    <div className="flex justify-center">
+                        <div className="flex bg-gray-100 p-1 rounded-xl shadow-inner">
+                            {['all', 'high', 'medium', 'low'].map((s) => (
+                                <button
+                                    key={s}
+                                    onClick={() => setFilter(s)}
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${filter === s ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                }
-            />
+                </div>
+            </section>
 
             <div className="max-w-4xl mx-auto mt-12">
                 {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-8">{error}</div>}

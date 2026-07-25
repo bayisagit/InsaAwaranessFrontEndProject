@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FeatureCard } from './FeatureCard';
 import type { AwarenessTopic } from '@/lib/awarenessData';
 import { Button } from '@/components/Button';
+import { PageHero } from '@/components/PageHero';
 
 interface AwarenessTopicTemplateProps {
     topic: AwarenessTopic;
@@ -11,23 +12,20 @@ interface AwarenessTopicTemplateProps {
 export function AwarenessTopicTemplate({ topic }: AwarenessTopicTemplateProps) {
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Hero */}
-            <section className="bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 sm:py-24">
-                    <Link href="/awareness" className="text-xs font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-2 mb-6">
-                        ← Back to All Topics
-                    </Link>
+            <PageHero
+                breadcrumbBack={{ label: 'Back to All Topics', href: '/awareness' }}
+                title={
                     <div className="flex items-start gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center text-3xl shrink-0">
+                        <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-3xl shrink-0">
                             {topic.icon}
                         </div>
                         <div>
-                            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">{topic.title}</h1>
-                            <p className="text-lg text-gray-600 max-w-3xl leading-relaxed">{topic.description}</p>
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">{topic.title}</h1>
                         </div>
                     </div>
-                </div>
-            </section>
+                }
+                description={topic.description}
+            />
 
             {/* Feature Cards Grid */}
             <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16">

@@ -1158,6 +1158,27 @@ export const confirmPasswordReset = (uid: string, token: string, newPassword: st
         body: JSON.stringify({ uid, token, new_password: newPassword }),
     });
 
+// Social auth — POST /api/auth/social/google/
+export const loginWithGoogle = (credential: string) =>
+    apiFetch<LoginResponse>('/api/auth/social/google/', {
+        method: 'POST',
+        body: JSON.stringify({ credential }),
+    });
+
+// Social auth — POST /api/auth/social/github/
+export const loginWithGitHub = (code: string) =>
+    apiFetch<LoginResponse>('/api/auth/social/github/', {
+        method: 'POST',
+        body: JSON.stringify({ code }),
+    });
+
+// Logout — POST /api/auth/logout/
+export const logoutUser = (refresh: string) =>
+    apiFetch<{ detail: string }>('/api/auth/logout/', {
+        method: 'POST',
+        body: JSON.stringify({ refresh }),
+    });
+
 // ─────────────────────────────────────────────────────────────
 // Normalized Assessment System Helpers
 // ─────────────────────────────────────────────────────────────
