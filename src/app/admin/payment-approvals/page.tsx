@@ -278,7 +278,7 @@ export default function PaymentApprovalsPage() {
                                                             <button onClick={() => handleStatusUpdate(a.id, 'rejected')} className="px-2.5 py-1 bg-red-600 text-white rounded-md text-[10px] font-bold hover:bg-red-700 transition-colors uppercase tracking-wider">Reject</button>
                                                         </>
                                                     )}
-                                                    <button onClick={() => openEditModal(a)} className="text-secondary hover:text-primary font-medium text-xs transition-colors">Edit</button>
+                                                    <button onClick={() => openEditModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
                                                     <button onClick={() => setDeleteTarget({ isOpen: true, id: a.id })} className="text-red-500 hover:text-red-700 font-medium text-xs transition-colors">Delete</button>
                                                 </>
                                             )}

@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CyberSafe Nation",
+  title: "INSA Cyber Awareness",
   description: "National Cyber Security Awareness Creation Portal",
 };
 

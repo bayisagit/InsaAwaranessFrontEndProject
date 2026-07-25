@@ -284,7 +284,7 @@ export default function AdminAlertsPage() {
                                         {a.status !== 'published' && (
                                             <button onClick={() => handlePublish(a.id)} className="text-green-600 hover:text-green-800 font-medium mr-3 transition-colors">Publish</button>
                                         )}
-                                        <button onClick={() => openModal(a)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                        <button onClick={() => openModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
                                         <button onClick={() => handleDelete(a.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                     </td>
                                 </tr>

@@ -10,6 +10,7 @@ interface CloudinaryUploadProps {
     className?: string;
     value?: string;
     disabled?: boolean;
+    children?: React.ReactNode;
 }
 
 export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
@@ -19,7 +20,8 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     resourceType = 'auto',
     className = '',
     value = '',
-    disabled = false
+    disabled = false,
+    children
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -81,13 +83,42 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         }
     };
 
+    const triggerUpload = () => {
+        if (!isUploading && !disabled) fileInputRef.current?.click();
+    };
+
+    if (children) {
+        return (
+            <>
+                <div onClick={triggerUpload} className={`inline-block ${className}`}>
+                    {children}
+                </div>
+                {isUploading && (
+                    <div className="flex items-center gap-2 text-sm text-primary font-medium mt-1">
+                        <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                        <span>Uploading... {progress}%</span>
+                    </div>
+                )}
+                {error && <p className="text-xs text-red-500 font-medium mt-1">{error}</p>}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    disabled={isUploading || disabled}
+                    accept={resourceType === 'video' ? 'video/*' : resourceType === 'image' ? 'image/*' : '*'}
+                />
+            </>
+        );
+    }
+
     return (
         <div className={`space-y-2 ${className}`}>
             {label && <label className="block text-sm font-semibold text-gray-700">{label}</label>}
 
             <div className="relative">
                 <div
-                    onClick={() => !isUploading && !disabled && fileInputRef.current?.click()}
+                    onClick={triggerUpload}
                     className={`
                         w-full px-4 py-3 border-2 border-dashed rounded-xl ${!disabled && !isUploading ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}
                         transition-all duration-200 flex items-center justify-between

@@ -57,19 +57,24 @@ export default function DashboardPage() {
         attachment_url: ''
     });
     const [error, setError] = useState('');
+    const [showProfileModal, setShowProfileModal] = useState(false);
 
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) {
                 router.push('/login');
-            } else {
-                fetchDashboardData();
-                fetchMyRequests();
-                const interval = setInterval(fetchDashboardData, 60000); // Poll every minute
-                return () => clearInterval(interval);
+                return;
             }
+            if (user?.role === 'super_admin' || user?.role === 'org_admin' || user?.role === 'course_provider') {
+                router.push('/admin');
+                return;
+            }
+            fetchDashboardData();
+            fetchMyRequests();
+            const interval = setInterval(fetchDashboardData, 60000);
+            return () => clearInterval(interval);
         }
-    }, [isAuthenticated, isLoading, router]);
+    }, [isAuthenticated, isLoading, user, router]);
 
     const fetchDashboardData = async () => {
         setIsFetching(true);
@@ -119,11 +124,16 @@ export default function DashboardPage() {
         if (!user) return;
         setActionLoading(courseId);
         setError('');
-        const { error: err, status } = await enrollInCourse(courseId, user.id);
+        const { data, error: err, status } = await enrollInCourse(courseId, user.id);
+        if (status === 400 && (data as any)?.status === 'profile_required') {
+            setShowProfileModal(true);
+            setActionLoading(null);
+            return;
+        }
         if (err || (status !== 200 && status !== 201)) {
             setError(err || 'Failed to enroll. You might already be enrolled.');
         } else {
-            fetchDashboardData(); // Refresh data
+            fetchDashboardData();
         }
         setActionLoading(null);
     };
@@ -151,6 +161,13 @@ export default function DashboardPage() {
     };
 
     if (isLoading || !isAuthenticated) return null;
+    if (user && (user.role === 'super_admin' || user.role === 'org_admin' || user.role === 'course_provider')) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+            </div>
+        );
+    }
 
     const fullName = user?.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : user?.email || 'User';
 
@@ -196,7 +213,7 @@ export default function DashboardPage() {
                             {alerts[0]?.message || 'Phishing campaigns targeting public sector employees increased by 42%. Verify all communications immediately through the official portal.'}
                         </p>
                     </div>
-                    <Link href="/alerts">
+                    <Link href="/dashboard/alerts">
                         <button className="bg-white border border-orange-200 text-orange-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-50 shrink-0 mt-2 sm:mt-0">
                             View Briefing
                         </button>
@@ -537,6 +554,39 @@ export default function DashboardPage() {
                         </Button>
                     </div>
                 </form>
+            </Modal>
+
+            <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title="Complete Your Profile">
+                <div className="text-center py-4">
+                    <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Profile Required</h3>
+                    <p className="text-sm text-gray-600 mb-6 max-w-xs mx-auto">
+                        Please complete your background profile before enrolling in this course.
+                    </p>
+                    <div className="flex flex-col gap-3">
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                setShowProfileModal(false);
+                                router.push('/profile');
+                            }}
+                            className="w-full py-3"
+                        >
+                            Complete Profile
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setShowProfileModal(false)}
+                            className="w-full py-3"
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
             </Modal>
         </div>
     );

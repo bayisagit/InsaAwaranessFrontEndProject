@@ -188,13 +188,9 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
         <header className="w-full h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-12 sticky top-0 z-50">
             <div className="flex items-center gap-2">
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center border border-gray-200">
-                        <div className="w-4 h-4 rounded-full border-2 border-primary flex items-center justify-center">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                        </div>
-                    </div>
-                    <span className="font-bold text-lg text-gray-900 tracking-tight hidden sm:inline">CyberSafe Nation</span>
-                    <span className="font-bold text-lg text-gray-900 tracking-tight sm:hidden">CSN</span>
+                    <img src="/logo.png" alt="INSA" className="h-8 w-8 object-contain" />
+                    <span className="font-bold text-lg text-gray-900 tracking-tight hidden sm:inline">INSA Cyber Awareness</span>
+                    <span className="font-bold text-lg text-gray-900 tracking-tight sm:hidden">INSA</span>
                 </Link>
             </div>
 

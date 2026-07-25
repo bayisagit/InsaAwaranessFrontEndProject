@@ -96,32 +96,32 @@ export default function PasswordStrengthPage() {
                                     />
                                 ))}
                             </div>
-                            <p className="mt-3 text-sm text-gray-500 text-center italic">{strength.feedback}</p>
+                            <p className="mt-3 text-sm text-gray-700 text-center font-medium">{strength.feedback}</p>
                         </div>
 
                         <div className="pt-6 border-t border-gray-50 grid grid-cols-2 gap-4">
                             <div className={`p-4 rounded-xl border ${password.length >= 12 ? 'bg-green-50 border-green-100' : 'bg-gray-50 border-gray-100'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-gray-600">Length &gt; 12</span>
-                                    {password.length >= 12 && <span className="text-green-500">✓</span>}
+                                    {password.length >= 12 && <span className="text-green-600 font-bold text-base">✓</span>}
                                 </div>
                             </div>
                             <div className={`p-4 rounded-xl border ${/[A-Z]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-gray-50 border-gray-100'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-gray-600">Uppercase</span>
-                                    {/[A-Z]/.test(password) && <span className="text-green-500">✓</span>}
+                                    {/[A-Z]/.test(password) && <span className="text-green-600 font-bold text-base">✓</span>}
                                 </div>
                             </div>
                             <div className={`p-4 rounded-xl border ${/[0-9]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-gray-50 border-gray-100'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-gray-600">Numbers</span>
-                                    {/[0-9]/.test(password) && <span className="text-green-500">✓</span>}
+                                    {/[0-9]/.test(password) && <span className="text-green-600 font-bold text-base">✓</span>}
                                 </div>
                             </div>
                             <div className={`p-4 rounded-xl border ${/[^A-Za-z0-9]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-gray-50 border-gray-100'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-gray-600">Symbols</span>
-                                    {/[^A-Za-z0-9]/.test(password) && <span className="text-green-500">✓</span>}
+                                    {/[^A-Za-z0-9]/.test(password) && <span className="text-green-600 font-bold text-base">✓</span>}
                                 </div>
                             </div>
                         </div>

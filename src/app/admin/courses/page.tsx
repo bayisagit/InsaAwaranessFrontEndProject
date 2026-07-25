@@ -7,6 +7,7 @@ import Link from 'next/link';
 import {
     getCourses, createCourse, updateCourse, deleteCourse,
     getOrganizations, assignCourseProvider, assignCourseOrganization,
+    submitCourseForReview, approveCourse, rejectCourse, withdrawCourse,
     apiFetch, Course, Organization
 } from '@/lib/api';
 import { Button } from '@/components/Button';
@@ -23,6 +24,7 @@ const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 t
 const STATUS_COLORS: Record<string, string> = {
     published: 'bg-green-50 text-green-700',
     draft: 'bg-yellow-50 text-yellow-700',
+    submitted: 'bg-blue-50 text-blue-700',
     archived: 'bg-gray-100 text-gray-600',
 };
 
@@ -33,6 +35,7 @@ export default function AdminCoursesPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [orgs, setOrgs] = useState<Organization[]>([]);
     const [providers, setProviders] = useState<UserData[]>([]);
+    const [allUsers, setAllUsers] = useState<UserData[]>([]);
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState('');
 
@@ -45,6 +48,12 @@ export default function AdminCoursesPage() {
         title: '', description: '', organization: '', course_provider: '',
         language: 'en', level: 'Beginner', status: 'draft', is_active: true, thumbnail_url: ''
     });
+
+    // Submit confirm
+    const [submitConfirmId, setSubmitConfirmId] = useState<string | null>(null);
+
+    // Withdraw confirm
+    const [withdrawConfirmId, setWithdrawConfirmId] = useState<string | null>(null);
 
     // Delete confirm
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -64,8 +73,15 @@ export default function AdminCoursesPage() {
     const [assignOrgCourse, setAssignOrgCourse] = useState<Course | null>(null);
     const [selectedOrg, setSelectedOrg] = useState('');
 
+    // Rejection reason modal
+    const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+    const [rejectCourseId, setRejectCourseId] = useState<string | null>(null);
+    const [rejectionReason, setRejectionReason] = useState('');
+
     // Filters
-    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+    const [statusFilter, setStatusFilter] = useState<string>('');
+    const [orgFilter, setOrgFilter] = useState<string>('');
+    const [providerFilter, setProviderFilter] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState('');
 
     const fetchCourses = useCallback(async () => {
@@ -87,15 +103,22 @@ export default function AdminCoursesPage() {
         const { data } = await apiFetch('/api/auth/users/?page_size=200');
         let all: UserData[] = data?.results ?? (Array.isArray(data) ? data : []);
         setProviders(all.filter(u => u.role === 'course_provider'));
+        setAllUsers(all);
     }, []);
 
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) router.push('/login');
-            else if (!['super_admin', 'course_provider'].includes(user?.role || '')) router.push('/dashboard');
+            else if (!['super_admin', 'org_admin', 'course_provider'].includes(user?.role || '')) router.push('/dashboard');
             else { fetchCourses(); fetchOrgs(); fetchUsers(); }
         }
     }, [isAuthenticated, isLoading, user, router, fetchCourses, fetchOrgs, fetchUsers]);
+
+    useEffect(() => {
+        if (user?.role === 'org_admin' && user?.organization_id && orgs.length > 0) {
+            setOrgFilter(user.organization_id);
+        }
+    }, [user, orgs]);
 
     const openModal = (course?: Course) => {
         setActionError('');
@@ -220,32 +243,96 @@ export default function AdminCoursesPage() {
         setIsActionLoading(false);
     };
 
+    const handleSubmitConfirm = (id: string) => {
+        setSubmitConfirmId(id);
+    };
+
+    const handleSubmitForReview = async () => {
+        if (!submitConfirmId) return;
+        setIsActionLoading(true);
+        const { error: e } = await submitCourseForReview(submitConfirmId);
+        if (e) toast.error(e);
+        else { toast.success('Course submitted for review.'); fetchCourses(); }
+        setIsActionLoading(false);
+        setSubmitConfirmId(null);
+    };
+
+    const handleWithdrawConfirm = (id: string) => {
+        setWithdrawConfirmId(id);
+    };
+
+    const handleWithdraw = async () => {
+        if (!withdrawConfirmId) return;
+        setIsActionLoading(true);
+        const { error: e } = await withdrawCourse(withdrawConfirmId);
+        if (e) toast.error(e);
+        else { toast.success('Course submission withdrawn. It is now a draft again.'); fetchCourses(); }
+        setIsActionLoading(false);
+        setWithdrawConfirmId(null);
+    };
+
+    const handleApprove = async (id: string) => {
+        setIsActionLoading(true);
+        const { error: e } = await approveCourse(id);
+        if (e) toast.error(e);
+        else { toast.success('Course approved and published.'); fetchCourses(); }
+        setIsActionLoading(false);
+    };
+
+    const openRejectModal = (id: string) => {
+        setRejectCourseId(id);
+        setRejectionReason('');
+        setIsRejectModalOpen(true);
+    };
+
+    const handleRejectConfirm = async () => {
+        if (!rejectCourseId || !rejectionReason.trim()) return;
+        setIsActionLoading(true);
+        const { error: e } = await rejectCourse(rejectCourseId, rejectionReason);
+        if (e) toast.error(e);
+        else { toast.success('Course rejected.'); fetchCourses(); setIsRejectModalOpen(false); }
+        setIsActionLoading(false);
+    };
+
     if (isLoading || isFetching) return (
         <div className="flex justify-center items-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         </div>
     );
-    if (!user || !['super_admin', 'course_provider'].includes(user.role)) return null;
+    if (!user || !['super_admin', 'org_admin', 'course_provider'].includes(user.role)) return null;
 
     const filteredCourses = courses.filter(c => {
-        const matchesStatus = selectedStatuses.length === 0 || (c.status && selectedStatuses.includes(c.status));
+        const matchesStatus = !statusFilter || c.status === statusFilter;
+        const matchesOrg = !orgFilter || c.organization === orgFilter;
+        const matchesProvider = !providerFilter || c.course_provider === providerFilter;
         const matchesSearch = !searchQuery || c.title.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesStatus && matchesSearch;
+        return matchesStatus && matchesOrg && matchesProvider && matchesSearch;
     });
 
     const isSuperAdmin = user.role === 'super_admin';
+    const canManage = isSuperAdmin || user.role === 'course_provider';
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-1">Courses Management</h1>
                         <p className="text-gray-500">Create and manage cybersecurity training courses.</p>
                     </div>
+                    <div className="w-full lg:w-72 shrink-0">
+                        <input
+                            type="text"
+                            placeholder="Search course title…"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
             </div>
 
+            {canManage && (
             <ExpandableCreateSection
                 title="Add New Course"
                 isOpen={isCreateExpanded}
@@ -332,6 +419,7 @@ export default function AdminCoursesPage() {
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
                             <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
                                 <option value="draft">Draft</option>
+                                <option value="submitted">Submitted</option>
                                 <option value="published">Published</option>
                                 <option value="archived">Archived</option>
                             </select>
@@ -344,73 +432,86 @@ export default function AdminCoursesPage() {
                     </div>
                 </form>
             </ExpandableCreateSection>
+            )}
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10 flex flex-col lg:flex-row gap-8">
-                {/* Sidebar Filter */}
-                <div className="w-full lg:w-64 shrink-0">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-                        <div className="mb-6">
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Search</label>
-                            <input
-                                type="text"
-                                placeholder="Course title…"
-                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="mb-8">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Status</h3>
-                            <div className="space-y-3">
-                                {['draft', 'published', 'archived'].map(status => (
-                                    <label key={status} className="flex items-center gap-3 cursor-pointer group">
-                                        <input
-                                            type="checkbox"
-                                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                                            checked={selectedStatuses.includes(status)}
-                                            onChange={() => setSelectedStatuses(prev =>
-                                                prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
-                                            )}
-                                        />
-                                        <span className="text-sm text-gray-600 capitalize">{status}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {(selectedStatuses.length > 0 || searchQuery) && (
-                            <button
-                                onClick={() => { setSelectedStatuses([]); setSearchQuery(''); }}
-                                className="text-xs text-primary font-bold hover:text-primary-hover flex items-center gap-1"
-                            >
-                                ✕ Clear filters
-                            </button>
-                        )}
+            {/* Filter Bar */}
+            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
+                <div className="flex flex-wrap items-center gap-4 mb-6">
+                    <div className="flex items-center gap-2">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Status</label>
+                        <select
+                            className="rounded-md border border-gray-300 py-1.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                            value={statusFilter}
+                            onChange={e => setStatusFilter(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            <option value="draft">Draft</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="published">Published</option>
+                            <option value="archived">Archived</option>
+                        </select>
                     </div>
+                    {user?.role !== 'org_admin' && (
+                    <div className="flex items-center gap-2">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Organization</label>
+                        <select
+                            className="rounded-md border border-gray-300 py-1.5 px-2 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white min-w-[200px]"
+                            value={orgFilter}
+                            onChange={e => setOrgFilter(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            {orgs.map(o => (
+                                <option key={o.id} value={o.id}>{o.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    )}
+                    {isSuperAdmin && (
+                    <div className="flex items-center gap-2">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Provider</label>
+                        <select
+                            className="rounded-md border border-gray-300 py-1.5 px-2 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white max-w-[140px]"
+                            value={providerFilter}
+                            onChange={e => setProviderFilter(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            {allUsers.map(u => (
+                                <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.role})</option>
+                            ))}
+                        </select>
+                    </div>
+                    )}
+                    {(statusFilter || orgFilter || providerFilter || searchQuery) && (
+                        <button
+                            onClick={() => { setStatusFilter(''); setOrgFilter(''); setProviderFilter(''); setSearchQuery(''); }}
+                            className="text-xs text-primary font-bold hover:text-primary-hover"
+                        >
+                            ✕ Clear filters
+                        </button>
+                    )}
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1">
+                <div>
                     {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm text-gray-500">
                             <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
                                 <tr>
-                                    <th className="px-6 py-4">Title</th>
-                                    <th className="px-6 py-4">Level</th>
-                                    <th className="px-6 py-4">Language</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
+                                    <th className="px-4 py-3">Title</th>
+                                    <th className="px-4 py-3">Level</th>
+                                    <th className="px-4 py-3">Language</th>
+                                    <th className="px-4 py-3">Organization</th>
+                                    <th className="px-4 py-3">Status</th>
+                                    <th className="px-4 py-3 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                                 {filteredCourses.length === 0 ? (
-                                    <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">No courses found.</td></tr>
+                                    <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">No courses found.</td></tr>
                                 ) : filteredCourses.map(c => (
                                     <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900">
+                                        <td className="px-4 py-3 font-medium text-gray-900">
                                             <div className="flex items-center gap-3">
                                                 {c.thumbnail_url ? (
                                                     <img src={c.thumbnail_url} alt={c.title} className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0" />
@@ -424,42 +525,45 @@ export default function AdminCoursesPage() {
                                                 </Link>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 capitalize">{c.level || '—'}</td>
-                                        <td className="px-6 py-4 uppercase text-xs">{c.language || '—'}</td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-3 capitalize">{c.level || '—'}</td>
+                                        <td className="px-4 py-3 uppercase text-xs">{c.language || '—'}</td>
+                                        <td className="px-4 py-3 text-xs text-gray-600">
+                                            {c.organization ? (orgs.find(o => o.id === c.organization)?.name || c.organization) : '—'}
+                                        </td>
+                                        <td className="px-4 py-3">
                                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[c.status] || 'bg-gray-100 text-gray-600'}`}>
                                                 {c.status || 'draft'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                                        <td className="px-4 py-3 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                            {/* Publish/Archive quick actions */}
-                                            {isSuperAdmin && c.status === 'draft' && (
-                                                <button onClick={() => handleStatusUpdate(c.id, 'published')} className="text-green-600 hover:text-green-800 font-medium transition-colors" disabled={isActionLoading}>Publish</button>
+                                            {canManage && (
+                                                <button onClick={() => openModal(c)} className="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
                                             )}
-                                            {isSuperAdmin && c.status === 'published' && (
-                                                <button onClick={() => handleStatusUpdate(c.id, 'archived')} className="px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-700 rounded-md text-xs font-bold transition-colors" disabled={isActionLoading}>Archive</button>
+                                            {c.status === 'draft' && user.role === 'course_provider' && (
+                                                <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-md text-xs font-bold transition-colors">Submit</button>
                                             )}
-                                            {/* Course provider can publish their own draft */}
-                                            {user.role === 'course_provider' && c.status === 'draft' && c.course_provider === user.id && (
-                                                <button onClick={() => handleStatusUpdate(c.id, 'published')} className="px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-md text-xs font-bold transition-colors" disabled={isActionLoading}>Publish</button>
+                                            {c.status === 'submitted' && user.role === 'course_provider' && (
+                                                <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 rounded-md text-xs font-bold transition-colors">Withdraw</button>
                                             )}
-                                            <button onClick={() => openModal(c)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
-                                            {isSuperAdmin && (
+                                            {c.status === 'submitted' && isSuperAdmin && (
                                                 <>
-                                                    <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-md text-xs font-bold transition-colors">Provider</button>
-                                                    <button onClick={() => { setAssignOrgCourse(c); setSelectedOrg(c.organization || ''); setIsAssignOrgOpen(true); }} className="px-3 py-1.5 bg-teal-50 text-teal-600 hover:bg-teal-100 hover:text-teal-700 rounded-md text-xs font-bold transition-colors">Org</button>
+                                                <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-md text-xs font-bold transition-colors">Approve</button>
+                                                <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Reject</button>
                                                 </>
                                             )}
-                                            <button onClick={() => { router.push(`/admin/assessments?course=${c.id}`); }} className="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary-hover rounded-md text-xs font-bold transition-colors">Exam</button>
-                                            <button onClick={() => handleDelete(c.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                            {isSuperAdmin && (
+                                                <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-md text-xs font-bold transition-colors">Provider</button>
+                                            )}
+                                            {canManage && (
+                                                <button onClick={() => handleDelete(c.id)} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                            )}
                                             </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -527,8 +631,9 @@ export default function AdminCoursesPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
-                            <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
+                            <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading || (!!selectedCourse && selectedCourse.status === 'submitted')}>
                                 <option value="draft">Draft</option>
+                                <option value="submitted">Submitted</option>
                                 <option value="published">Published</option>
                                 <option value="archived">Archived</option>
                             </select>
@@ -573,6 +678,28 @@ export default function AdminCoursesPage() {
             </Modal>
 
             <ConfirmModal
+                isOpen={!!submitConfirmId}
+                onClose={() => setSubmitConfirmId(null)}
+                onConfirm={handleSubmitForReview}
+                title="Submit for Review"
+                message="Are you sure you want to submit this course for review? Once submitted, it will be locked and only a System Administrator can approve or reject it. You will not be able to edit it until the review is complete."
+                confirmText="Submit"
+                variant="warning"
+                isLoading={isActionLoading}
+            />
+
+            <ConfirmModal
+                isOpen={!!withdrawConfirmId}
+                onClose={() => setWithdrawConfirmId(null)}
+                onConfirm={handleWithdraw}
+                title="Withdraw Submission"
+                message="Are you sure you want to withdraw this course from review? It will be moved back to Draft so you can make changes. You will need to submit it again for review when ready."
+                confirmText="Withdraw"
+                variant="warning"
+                isLoading={isActionLoading}
+            />
+
+            <ConfirmModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleDeleteConfirm}
@@ -581,6 +708,27 @@ export default function AdminCoursesPage() {
                 confirmText="Delete"
                 isLoading={isActionLoading}
             />
+
+            {/* Rejection Reason Modal */}
+            <Modal isOpen={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} title="Reject Course">
+                <div className="space-y-4">
+                <p className="text-sm text-gray-600">Provide a reason for rejecting this course. The course provider will see this feedback.</p>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Rejection Reason <span className="text-red-500">*</span></label>
+                    <textarea
+                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 outline-none min-h-[100px] resize-y"
+                    placeholder="Explain why the course is being rejected…"
+                    value={rejectionReason}
+                    onChange={e => setRejectionReason(e.target.value)}
+                    disabled={isActionLoading}
+                    />
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                    <Button variant="outline" onClick={() => setIsRejectModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
+                    <Button variant="primary" onClick={handleRejectConfirm} disabled={!rejectionReason.trim() || isActionLoading}>{isActionLoading ? 'Rejecting…' : 'Reject'}</Button>
+                </div>
+                </div>
+            </Modal>
         </div>
     );
 }

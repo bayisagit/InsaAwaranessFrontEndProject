@@ -138,11 +138,11 @@ export function CertificatesManager({ lockedCourseId }: CertificatesManagerProps
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {cert.pdf_file ? (
-                                            <Button variant="ghost" size="sm" asChild className="h-8 text-primary hover:bg-primary/10">
-                                                <a href={cert.pdf_file} target="_blank" rel="noreferrer">
+                                            <a href={cert.pdf_file} target="_blank" rel="noreferrer">
+                                                <Button variant="ghost" size="sm" className="h-8 text-primary hover:bg-primary/10">
                                                     <Download className="size-4 mr-2" /> Download PDF
-                                                </a>
-                                            </Button>
+                                                </Button>
+                                            </a>
                                         ) : (
                                             <span className="text-xs text-gray-400">No PDF</span>
                                         )}

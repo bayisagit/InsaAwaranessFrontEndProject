@@ -59,6 +59,13 @@ export default function LoginPage() {
                 return;
             }
 
+            // ── next query param (return-to after login) ────────────────────
+            const nextParam = new URLSearchParams(window.location.search).get('next');
+            if (nextParam) {
+                router.push(nextParam);
+                return;
+            }
+
             // ── Role-based dashboard redirect ───────────────────────────────
             // Use dashboard_route from backend response when available, otherwise derive from role.
             if (data.dashboard_route) {

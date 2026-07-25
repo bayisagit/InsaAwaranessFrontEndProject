@@ -261,7 +261,7 @@ export default function AdminVideosPage() {
                                         <td className="px-6 py-4 text-center">{v.duration} min</td>
                                         <td className="px-6 py-4 text-center">{v.order}</td>
                                         <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            <button onClick={() => openModal(v)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                            <button onClick={() => openModal(v)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
                                             <button onClick={() => handleDelete(v.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                         </td>
                                     </tr>

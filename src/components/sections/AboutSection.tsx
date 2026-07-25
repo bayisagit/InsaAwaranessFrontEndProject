@@ -187,21 +187,29 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
             </section>
 
             {/* Bottom CTA */}
-            <section className="bg-primary py-20 px-6 text-center text-white">
-                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-6">
-                    &#128274;
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">Ready to secure your digital life?</h2>
-                <p className="text-red-100 max-w-2xl mx-auto mb-10 text-lg">
+            <section className="relative py-24 bg-secondary px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+                {/* Subtle gradient overlay to ensure contrast against background */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60 pointer-events-none" />
+                
+                <div className="relative z-10 max-w-3xl mx-auto">
+                <h2 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl drop-shadow-md">
+                    Ready to secure your digital life?
+                </h2>
+                <p className="mt-6 text-xl text-gray-100 max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
                     Join millions of other citizens who have taken the pledge to practice safe online behavior.
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/signup">
-                        <Button className="bg-white text-primary hover:bg-gray-100 hover:text-primary font-bold shadow-sm">Create Account</Button>
+                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link href="/signup" aria-label="Create a free account">
+                    <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                        Create Free Account
+                    </Button>
                     </Link>
-                    <Link href="/courses">
-                        <Button variant="outline" className="border-white text-white hover:bg-white/10">Explore Courses</Button>
+                    <Link href="/courses" aria-label="Explore cybersecurity resources">
+                    <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
+                        Explore Courses
+                    </Button>
                     </Link>
+                </div>
                 </div>
             </section>
         </div>

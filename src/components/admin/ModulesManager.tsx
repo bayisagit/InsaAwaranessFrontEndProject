@@ -65,7 +65,7 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) router.push('/login');
-            else if (user?.role !== 'super_admin' && user?.role !== 'course_provider') router.push('/dashboard');
+            else if (user?.role !== 'super_admin' && user?.role !== 'course_provider' && user?.role !== 'org_admin') router.push('/dashboard');
             else {
                 fetchCourses();
                 fetchModules();
@@ -215,8 +215,9 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
     };
 
     if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
-    if (!user || (user.role !== 'super_admin' && user.role !== 'course_provider')) return null;
+    if (!user || (user.role !== 'super_admin' && user.role !== 'course_provider' && user.role !== 'org_admin')) return null;
 
+    const canManage = user.role === 'super_admin' || user.role === 'course_provider';
 
     const filteredModules = modules.filter(m => {
         const matchesCourse = selectedCourses.length === 0 || selectedCourses.includes(m.course);
@@ -237,6 +238,7 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                 </div>
             )}
 
+            {canManage && (
             <ExpandableCreateSection
                 title="Add New Module"
                 isOpen={isCreateExpanded}
@@ -245,8 +247,8 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                 successTitle="Module Created Successfully!"
                 successDescription="What would you like to add to this module?"
                 nextSteps={createdModuleId ? [
-                    { label: 'Add a Lesson', href: `/admin/lessons?create=true&moduleId=${createdModuleId}`, icon: '📄' },
-                    { label: 'Add Module Quiz', href: `/admin/assessments?create=true&parent_type=module_quiz&moduleId=${createdModuleId}`, variant: 'secondary', icon: '📋' }
+                    { label: 'Add a Lesson', href: lockedCourseId ? `/admin/courses/${lockedCourseId}/lessons?create=true&moduleId=${createdModuleId}` : `/admin/lessons?create=true&moduleId=${createdModuleId}`, icon: '📄' },
+                    { label: 'Add Module Quiz', href: lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments?create=true&parent_type=module_quiz&moduleId=${createdModuleId}` : `/admin/assessments?create=true&parent_type=module_quiz&moduleId=${createdModuleId}`, variant: 'secondary', icon: '📋' }
                 ] : []}
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -307,6 +309,7 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                     </div>
                 </form>
             </ExpandableCreateSection>
+            )}
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10 flex flex-col lg:flex-row gap-8">
                 {/* Sidebar Filter */}
@@ -387,15 +390,19 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                                     ) : filteredModules.map(m => (
                                         <tr key={m.id} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4 font-medium text-gray-900">
-                                                <Link href={`/admin/modules/${m.id}`} className="hover:text-primary transition-colors hover:underline">
+                                                <Link href={lockedCourseId ? `/admin/courses/${lockedCourseId}/modules/${m.id}` : `/admin/modules/${m.id}`} className="hover:text-primary transition-colors hover:underline">
                                                     {m.title}
                                                 </Link>
                                             </td>
                                             {!lockedCourseId && <td className="px-6 py-4 text-gray-600 truncate max-w-[250px]">{getCourseName(m.course)}</td>}
                                             <td className="px-6 py-4 text-center">{m.order}</td>
                                             <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
+                                                {canManage && (
                                                 <button onClick={() => openModal(m)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                                )}
+                                                {canManage && (
                                                 <button onClick={() => handleDelete(m.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

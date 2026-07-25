@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useParams, useRouter } from 'next/navigation';
-import { apiFetch, getCourse } from '@/lib/api';
+import { getCourse } from '@/lib/api';
 import { ModulesManager } from '@/components/admin/ModulesManager';
 import { AssessmentsManager } from '@/components/admin/AssessmentsManager';
 
@@ -19,9 +19,11 @@ export default function CourseWorkspacePage() {
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) router.push('/login');
+            else if (user?.role !== 'super_admin' && user?.role !== 'org_admin' && user?.role !== 'course_provider')
+                router.push('/dashboard');
             else fetchCourseData();
         }
-    }, [isAuthenticated, isLoading, courseId]);
+    }, [isAuthenticated, isLoading, user, courseId]);
 
     const fetchCourseData = async () => {
         setIsFetching(true);
@@ -30,6 +32,7 @@ export default function CourseWorkspacePage() {
         setIsFetching(false);
     };
 
+    if (!user || !['super_admin', 'org_admin', 'course_provider'].includes(user.role)) return null;
     if (isLoading || isFetching) return <div className="p-8 text-center">Loading course workspace...</div>;
     if (!course) return <div className="p-8 text-center text-red-500">Course not found.</div>;
 

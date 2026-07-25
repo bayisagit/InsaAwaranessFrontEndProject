@@ -346,8 +346,8 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                     successTitle="Lesson Created Successfully!"
                     successDescription="What would you like to add next?"
                     nextSteps={createdLessonId ? [
-                        { label: 'Add Lesson Assessment', href: `/admin/assessments?create=true&parent_type=lesson_assessment&lessonId=${createdLessonId}`, icon: '📝' },
-                        { label: 'Add Global Resource', href: `/admin/resources?create=true`, variant: 'secondary', icon: '📎' }
+                        { label: 'Add Lesson Assessment', href: lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments?create=true&parent_type=lesson_assessment&lessonId=${createdLessonId}` : `/admin/assessments?create=true&parent_type=lesson_assessment&lessonId=${createdLessonId}`, icon: '📝' },
+                        ...(lockedCourseId ? [] : [{ label: 'Add Global Resource', href: `/admin/resources?create=true`, variant: 'secondary' as const, icon: '📎' as const }])
                     ] : []}
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -661,7 +661,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                 ) : filteredLessons.map(l => (
                                     <tr key={l.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4 font-medium text-gray-900">
-                                            <Link href={`/admin/lessons/${l.id}`} className="hover:text-primary transition-colors hover:underline">
+                                            <Link href={lockedCourseId && lockedModuleId ? `/admin/courses/${lockedCourseId}/modules/${lockedModuleId}/lessons/${l.id}` : `/admin/lessons/${l.id}`} className="hover:text-primary transition-colors hover:underline">
                                                 {l.title}
                                             </Link>
                                         </td>

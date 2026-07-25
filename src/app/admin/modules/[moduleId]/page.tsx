@@ -14,6 +14,7 @@ export default function ModuleWorkspacePage() {
     const moduleId = params.moduleId as string;
 
     const [moduleData, setModuleData] = useState<any>(null);
+    const [courseId, setCourseId] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {
@@ -26,7 +27,10 @@ export default function ModuleWorkspacePage() {
     const fetchModuleData = async () => {
         setIsFetching(true);
         const { data: mData } = await getModule(moduleId);
-        if (mData) setModuleData(mData);
+        if (mData) {
+            setModuleData(mData);
+            if (mData.course) setCourseId(mData.course);
+        }
         setIsFetching(false);
     };
 
@@ -47,7 +51,7 @@ export default function ModuleWorkspacePage() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <LessonsManager lockedModuleId={moduleId} />
+                <LessonsManager lockedModuleId={moduleId} lockedCourseId={courseId || undefined} />
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

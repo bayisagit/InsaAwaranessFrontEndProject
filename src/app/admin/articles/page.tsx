@@ -413,7 +413,7 @@ export default function AdminArticlesPage() {
                                             <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{getModuleName(a.module)}</td>
                                             <td className="px-6 py-4 text-center">{a.order}</td>
                                             <td className="px-6 py-4 text-right whitespace-nowrap">
-                                                <button onClick={() => handleOpenModal(a)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                                <button onClick={() => handleOpenModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
                                                 <button onClick={() => handleDeleteArticle(a.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                             </td>
                                         </tr>

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
+import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { getBackgroundProfile, updateBackgroundProfile, changePassword, clearTokens, BackgroundProfile } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -63,7 +64,7 @@ interface ProfileData extends Partial<BackgroundProfile> {}
 
 
 export default function ProfilePage() {
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, setUser, isAuthenticated, isLoading: authLoading } = useAuth();
     const router = useRouter();
 
     const [profileData, setProfileData] = useState<ProfileData>({});
@@ -92,7 +93,7 @@ export default function ProfilePage() {
                 gender: '', education_level: '', field_of_study: '', institution_name: '',
                 employment_status: '', employer_name: '', unemployment_description: '',
                 professional_experience: '', enrollment_motivation: '', referral_source: '',
-                is_information_confirmed: true
+                is_information_confirmed: true, profile_photo: ''
             });
         }
         setIsLoadingProfile(false);
@@ -205,11 +206,47 @@ export default function ProfilePage() {
                     <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-80 w-80 bg-blue-500/5 rounded-full blur-3xl"></div>
 
                     <div className="relative flex flex-col md:flex-row items-center gap-8">
-                        <div className="relative group">
-                            <div className="h-32 w-32 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-4xl font-bold shadow-2xl group-hover:scale-105 transition-transform duration-300">
-                                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                    <div className="relative group">
+                        {user?.profile_photo ? (
+                            <div className="h-32 w-32 rounded-3xl overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-300 relative">
+                                <img src={user?.profile_photo} alt="Profile" className="h-full w-full object-cover" />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                    <CloudinaryUpload
+                                        onUploadSuccess={async (url) => {
+                                            setProfileData(prev => ({ ...prev, profile_photo: url }));
+                                            await updateBackgroundProfile({ profile_photo: url });
+                                            setUser(prev => prev ? { ...prev, profile_photo: url } : prev);
+                                            toast.success('Profile photo updated successfully.');
+                                        }}
+                                        folder="profile-photos"
+                                    >
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-gray-800 p-2 rounded-full shadow-lg hover:bg-white cursor-pointer">
+                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        </div>
+                                    </CloudinaryUpload>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="h-32 w-32 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-4xl font-bold shadow-2xl group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
+                                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                    <CloudinaryUpload
+                                        onUploadSuccess={async (url) => {
+                                            setProfileData(prev => ({ ...prev, profile_photo: url }));
+                                            await updateBackgroundProfile({ profile_photo: url });
+                                            setUser(prev => prev ? { ...prev, profile_photo: url } : prev);
+                                            toast.success('Profile photo updated successfully.');
+                                        }}
+                                        folder="profile-photos"
+                                    >
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-gray-800 p-2 rounded-full shadow-lg hover:bg-white cursor-pointer">
+                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        </div>
+                                    </CloudinaryUpload>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                         <div className="text-center md:text-left">
                             <h1 className="text-4xl font-black text-gray-900 mb-3 tracking-tight">{user?.first_name} {user?.last_name}</h1>

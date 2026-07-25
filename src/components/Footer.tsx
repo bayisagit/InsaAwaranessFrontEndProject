@@ -7,10 +7,8 @@ export const Footer: React.FC = () => {
             <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="col-span-1 md:col-span-1">
                     <div className="flex items-center gap-2 mb-4">
-                        <div className="w-5 h-5 bg-primary rounded-sm flex items-center justify-center">
-                            <div className="w-2.5 h-2.5 bg-white rounded-full" />
-                        </div>
-                        <span className="font-bold text-gray-900">CyberSafe Nation</span>
+                        <img src="/logo.png" alt="INSA" className="h-6 w-6 object-contain" />
+                        <span className="font-bold text-gray-900">INSA Cyber Awareness</span>
                     </div>
                     <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
                         A government initiative dedicated to empowering citizens with the knowledge and tools to stay safe online. Together, we build a resilient digital nation.
@@ -64,7 +62,7 @@ export const Footer: React.FC = () => {
             </div>
 
             <div className="border-t border-gray-100 mx-6 lg:mx-12 py-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400">
-                <p>© 2025 CyberSafe Nation. All rights reserved. Official Government Website.</p>
+                <p>© 2025 INSA Cyber Awareness. All rights reserved. Official Government Website.</p>
                 <div className="mt-4 md:mt-0">
                     <span className="text-green-500 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block"></span>

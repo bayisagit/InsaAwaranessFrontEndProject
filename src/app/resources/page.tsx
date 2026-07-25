@@ -1,5 +1,5 @@
 'use client';
-
+import Link from 'next/link';
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiFetch, Resource } from '@/lib/api';
 import { Button } from '@/components/Button';
@@ -177,12 +177,31 @@ export default function ResourcesPage() {
                 )}
             </section>
 
-            <SupportCTA
-                title="Can't find what you're looking for?"
-                description="Our support team is available to help citizens and organizations find the right resources."
-                buttonText="Contact Support"
-                buttonHref="/contact"
-            />
+            <section className="relative py-24 bg-secondary px-4 sm:px-6 rounded-[40px] lg:px-8 text-center overflow-hidden">
+                {/* Subtle gradient overlay to ensure contrast against background */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/30 pointer-events-none" />
+                
+                <div className="relative z-10 max-w-3xl mx-auto">
+                <h2 className="text-4xl font-extrabold tracking-tight text-black/70 sm:text-5xl drop-shadow-md">
+                    Can't find what you're looking for?
+                </h2>
+                <p className="mt-6 text-xl text-black/70 max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
+                    Our support team is available to help citizens and organizations find the right resources.
+                </p>
+                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link href="/contact" aria-label="Create a free account">
+                    <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                        Contact Support
+                    </Button>
+                    </Link>
+                    <Link href="/courses" aria-label="Explore cybersecurity resources">
+                    <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
+                        Explore Courses
+                    </Button>
+                    </Link>
+                </div>
+                </div>
+            </section>
         </div>
     );
 }

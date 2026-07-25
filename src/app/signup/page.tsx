@@ -159,7 +159,7 @@ export default function SignupPage() {
                         </svg>
                         SECURE REGISTRATION
                     </span>
-                    <h1 className="text-4xl font-bold text-white leading-tight mb-2">
+                    <h1 className="text-4xl font-bold text-blue-400 leading-tight mb-2">
                         Forging a Safer <br />
                         <span className="text-primary">Digital Frontier.</span>
                     </h1>

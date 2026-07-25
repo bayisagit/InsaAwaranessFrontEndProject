@@ -119,11 +119,17 @@ export default function AdminTrainingRequestsPage() {
             return;
         }
 
+        if (!formData.attachment_url.trim()) {
+            setCreateError('A supporting document is required.');
+            setCreateLoading(false);
+            return;
+        }
+
         // Per API docs: DO NOT send organization, created_by, status, etc.
         // Backend auto-assigns the caller's primary organization.
-        const payload: { description: string; attachment_url?: string } = {
+        const payload: { description: string; attachment_url: string } = {
             description: formData.description.trim(),
-            ...(formData.attachment_url ? { attachment_url: formData.attachment_url } : {}),
+            attachment_url: formData.attachment_url.trim(),
         };
 
         const { error: err, status } = await createTrainingRequest(payload);
@@ -214,7 +220,7 @@ export default function AdminTrainingRequestsPage() {
 
                                 <div className="space-y-1">
                                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                        Supporting Document <span className="text-gray-400 font-normal">(optional)</span>
+                                        Supporting Document <span className="text-primary">*</span>
                                     </label>
                                     <CloudinaryUpload
                                         onUploadSuccess={(url) => setFormData(f => ({ ...f, attachment_url: url }))}

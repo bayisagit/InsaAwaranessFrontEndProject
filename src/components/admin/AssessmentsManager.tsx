@@ -91,7 +91,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
         if (filterType) params.parent_type = filterType;
         if (lockedLessonId) params.lesson = lockedLessonId;
         if (lockedModuleId) params.module = lockedModuleId;
-        if (lockedCourseId) params.course = lockedCourseId; // Assuming backend supports course filtering
+        if (lockedCourseId) params.course_scope = lockedCourseId;
         const { data, error: e } = await getAssessments(params);
         if (e) setError(e);
         else if (data?.results) { setAssessments(data.results); setTotalCount(data.count); }
@@ -106,7 +106,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) router.push('/login');
-            else if (!['super_admin', 'course_provider'].includes(user?.role || '')) router.push('/dashboard');
+            else if (!['super_admin', 'course_provider', 'org_admin'].includes(user?.role || '')) router.push('/dashboard');
             else { fetchAssessments(); fetchCourses(); }
         }
     }, [isAuthenticated, isLoading, user, router, fetchAssessments, fetchCourses]);
@@ -272,7 +272,9 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
     const filtered = assessments;
 
     if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>;
-    if (!user || !['super_admin', 'course_provider'].includes(user.role)) return null;
+    if (!user || !['super_admin', 'course_provider', 'org_admin'].includes(user.role)) return null;
+
+    const canManage = user.role === 'super_admin' || user.role === 'course_provider';
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
@@ -303,6 +305,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                     </div>
                 )}
 
+                {canManage && (
                 <ExpandableCreateSection
                     title="New Assessment"
                     isOpen={isCreateExpanded}
@@ -311,7 +314,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                     successTitle="Assessment Created Successfully!"
                     successDescription="Ready to add questions to your new assessment?"
                     nextSteps={createdAssessmentId ? [
-                        { label: 'Add Questions', href: `/admin/assessments/${createdAssessmentId}/questions?create=true`, icon: '❓' }
+                        { label: 'Add Questions', href: lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments/${createdAssessmentId}/questions?create=true` : `/admin/assessments/${createdAssessmentId}/questions?create=true`, icon: '❓' }
                     ] : []}
                 >
                     <form onSubmit={handleSubmit} className="space-y-5">
@@ -468,6 +471,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                         </div>
                     </form>
                 </ExpandableCreateSection>
+                )}
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     {isFetching ? (
@@ -507,9 +511,13 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                                         <td className="px-6 py-4 text-center font-medium text-gray-700">{a.passing_score}%</td>
                                         <td className="px-6 py-4 text-center text-gray-500">{a.time_limit_minutes > 0 ? `${a.time_limit_minutes} min` : '∞'}</td>
                                         <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
-                                            <Link href={`/admin/assessments/${a.id}/questions`} className="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-md text-xs font-bold transition-colors inline-block">Questions</Link>
+                                            <Link href={lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments/${a.id}/questions` : `/admin/assessments/${a.id}/questions`} className="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-md text-xs font-bold transition-colors inline-block">Questions</Link>
+                                            {canManage && (
                                             <button onClick={() => openEdit(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors inline-block">Edit</button>
+                                            )}
+                                            {canManage && (
                                             <button onClick={() => handleDelete(a)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors inline-block">Delete</button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

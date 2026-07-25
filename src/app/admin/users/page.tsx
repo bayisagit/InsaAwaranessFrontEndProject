@@ -36,6 +36,7 @@ export default function AdminUsersPage() {
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+    const [roleFilter, setRoleFilter] = useState<string>('');
 
     const [formData, setFormData] = useState({
         first_name: '',
@@ -349,12 +350,11 @@ export default function AdminUsersPage() {
                                     <option value="course_provider">Course Provider</option>
                                     <option value="org_admin">Organization Admin</option>
                                     <option value="super_admin">Super Admin</option>
-                                    <option value="user">Regular User</option>
+                                    <option value="public user">Public User</option>
                                 </select>
                             )}
-                        </div>
 
-                        {formData.role === 'user' && (
+                        {formData.role === 'public user' && (
                             <Input
                                 label="Password"
                                 type="password"
@@ -365,6 +365,8 @@ export default function AdminUsersPage() {
                                 disabled={isActionLoading}
                             />
                         )}
+
+                        </div>
 
                         <div className="pt-4 flex justify-end gap-3">
                             <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>
@@ -377,55 +379,80 @@ export default function AdminUsersPage() {
                     </form>
                 </ExpandableCreateSection>
 
+                {/* Filter Bar */}
+                <div className="flex flex-wrap items-center gap-4 mb-6">
+                    <div className="flex items-center gap-2">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Role</label>
+                        <select
+                            className="rounded-md border border-gray-300 py-1.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                            value={roleFilter}
+                            onChange={e => setRoleFilter(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            <option value="member">Member</option>
+                            <option value="course_provider">Course Provider</option>
+                            <option value="org_admin">Org Admin</option>
+                            <option value="super_admin">Super Admin</option>
+                            <option value="public user">Public User</option>
+                        </select>
+                    </div>
+                    {roleFilter && (
+                        <button
+                            onClick={() => setRoleFilter('')}
+                            className="text-xs text-primary font-bold hover:text-primary-hover"
+                        >
+                            ✕ Clear filter
+                        </button>
+                    )}
+                </div>
+
                 {/* User Table */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                    <table className="w-full text-left text-sm text-gray-500">
+                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                            <tr>
+                                <th className="px-4 py-3">Name</th>
+                                <th className="px-4 py-3">Email</th>
+                                <th className="px-4 py-3">Role</th>
+                                <th className="px-4 py-3">Status</th>
+                                <th className="px-4 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {users.length === 0 ? (
                                 <tr>
-                                    <th className="px-6 py-4">Name</th>
-                                    <th className="px-6 py-4">Email</th>
-                                    <th className="px-6 py-4">Role</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
+                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                                        No users found.
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {users.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                                            No users found.
+                            ) : (
+                                users.filter(u => u.id !== user?.id && (!roleFilter || u.role === roleFilter)).map((u) => (
+                                    <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                            {u.first_name} {u.last_name}
+                                        </td>
+                                        <td className="px-4 py-3">{u.email}</td>
+                                        <td className="px-4 py-3">
+                                            <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium border border-blue-100 uppercase">
+                                                {u.role ? u.role.replace('_', ' ') : 'USER'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium border ${u.is_active ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                                                {u.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                            <button onClick={() => openModal(u)} className="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                            <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                            </div>
                                         </td>
                                     </tr>
-                                ) : (
-                                    users.filter(u => u.id !== user?.id).map((u) => (
-                                        <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 font-medium text-gray-900">
-                                                {u.first_name} {u.last_name}
-                                            </td>
-                                            <td className="px-6 py-4">{u.email}</td>
-                                            <td className="px-6 py-4">
-                                                <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full text-xs font-medium border border-blue-100 uppercase">
-                                                    {u.role ? u.role.replace('_', ' ') : 'USER'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${u.is_active ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
-                                                    {u.is_active ? 'Active' : 'Inactive'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-right whitespace-nowrap">
-                                                <div className="flex items-center justify-end gap-2">
-                                                <button onClick={() => openModal(u)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors inline-block">Edit</button>
-                                                <button onClick={() => handleDeleteUser(u.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors inline-block">Delete</button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -490,7 +517,7 @@ export default function AdminUsersPage() {
                                 <option value="course_provider">Course Provider</option>
                                 <option value="org_admin">Organization Admin</option>
                                 <option value="super_admin">Super Admin</option>
-                                <option value="user">Regular User</option>
+                                <option value="public user">Public User</option>
                             </select>
                         )}
                     </div>

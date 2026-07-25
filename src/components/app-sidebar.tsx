@@ -136,7 +136,6 @@ const sidebarConfig: SidebarConfig = {
             { title: "Articles", url: "/admin/articles" },
           ]
         },
-        { title: "Certificates", url: "/certificates", icon: Award },
       ]
     },
     {
@@ -186,7 +185,6 @@ const sidebarConfig: SidebarConfig = {
         { title: "Courses", url: "/admin/courses", icon: GraduationCap },
         { title: "Reports", url: "/admin/reports", icon: BarChart },
         { title: "Campaigns", url: "/admin/campaigns", icon: Megaphone },
-        { title: "Certificates", url: "/certificates", icon: Award },
       ]
     }
   ],
@@ -224,40 +222,21 @@ const sidebarConfig: SidebarConfig = {
         },
       ]
     },
-    {
-      title: "Insights",
-      items: [
-        { title: "Certificates Issued", url: "/certificates", icon: Award },
-      ]
-    }
   ],
 
-  org_member: [
+  member: [
     {
       title: "Overview",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard }
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Alerts", url: "/dashboard/alerts", icon: Bell }
       ]
     },
     {
       title: "My Learning",
       items: [
-        { title: "My Courses", url: "/courses/enrolled", icon: GraduationCap },
-        { title: "Full Catalog", url: "/courses", icon: BookOpen },
-        { title: "My Certificates", url: "/certificates", icon: Award }
-      ]
-    },
-    {
-      title: "Security Tools",
-      items: [
-        { title: "Phishing Test", url: "/tools/phishing", icon: ShieldAlert },
-        { title: "Password Check", url: "/tools/password-strength", icon: Shield }
-      ]
-    },
-    {
-      title: "Support",
-      items: [
-        { title: "Training Requests", url: "/dashboard", icon: ClipboardList }
+        { title: "My Courses", url: "/dashboard/courses", icon: GraduationCap },
+        { title: "My Certificates", url: "/dashboard/certificates", icon: Award }
       ]
     }
   ],
@@ -266,22 +245,22 @@ const sidebarConfig: SidebarConfig = {
     {
       title: "Overview",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard }
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Alerts", url: "/dashboard/alerts", icon: Bell }
       ]
     },
     {
       title: "My Learning",
       items: [
-        { title: "My Courses", url: "/courses/enrolled", icon: GraduationCap },
-        { title: "Full Catalog", url: "/courses", icon: BookOpen },
-        { title: "My Certificates", url: "/certificates", icon: Award }
+        { title: "My Courses", url: "/dashboard/courses", icon: GraduationCap },
+        { title: "My Certificates", url: "/dashboard/certificates", icon: Award }
       ]
     },
     {
       title: "Security Tools",
       items: [
-        { title: "Phishing Test", url: "/tools/phishing", icon: ShieldAlert },
-        { title: "Password Check", url: "/tools/password-strength", icon: Shield }
+        { title: "Phishing Test", url: "/dashboard/tools/phishing", icon: ShieldAlert },
+        { title: "Password Check", url: "/dashboard/tools/password-strength", icon: Shield }
       ]
     }
   ]
@@ -322,16 +301,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="group/logo">
-              <Link href={homeUrl} className="flex items-center gap-3 w-full overflow-hidden">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:shrink-0!">
-                  <ShieldAlert className="size-4" />
+            <SidebarMenuButton size="lg" render={<Link href={homeUrl} />} className="group/logo">
+              <div className="flex items-center gap-3 w-full overflow-hidden">
+                <div className="flex aspect-square size-8 items-center justify-center group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:shrink-0!">
+                  <img src="/logo.png" alt="INSA" className="h-8 w-8 object-contain" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none transition-opacity group-data-[collapsible=icon]:hidden">
-                  <span className="font-semibold text-base">CyberSafe</span>
+                  <span className="font-semibold text-base">INSA Awareness</span>
                   <span className="text-xs text-muted-foreground">{portalName}</span>
                 </div>
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -352,26 +331,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     return (
                       <Collapsible
                         key={item.title}
-                        asChild
                         defaultOpen={isMenuExpanded(item.url, item.subItems)}
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton tooltip={item.title} isActive={isActive} className="flex items-center gap-3 w-full">
-                              <item.icon className="size-4 shrink-0" />
-                              <span>{item.title}</span>
-                              <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
-                            </SidebarMenuButton>
+                          <CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} isActive={isActive} />}>
+                            <item.icon className="size-4 shrink-0" />
+                            <span>{item.title}</span>
+                            <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="group-data-[collapsible=icon]:hidden">
                             <SidebarMenuSub>
                               {item.subItems!.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarMenuSubButton asChild isActive={pathname === subItem.url}>
-                                    <Link href={subItem.url} className="flex items-center gap-2 w-full">
-                                      <span>{subItem.title}</span>
-                                    </Link>
+                                  <SidebarMenuSubButton isActive={pathname === subItem.url} render={<Link href={subItem.url} />}>
+                                    <span>{subItem.title}</span>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}
@@ -385,11 +359,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   // No sub-items
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
-                        <Link href={item.url} className="flex items-center gap-3 w-full">
-                          <item.icon className="size-4 shrink-0" />
-                          <span>{item.title}</span>
-                        </Link>
+                      <SidebarMenuButton isActive={isActive} tooltip={item.title} render={<Link href={item.url} />}>
+                        <item.icon className="size-4 shrink-0" />
+                        <span>{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
@@ -405,19 +377,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Settings">
-              <Link href="/profile" className="flex items-center gap-3 w-full">
-                <Settings className="size-4 shrink-0" />
-                <span>Settings</span>
-              </Link>
+            <SidebarMenuButton tooltip="Settings" render={<Link href="/profile" />}>
+              <Settings className="size-4 shrink-0" />
+              <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Notifications">
-              <Link href="/notifications" className="flex items-center gap-3 w-full">
-                <Bell className="size-4 shrink-0" />
-                <span>Notifications</span>
-              </Link>
+            <SidebarMenuButton tooltip="Notifications" render={<Link href="/notifications" />}>
+              <Bell className="size-4 shrink-0" />
+              <span>Notifications</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>

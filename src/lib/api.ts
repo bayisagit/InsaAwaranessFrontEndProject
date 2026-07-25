@@ -26,6 +26,7 @@ export interface User {
     must_change_password: boolean;
     organization_id?: string;
     organization_name?: string;
+    profile_photo?: string;
 }
 
 // Background profile — matches GET/PUT/PATCH /api/auth/user/background-profile/
@@ -47,6 +48,7 @@ export interface BackgroundProfile {
     enrollment_motivation: string;
     referral_source: string;
     is_information_confirmed: boolean;
+    profile_photo?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -122,7 +124,8 @@ export interface Resource {
     file_url: string;
     category: string;
     audience: string;
-    status: 'draft' | 'published';
+    status: 'draft' | 'submitted' | 'published' | 'archived';
+    rejection_reason?: string;
     created_by: string;
     created_at: string;
     updated_at: string;
@@ -211,12 +214,14 @@ export interface Lesson {
     module: string;
     title: string;
     content_type: 'article' | 'video' | 'assessment' | 'image';
-    content?: string; // For articles
-    media_url?: string; // Standard for both video and image in some components
+    content?: string;
+    media_url?: string;
     video_url?: string;
     image_url?: string;
+    language?: string;
     assessment_type?: 'multiple_choice' | 'true_false' | 'matching' | 'multiple';
     assessment_payload?: AssessmentPayload | string;
+    passing_score?: number;
     order: number;
     created_at?: string;
     updated_at?: string;
@@ -234,7 +239,8 @@ export interface Course {
     language: string;
     level?: string;
     is_active?: boolean;
-    status: 'draft' | 'published' | 'archived';
+    status: 'draft' | 'submitted' | 'published' | 'archived';
+    rejection_reason?: string;
     thumbnail_url?: string;
     modules?: CourseModule[];
     course_exams?: Assessment[];
@@ -483,6 +489,71 @@ export interface AnalyticsDashboard {
     };
 }
 
+// ── Overview — GET /api/v1/analytics/overview/ ─────────────────────
+export interface AnalyticsOverview {
+    total_users: number;
+    total_organizations: number;
+    total_courses: number;
+    total_enrollments: number;
+    total_completions: number;
+    total_certificates: number;
+}
+
+// ── Growth data point ──────────────────────────────────────────────
+export interface GrowthDataPoint {
+    month: string;
+    count: number;
+}
+
+// ── Course Comparison — GET /api/v1/analytics/course-comparison/ ──
+export interface CourseComparisonItem {
+    course_id: string;
+    course_title: string;
+    total_enrolled: number;
+    completed: number;
+    completion_rate: number;
+    certificates_issued: number;
+}
+
+// ── Top Course ─────────────────────────────────────────────────────
+export interface TopCourseItem {
+    course_id: string;
+    course_title: string;
+    total_enrolled: number;
+    completed: number;
+    completion_rate: number;
+}
+
+// ── Course Workspace — GET /api/v1/analytics/courses/{id}/workspace/ ─
+export interface CourseWorkspaceAnalytics {
+    course_title: string;
+    summary: {
+        total_enrolled: number;
+        active: number;
+        completed: number;
+        completion_percentage: number;
+        certificates_issued: number;
+        average_assessment_score: number;
+    };
+    learner_overview: {
+        total: number;
+        completed: number;
+        in_progress: number;
+    };
+    enrollment_trend: GrowthDataPoint[];
+    completion_trend: GrowthDataPoint[];
+}
+
+// ── Enrollment Demographics — GET /api/v1/analytics/courses/{id}/enrollment-demographics/ ──
+export interface DemographicDistribution {
+    total_enrolled: number;
+    nationality: Record<string, number>;
+    employment_status: Record<string, number>;
+    age_range: Record<string, number>;
+    gender: Record<string, number>;
+    organizations: Record<string, number>;
+}
+
 // Token Management Hook-like helpers for local storage
 export const getTokens = (): Tokens | null => {
     if (typeof window === 'undefined') return null;
@@ -568,11 +639,29 @@ export async function apiFetch<T = any>(
         const data = isJson ? await response.json() : null;
 
         if (!response.ok) {
-            const errorMessage = data && typeof data === 'object'
-                ? Object.values(data).flat().join(', ')
-                : (data?.detail || data?.message || response.statusText);
+            let errorMessage = 'An error occurred';
+            if (data && typeof data === 'object') {
+                if (typeof data.detail === 'string' && data.detail) {
+                    errorMessage = data.detail;
+                } else if (typeof data.message === 'string' && data.message) {
+                    errorMessage = data.message;
+                } else {
+                    const parts: string[] = [];
+                    for (const [key, value] of Object.entries(data)) {
+                        if (['status', 'redirect', 'status_code'].includes(key)) continue;
+                        if (Array.isArray(value) && value.length > 0) {
+                            parts.push(`${key}: ${value.join(', ')}`);
+                        } else if (typeof value === 'string' && value) {
+                            parts.push(`${key}: ${value}`);
+                        }
+                    }
+                    if (parts.length > 0) errorMessage = parts.join('; ');
+                }
+            } else if (typeof data === 'string') {
+                errorMessage = data;
+            }
 
-            return { data, error: errorMessage || 'An error occurred', status: response.status };
+            return { data, error: errorMessage, status: response.status };
         }
 
         return { data, status: response.status };
@@ -646,8 +735,17 @@ export const updateResource = (id: string, data: Partial<Resource>, patch = true
 export const deleteResource = (id: string) =>
     apiFetch(`/api/v1/resources/${id}/`, { method: 'DELETE' });
 
-export const publishResource = (id: string, data: any) =>
-    apiFetch<Resource>(`/api/v1/resources/${id}/publish/`, { method: 'POST', body: JSON.stringify(data) });
+export const submitResourceForReview = (id: string) =>
+    apiFetch<Resource>(`/api/v1/resources/${id}/submit-for-review/`, { method: 'POST', body: JSON.stringify({}) });
+
+export const approveResource = (id: string) =>
+    apiFetch<Resource>(`/api/v1/resources/${id}/approve/`, { method: 'POST', body: JSON.stringify({}) });
+
+export const rejectResource = (id: string, rejection_reason: string) =>
+    apiFetch<Resource>(`/api/v1/resources/${id}/reject/`, { method: 'POST', body: JSON.stringify({ rejection_reason }) });
+
+export const withdrawResource = (id: string) =>
+    apiFetch<Resource>(`/api/v1/resources/${id}/withdraw/`, { method: 'POST', body: JSON.stringify({}) });
 
 // Training Requests
 export const getTrainingRequests = (params?: Record<string, any>) => {
@@ -966,6 +1064,19 @@ export const assignCourseOrganization = (courseId: string, organizationId: strin
         body: JSON.stringify({ organization_id: organizationId })
     });
 
+// Course approval workflow
+export const submitCourseForReview = (courseId: string) =>
+    apiFetch<Course>(`/api/v1/courses/${courseId}/submit-for-review/`, { method: 'POST', body: JSON.stringify({}) });
+
+export const approveCourse = (courseId: string) =>
+    apiFetch<Course>(`/api/v1/courses/${courseId}/approve/`, { method: 'POST', body: JSON.stringify({}) });
+
+export const rejectCourse = (courseId: string, rejection_reason: string) =>
+    apiFetch<Course>(`/api/v1/courses/${courseId}/reject/`, { method: 'POST', body: JSON.stringify({ rejection_reason }) });
+
+export const withdrawCourse = (courseId: string) =>
+    apiFetch<Course>(`/api/v1/courses/${courseId}/withdraw/`, { method: 'POST', body: JSON.stringify({}) });
+
 // Articles (legacy module content)
 export const getArticles = (params?: Record<string, any>) => {
     const query = params ? `?${new URLSearchParams(params).toString()}` : '';
@@ -1234,6 +1345,29 @@ export const getAuditLog = (id: string) =>
 // ──────────────────────────────────────────────────────────
 export const getAnalyticsDashboard = () =>
     apiFetch<AnalyticsDashboard>('/api/v1/analytics/dashboard/');
+
+export const getAnalyticsOverview = () =>
+    apiFetch<AnalyticsOverview>('/api/v1/analytics/overview/');
+
+export const getEnrollmentGrowth = (months = 12) =>
+    apiFetch<GrowthDataPoint[]>(`/api/v1/analytics/enrollment-growth/?months=${months}`);
+
+export const getUserGrowth = (months = 12) =>
+    apiFetch<GrowthDataPoint[]>(`/api/v1/analytics/user-growth/?months=${months}`);
+
+export const getCourseComparison = (params?: { course_ids?: string; date_from?: string; date_to?: string }) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<CourseComparisonItem[]>(`/api/v1/analytics/course-comparison/${query}`);
+};
+
+export const getTopCourses = (limit = 10) =>
+    apiFetch<TopCourseItem[]>(`/api/v1/analytics/top-courses/?limit=${limit}`);
+
+export const getCourseWorkspaceAnalytics = (courseId: string) =>
+    apiFetch<CourseWorkspaceAnalytics>(`/api/v1/analytics/courses/${courseId}/workspace/`);
+
+export const getCourseEnrollmentDemographics = (courseId: string) =>
+    apiFetch<DemographicDistribution>(`/api/v1/analytics/courses/${courseId}/enrollment-demographics/`);
 
 // ──────────────────────────────────────────────────────────
 // Email Verification

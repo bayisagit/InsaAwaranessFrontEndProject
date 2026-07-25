@@ -375,7 +375,7 @@ export default function AdminMembershipsPage() {
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right whitespace-nowrap">
-                                        <button onClick={() => openModal(m)} className="text-secondary hover:text-primary font-medium mr-3 transition-colors">Edit</button>
+                                        <button onClick={() => openModal(m)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
                                         <button onClick={() => handleDelete(m.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                     </td>
                                 </tr>

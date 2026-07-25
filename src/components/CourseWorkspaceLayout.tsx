@@ -2,11 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, SidebarFooter } from '@/components/ui/sidebar';
-import { BookOpen, Layers, FileText, CheckSquare, Paperclip, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { BookOpen, Layers, FileText, CheckSquare, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert, User, LogOut, BarChart3, PieChart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
 import { apiFetch, getModule, getLesson, getAssessment } from '@/lib/api';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { useAuth } from '@/context/AuthContext';
 
 interface CourseWorkspaceLayoutProps {
@@ -16,29 +27,89 @@ interface CourseWorkspaceLayoutProps {
 export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) {
     const pathname = usePathname() || '';
     const params = useParams();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const handleLogout = () => setIsLogoutModalOpen(true);
     const [courseId, setCourseId] = useState<string | null>(null);
     const [courseName, setCourseName] = useState<string>('Loading...');
     const [moduleName, setModuleName] = useState<string | null>(null);
+    const [moduleId, setModuleId] = useState<string | null>(null);
     const [lessonName, setLessonName] = useState<string | null>(null);
+    const [lessonId, setLessonId] = useState<string | null>(null);
 
     // Resolve hierarchy based on current URL
     useEffect(() => {
         const resolveContext = async () => {
             let resolvedCourseId = null;
+            let resolvedModuleId = null;
+            let resolvedLessonId = null;
+
             if (pathname.startsWith('/admin/courses/') && params.courseId) {
-                resolvedCourseId = params.courseId as string;
-                if (resolvedCourseId !== 'create') {
+                const cId = params.courseId as string;
+                if (cId !== 'create') {
+                    resolvedCourseId = cId;
                     setCourseId(resolvedCourseId);
                     const { data } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
                     if (data?.title) setCourseName(data.title);
                 }
+
+                if (params.moduleId) {
+                    const mId = params.moduleId as string;
+                    if (mId !== 'create') {
+                        resolvedModuleId = mId;
+                        const { data: moduleData } = await getModule(mId);
+                        if (moduleData) {
+                            setModuleName(moduleData.title);
+                            setModuleId(mId);
+                            resolvedCourseId = moduleData.course;
+                            setCourseId(resolvedCourseId);
+                            const { data: courseData } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
+                            if (courseData?.title) setCourseName(courseData.title);
+                        }
+                    }
+                }
+
+                if (params.moduleId && params.lessonId) {
+                    const lId = params.lessonId as string;
+                    if (lId !== 'create') {
+                        resolvedLessonId = lId;
+                        const { data: lessonData } = await getLesson(lId);
+                        if (lessonData) {
+                            setLessonName(lessonData.title);
+                            setLessonId(lId);
+                        }
+                    }
+                } else if (params.lessonId && !params.moduleId) {
+                    const lId = params.lessonId as string;
+                    if (lId !== 'create') {
+                        resolvedLessonId = lId;
+                        const { data: lessonData } = await getLesson(lId);
+                        if (lessonData) {
+                            setLessonName(lessonData.title);
+                            setLessonId(lId);
+                            const { data: moduleData } = await getModule(lessonData.module);
+                            if (moduleData) {
+                                setModuleName(moduleData.title);
+                                setModuleId(lessonData.module);
+                                resolvedCourseId = moduleData.course;
+                                setCourseId(resolvedCourseId);
+                                const { data: courseData } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
+                                if (courseData?.title) setCourseName(courseData.title);
+                            }
+                        }
+                    }
+                }
+
+                if (!params.moduleId) setModuleId(null);
+                if (!params.lessonId) setLessonId(null);
             } else if (pathname.startsWith('/admin/modules/') && params.moduleId) {
-                const moduleId = params.moduleId as string;
-                if (moduleId !== 'create') {
-                    const { data: moduleData } = await getModule(moduleId);
+                const mId = params.moduleId as string;
+                if (mId !== 'create') {
+                    resolvedModuleId = mId;
+                    const { data: moduleData } = await getModule(mId);
                     if (moduleData) {
                         setModuleName(moduleData.title);
+                        setModuleId(mId);
                         resolvedCourseId = moduleData.course;
                         setCourseId(resolvedCourseId);
                         const { data } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
@@ -46,14 +117,17 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     }
                 }
             } else if (pathname.startsWith('/admin/lessons/') && params.lessonId) {
-                const lessonId = params.lessonId as string;
-                if (lessonId !== 'create') {
-                    const { data: lessonData } = await getLesson(lessonId);
+                const lId = params.lessonId as string;
+                if (lId !== 'create') {
+                    resolvedLessonId = lId;
+                    const { data: lessonData } = await getLesson(lId);
                     if (lessonData) {
                         setLessonName(lessonData.title);
+                        setLessonId(lId);
                         const { data: moduleData } = await getModule(lessonData.module);
                         if (moduleData) {
                             setModuleName(moduleData.title);
+                            setModuleId(lessonData.module);
                             resolvedCourseId = moduleData.course;
                             setCourseId(resolvedCourseId);
                             const { data } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
@@ -71,8 +145,9 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
         { title: "Modules", url: `/admin/courses/${courseId}/modules`, icon: Layers },
         { title: "Lessons", url: `/admin/courses/${courseId}/lessons`, icon: FileText },
         { title: "Assessments", url: `/admin/courses/${courseId}/assessments`, icon: CheckSquare },
-        { title: "Resources", url: `/admin/courses/${courseId}/resources`, icon: Paperclip },
         { title: "Certificates", url: `/admin/courses/${courseId}/certificates`, icon: Award },
+        { title: "Analytics", url: `/admin/courses/${courseId}/analytics`, icon: BarChart3 },
+        { title: "Demographics", url: `/admin/courses/${courseId}/demographics`, icon: PieChart },
         { title: "Settings", url: `/admin/courses/${courseId}/settings`, icon: Settings },
     ];
 
@@ -102,14 +177,13 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                 <SidebarContent className="px-2 py-4">
                     <SidebarMenu>
                         {courseId && navItems.map((item) => {
-                            const isActive = pathname === item.url;
+                            const isOverview = item.url === `/admin/courses/${courseId}`;
+                            const isActive = isOverview ? pathname === item.url : pathname.startsWith(item.url + '/') || pathname === item.url;
                             return (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.title} className="hover:bg-gray-100">
-                                        <Link href={item.url} className="flex items-center gap-3 w-full">
-                                            <item.icon className="size-4 shrink-0" />
-                                            <span>{item.title}</span>
-                                        </Link>
+                                    <SidebarMenuButton isActive={isActive} tooltip={item.title} render={<Link href={item.url} />} className="hover:bg-gray-100">
+                                        <item.icon className="size-4 shrink-0" />
+                                        <span>{item.title}</span>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             )
@@ -130,26 +204,72 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                         <Link href={`/admin/courses/${courseId}`} className={`hover:text-primary transition-colors ${!moduleName ? 'text-gray-900' : ''}`}>
                             {courseName}
                         </Link>
-                        {moduleName && (
+                        {moduleName && moduleId && (
                             <>
                                 <span className="mx-2 text-gray-300">/</span>
-                                <span className={`${!lessonName ? 'text-gray-900' : ''}`}>{moduleName}</span>
+                                <Link
+                                    href={courseId ? `/admin/courses/${courseId}/modules/${moduleId}` : `/admin/modules/${moduleId}`}
+                                    className={`hover:text-primary transition-colors ${!lessonName ? 'text-gray-900' : ''}`}
+                                >
+                                    {moduleName}
+                                </Link>
                             </>
                         )}
-                        {lessonName && (
+                        {lessonName && lessonId && (
                             <>
                                 <span className="mx-2 text-gray-300">/</span>
-                                <span className="text-gray-900">{lessonName}</span>
+                                <Link
+                                    href={courseId && moduleId ? `/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}` : `/admin/lessons/${lessonId}`}
+                                    className="text-gray-900 hover:text-primary transition-colors"
+                                >
+                                    {lessonName}
+                                </Link>
                             </>
                         )}
                     </div>
                     
-                    <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8 border border-gray-200">
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
-                                {user?.first_name?.[0] || 'U'}
-                            </AvatarFallback>
-                        </Avatar>
+                    <div className="flex items-center gap-3 ml-auto">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Button variant="ghost" className="relative h-9 w-9 rounded-full ml-1">
+                                    <Avatar className="h-9 w-9 border border-gray-200">
+                                        {user?.profile_photo ? (
+                                            <AvatarImage src={user.profile_photo} alt="Profile" className="h-full w-full object-cover rounded-full" />
+                                        ) : null}
+                                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+                                            {user?.first_name?.[0] || 'U'}
+                                            {user?.last_name?.[0] || ''}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end">
+                                <DropdownMenuGroup>
+                                    <DropdownMenuLabel className="font-normal">
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">{user?.first_name || 'User'} {user?.last_name || ''}</p>
+                                            <p className="text-xs leading-none text-muted-foreground">
+                                                {user?.email || 'user@example.com'}
+                                            </p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem>
+                                        <Link href="/profile" className="flex flex-row items-center w-full cursor-pointer">
+                                            <User className="mr-2 h-4 w-4 text-muted-foreground" />
+                                            <span>Profile</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleLogout} className="flex flex-row items-center w-full text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer">
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Log out</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </header>
                 
@@ -157,6 +277,15 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     {children}
                 </div>
             </SidebarInset>
+
+            <ConfirmModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={() => { setIsLogoutModalOpen(false); logout(); }}
+                title="Log out"
+                message="Are you sure you want to log out?"
+                confirmText="Log out"
+            />
         </SidebarProvider>
     );
 }
