@@ -747,6 +747,21 @@ export const rejectResource = (id: string, rejection_reason: string) =>
 export const withdrawResource = (id: string) =>
     apiFetch<Resource>(`/api/v1/resources/${id}/withdraw/`, { method: 'POST', body: JSON.stringify({}) });
 
+export const downloadResourceFile = async (id: string): Promise<Blob | null> => {
+    const tokens = getTokens();
+    const headers: Record<string, string> = {};
+    if (tokens?.access) {
+        headers['Authorization'] = `Bearer ${tokens.access}`;
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/resources/${id}/download/`, { headers });
+        if (!response.ok) return null;
+        return await response.blob();
+    } catch {
+        return null;
+    }
+};
+
 // Training Requests
 export const getTrainingRequests = (params?: Record<string, any>) => {
     const query = params ? `?${new URLSearchParams(params).toString()}` : '';
@@ -1159,10 +1174,10 @@ export const confirmPasswordReset = (uid: string, token: string, newPassword: st
     });
 
 // Social auth — POST /api/auth/social/google/
-export const loginWithGoogle = (credential: string) =>
+export const loginWithGoogle = (accessToken: string) =>
     apiFetch<LoginResponse>('/api/auth/social/google/', {
         method: 'POST',
-        body: JSON.stringify({ credential }),
+        body: JSON.stringify({ access_token: accessToken }),
     });
 
 // Social auth — POST /api/auth/social/github/
