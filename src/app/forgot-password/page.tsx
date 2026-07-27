@@ -41,8 +41,8 @@ export default function ForgotPasswordPage() {
     // ── Success / Confirmation state ──────────────────────────────────────────
     if (pageState === 'sent') {
         return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
-                <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
+                <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                     {/* Success Icon */}
                     <div className="flex justify-center mb-6">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -52,14 +52,14 @@ export default function ForgotPasswordPage() {
                         </div>
                     </div>
 
-                    <h1 className="text-2xl font-bold text-gray-900 mb-3">Check Your Email</h1>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <h1 className="text-2xl font-bold text-foreground mb-3">Check Your Email</h1>
+                    <p className="text-sm text-muted-foreground mb-2">
                         We&apos;ve sent a password reset link to:
                     </p>
-                    <p className="text-sm font-bold text-gray-900 bg-gray-50 px-4 py-2 rounded-lg mb-6 border border-gray-100">
+                    <p className="text-sm font-bold text-foreground bg-muted px-4 py-2 rounded-xl mb-6 border border-border">
                         {email}
                     </p>
-                    <p className="text-xs text-gray-500 mb-8 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mb-8 leading-relaxed">
                         Click the link in the email to reset your password. The link expires in{' '}
                         <strong>3 days</strong>. Check your spam folder if you don&apos;t see it.
                     </p>
@@ -74,8 +74,8 @@ export default function ForgotPasswordPage() {
                         </button>
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-gray-100">
-                        <p className="text-sm text-gray-600">
+                    <div className="mt-8 pt-6 border-t border-border">
+                        <p className="text-sm text-muted-foreground">
                             Remembered your password?{' '}
                             <Link href="/login" className="font-semibold text-primary hover:underline">
                                 Sign in
@@ -89,8 +89,8 @@ export default function ForgotPasswordPage() {
 
     // ── Form state ────────────────────────────────────────────────────────────
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
-            <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
+            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                 {/* Icon */}
                 <div className="flex justify-center mb-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -100,14 +100,14 @@ export default function ForgotPasswordPage() {
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h1>
-                <p className="text-sm font-medium text-gray-600 mb-8 max-w-xs mx-auto">
+                <h1 className="text-3xl font-bold text-foreground mb-2">Forgot Password?</h1>
+                <p className="text-sm font-medium text-muted-foreground mb-8 max-w-xs mx-auto">
                     Enter your registered email and we&apos;ll send you a secure reset link.
                 </p>
 
                 <form className="space-y-5 text-left" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-start gap-2">
+                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-start gap-2">
                             <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
                         autoComplete="email"
                     />
 
-                    <Button variant="secondary" type="submit" fullWidth className="py-3 rounded-lg" disabled={isLoading}>
+                    <Button variant="secondary" type="submit" fullWidth className="py-3 rounded-xl" disabled={isLoading}>
                         {isLoading ? (
                             <span className="flex items-center gap-2">
                                 <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
                     </Button>
                 </form>
 
-                <p className="mt-8 text-sm text-gray-600">
+                <p className="mt-8 text-sm text-muted-foreground">
                     Remembered your password?{' '}
                     <Link href="/login" className="font-semibold text-primary hover:underline">
                         Sign in

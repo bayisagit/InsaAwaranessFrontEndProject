@@ -83,7 +83,7 @@ export default function ChangePasswordPage() {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-muted">
                 <svg className="animate-spin h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -93,17 +93,17 @@ export default function ChangePasswordPage() {
     }
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
-            <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
+            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border">
 
                 {/* Forced-change banner */}
                 {user?.must_change_password && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+                    <div className="bg-amber-500/10 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
                         <svg className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                         <div>
-                            <p className="text-sm font-bold text-amber-800">Password change required</p>
+                            <p className="text-sm font-bold text-amber-500">Password change required</p>
                             <p className="text-xs text-amber-700 mt-1">
                                 Your account requires a password change before you can access the platform. Please set a new secure password below.
                             </p>
@@ -120,15 +120,15 @@ export default function ChangePasswordPage() {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Change Password</h1>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <h1 className="text-2xl font-bold text-foreground">Change Password</h1>
+                    <p className="text-sm text-muted-foreground mt-2">
                         {user?.first_name ? `Hi ${user.first_name}, set` : 'Set'} a new secure password for your account.
                     </p>
                 </div>
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-start gap-2">
+                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-start gap-2">
                             <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -164,7 +164,7 @@ export default function ChangePasswordPage() {
                         />
                         {newPassword && (
                             <div className="flex items-center gap-2 mt-1 px-1">
-                                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="flex-1 h-1.5 bg-muted/50 rounded-full overflow-hidden">
                                     <div className={`h-full ${passStrength.color} ${passStrength.w} transition-all duration-300`}></div>
                                 </div>
                                 <span className={`text-[10px] font-bold ${passStrength.color.replace('bg-', 'text-')}`}>{passStrength.label}</span>
@@ -185,8 +185,8 @@ export default function ChangePasswordPage() {
                     />
 
                     {/* Password requirements */}
-                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl">
-                        <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-500">
+                    <div className="bg-muted border border-border p-4 rounded-xl">
+                        <div className="grid grid-cols-2 gap-y-2 text-xs text-muted-foreground">
                             {[
                                 { test: newPassword.length >= 8, label: '8+ characters' },
                                 { test: /[A-Z]/.test(newPassword), label: '1 uppercase letter' },
@@ -201,7 +201,7 @@ export default function ChangePasswordPage() {
                         </div>
                     </div>
 
-                    <Button variant="secondary" type="submit" fullWidth className="py-3 rounded-lg mt-2" disabled={isLoading}>
+                    <Button variant="secondary" type="submit" fullWidth className="py-3 rounded-xl mt-2" disabled={isLoading}>
                         {isLoading ? (
                             <span className="flex items-center gap-2">
                                 <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">

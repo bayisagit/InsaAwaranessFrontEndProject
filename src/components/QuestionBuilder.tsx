@@ -78,11 +78,11 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
 
             <div className="space-y-6">
                 {value.map((q, index) => (
-                    <div key={q.id} className="p-6 bg-gray-50 rounded-2xl border border-gray-200 relative group">
+                    <div key={q.id} className="p-6 bg-muted rounded-2xl border border-border relative group">
                         <button
                             type="button"
                             onClick={() => removeQuestion(q.id)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors"
+                            className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors"
                         >
                             ✕
                         </button>
@@ -95,9 +95,9 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Question Text</label>
+                                <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Question Text</label>
                                 <textarea
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                                    className="w-full px-4 py-2 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none"
                                     value={q.question}
                                     onChange={(e) => updateQuestion(q.id, { question: e.target.value })}
                                     placeholder="Enter your question here..."
@@ -108,7 +108,7 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
                             {/* Multiple Choice Options */}
                             {(q.type === 'multiple' || q.type === 'multiple_choice') && q.options && (
                                 <div className="space-y-3">
-                                    <label className="block text-xs font-bold text-gray-500 uppercase">Options & Correct Answer</label>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase">Options & Correct Answer</label>
                                     {q.options.map((opt) => (
                                         <div key={opt.id} className="flex items-center gap-3">
                                             <input
@@ -120,7 +120,7 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
                                             />
                                             <input
                                                 type="text"
-                                                className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm"
+                                                className="flex-1 px-3 py-1.5 border border-border rounded-xl text-sm"
                                                 value={opt.label}
                                                 onChange={(e) => updateOption(q.id, opt.id, e.target.value)}
                                                 placeholder={`Option ${opt.id.toUpperCase()}`}
@@ -150,14 +150,14 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
                                     <button
                                         type="button"
                                         onClick={() => updateQuestion(q.id, { correct_answer: true })}
-                                        className={`flex-1 py-2 rounded-lg border font-bold text-sm transition-all ${q.correct_answer === true ? 'border-primary bg-primary text-white' : 'border-gray-200 text-gray-500 hover:border-primary/50'}`}
+                                        className={`flex-1 py-2 rounded-xl border font-bold text-sm transition-all ${q.correct_answer === true ? 'border-primary bg-primary text-white' : 'border-border text-muted-foreground hover:border-primary/50'}`}
                                     >
                                         True
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => updateQuestion(q.id, { correct_answer: false })}
-                                        className={`flex-1 py-2 rounded-lg border font-bold text-sm transition-all ${q.correct_answer === false ? 'border-primary bg-primary text-white' : 'border-gray-200 text-gray-500 hover:border-primary/50'}`}
+                                        className={`flex-1 py-2 rounded-xl border font-bold text-sm transition-all ${q.correct_answer === false ? 'border-primary bg-primary text-white' : 'border-border text-muted-foreground hover:border-primary/50'}`}
                                     >
                                         False
                                     </button>
@@ -177,16 +177,16 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
                                 });
                                 return (
                                     <div className="space-y-3">
-                                        <label className="block text-xs font-bold text-gray-500 uppercase">Term-Definition Pairs</label>
+                                        <label className="block text-xs font-bold text-muted-foreground uppercase">Term-Definition Pairs</label>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="text-[10px] font-bold text-gray-400 uppercase">Term</div>
-                                            <div className="text-[10px] font-bold text-gray-400 uppercase">Definition</div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase">Term</div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase">Definition</div>
                                         </div>
                                         {pairs.map((pair) => (
                                             <div key={pair._id} className="flex gap-2">
                                                 <input
                                                     type="text"
-                                                    className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm"
+                                                    className="flex-1 px-3 py-1.5 border border-border rounded-xl text-sm"
                                                     value={pair.term}
                                                     onChange={(e) => {
                                                         const newAnswers = { ...answerMap };
@@ -199,7 +199,7 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
                                                 />
                                                 <input
                                                     type="text"
-                                                    className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm"
+                                                    className="flex-1 px-3 py-1.5 border border-border rounded-xl text-sm"
                                                     value={pair.definition}
                                                     onChange={(e) => {
                                                         const newAnswers = { ...answerMap, [pair.term]: e.target.value };
@@ -238,8 +238,8 @@ export function QuestionBuilder({ value, onChange, mode = 'certificate' }: Quest
                 ))}
 
                 {value.length === 0 && (
-                    <div className="py-12 text-center border-2 border-dashed border-gray-200 rounded-2xl">
-                        <p className="text-gray-400 text-sm">No questions added yet. Start by choosing a type above.</p>
+                    <div className="py-12 text-center border-2 border-dashed border-border rounded-2xl">
+                        <p className="text-muted-foreground text-sm">No questions added yet. Start by choosing a type above.</p>
                     </div>
                 )}
             </div>

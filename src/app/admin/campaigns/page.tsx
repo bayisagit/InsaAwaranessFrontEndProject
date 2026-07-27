@@ -17,7 +17,7 @@ interface Organization {
     name: string;
 }
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
 export default function AdminCampaignsPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -153,13 +153,13 @@ export default function AdminCampaignsPage() {
     if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin')) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             <PageHeader
                 title="Campaigns Management"
                 description="Manage national cybersecurity awareness campaigns."
             />
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
-                {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="flex-1">
@@ -177,23 +177,23 @@ export default function AdminCampaignsPage() {
                     onToggle={toggleCreate}
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
                         <Input label="Campaign Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                         <div className="grid grid-cols-2 gap-4">
                             {user?.role === 'org_admin' ? (
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
-                                    <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                    <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
+                                    <div className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-muted-foreground font-medium text-sm">
                                         {user.organization_name || 'Your Organization'}
                                     </div>
                                 </div>
                             ) : (
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                    <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
                                     <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
-                                        <option value="" className="text-gray-900">Select Organization</option>
-                                        {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
+                                        <option value="" className="text-foreground">Select Organization</option>
+                                        {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
                                     </select>
                                 </div>
                             )}
@@ -205,18 +205,18 @@ export default function AdminCampaignsPage() {
                             <Input label="Send Time" type="time" value={form.send_time} onChange={e => setForm({ ...form, send_time: e.target.value })} required disabled={isActionLoading} />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
                             <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
-                                <option value="draft" className="text-gray-900">Draft</option>
-                                <option value="scheduled" className="text-gray-900">Scheduled</option>
-                                <option value="live" className="text-gray-900">Live</option>
-                                <option value="completed" className="text-gray-900">Completed</option>
-                                <option value="cancelled" className="text-gray-900">Cancelled</option>
+                                <option value="draft" className="text-foreground">Draft</option>
+                                <option value="scheduled" className="text-foreground">Scheduled</option>
+                                <option value="live" className="text-foreground">Live</option>
+                                <option value="completed" className="text-foreground">Completed</option>
+                                <option value="cancelled" className="text-foreground">Cancelled</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Campaign Message</label>
-                            <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
+                            <label className="block text-sm font-semibold text-foreground mb-1">Campaign Message</label>
+                            <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
                         </div>
                         <div className="pt-4 flex justify-end gap-3">
                             <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
@@ -231,9 +231,9 @@ export default function AdminCampaignsPage() {
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         </div>
                     )}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                        <table className="w-full text-left text-sm text-muted-foreground">
+                            <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                 <tr>
                                     <th className="px-6 py-4">Title</th>
                                     <th className="px-6 py-4">Timeline</th>
@@ -241,14 +241,14 @@ export default function AdminCampaignsPage() {
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-border">
                                 {camps.length === 0 ? (
-                                    <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No campaigns yet.</td></tr>
+                                    <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No campaigns yet.</td></tr>
                                 ) : camps.map(c => (
-                                    <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                                    <tr key={c.id} className="hover:bg-muted transition-colors">
                                         <td className="px-6 py-4">
-                                            <div className="font-medium text-gray-900">{c.title}</div>
-                                            <div className="text-gray-500 truncate max-w-sm">{c.message}</div>
+                                            <div className="font-medium text-foreground">{c.title}</div>
+                                            <div className="text-muted-foreground truncate max-w-sm">{c.message}</div>
                                         </td>
                                         <td className="px-6 py-4 text-xs">
                                             {new Date(c.start_date).toLocaleDateString()}
@@ -257,13 +257,13 @@ export default function AdminCampaignsPage() {
                                             <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${c.status === 'live' ? 'bg-green-50 text-green-700' :
                                                 c.status === 'scheduled' ? 'bg-blue-50 text-blue-700' :
                                                     c.status === 'cancelled' ? 'bg-red-50 text-red-700' :
-                                                        'bg-gray-100 text-gray-600'
+                                                        'bg-muted/50 text-muted-foreground'
                                                 }`}>
                                                 {c.status}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            <button onClick={() => openModal(c)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                            <button onClick={() => openModal(c)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                             <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                         </td>
                                     </tr>
@@ -285,23 +285,23 @@ export default function AdminCampaignsPage() {
             </div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Campaign">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
                     <Input label="Campaign Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                     <div className="grid grid-cols-2 gap-4">
                         {user?.role === 'org_admin' ? (
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
-                                <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
+                                <div className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-muted-foreground font-medium text-sm">
                                     {user.organization_name || 'Your Organization'}
                                 </div>
                             </div>
                         ) : (
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
                                 <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
-                                    <option value="" className="text-gray-900">Select Organization</option>
-                                    {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
+                                    <option value="" className="text-foreground">Select Organization</option>
+                                    {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
                                 </select>
                             </div>
                         )}
@@ -313,18 +313,18 @@ export default function AdminCampaignsPage() {
                         <Input label="Send Time" type="time" value={form.send_time} onChange={e => setForm({ ...form, send_time: e.target.value })} required disabled={isActionLoading} />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
                         <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
-                            <option value="draft" className="text-gray-900">Draft</option>
-                            <option value="scheduled" className="text-gray-900">Scheduled</option>
-                            <option value="live" className="text-gray-900">Live</option>
-                            <option value="completed" className="text-gray-900">Completed</option>
-                            <option value="cancelled" className="text-gray-900">Cancelled</option>
+                            <option value="draft" className="text-foreground">Draft</option>
+                            <option value="scheduled" className="text-foreground">Scheduled</option>
+                            <option value="live" className="text-foreground">Live</option>
+                            <option value="completed" className="text-foreground">Completed</option>
+                            <option value="cancelled" className="text-foreground">Cancelled</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Campaign Message</label>
-                        <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
+                        <label className="block text-sm font-semibold text-foreground mb-1">Campaign Message</label>
+                        <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
                     </div>
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>

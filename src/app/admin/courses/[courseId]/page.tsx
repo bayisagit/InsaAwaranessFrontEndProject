@@ -39,31 +39,31 @@ export default function CourseWorkspacePage() {
     return (
         <div className="space-y-8 pb-20 max-w-7xl mx-auto">
             {/* Context Header */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 border-t-4 border-t-primary">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{course.title}</h1>
-                <p className="text-gray-500">{course.description || 'No description provided.'}</p>
-                <div className="mt-4 pt-4 border-t border-gray-100 flex gap-4">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 border-t-4 border-t-primary">
+                <h1 className="text-2xl font-bold text-foreground mb-2">{course.title}</h1>
+                <p className="text-muted-foreground">{course.description || 'No description provided.'}</p>
+                <div className="mt-4 pt-4 border-t border-border flex gap-4">
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Level:</span>
-                        <span className="ml-2 capitalize font-bold text-gray-700">{course.level}</span>
+                        <span className="text-muted-foreground font-medium">Level:</span>
+                        <span className="ml-2 capitalize font-bold text-foreground">{course.level}</span>
                     </div>
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Language:</span>
-                        <span className="ml-2 uppercase font-bold text-gray-700">{course.language}</span>
+                        <span className="text-muted-foreground font-medium">Language:</span>
+                        <span className="ml-2 uppercase font-bold text-foreground">{course.language}</span>
                     </div>
                 </div>
             </div>
 
             {/* Embedded Modules Manager */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
                 <ModulesManager lockedCourseId={courseId} />
             </div>
 
             {/* Course Exams Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-6 pt-6 pb-2 border-b border-gray-100">
-                    <h2 className="text-xl font-bold text-gray-900">Course Exams</h2>
-                    <p className="text-sm text-gray-500">Manage final exams for this course.</p>
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                <div className="px-6 pt-6 pb-2 border-b border-border">
+                    <h2 className="text-xl font-bold text-foreground">Course Exams</h2>
+                    <p className="text-sm text-muted-foreground">Manage final exams for this course.</p>
                 </div>
                 <AssessmentsManager lockedCourseId={courseId} />
             </div>

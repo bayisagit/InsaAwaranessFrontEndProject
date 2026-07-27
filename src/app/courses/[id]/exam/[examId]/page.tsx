@@ -27,7 +27,7 @@ export default function CourseExamPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-muted flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
@@ -35,7 +35,7 @@ export default function CourseExamPage() {
 
     if (error || !exam) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
+            <div className="min-h-screen bg-muted flex items-center justify-center p-6 text-center">
                 <div>
                     <p className="text-red-600 font-bold mb-4">{error || 'Exam not found.'}</p>
                     <Link href={`/courses/${courseId}`} className="text-primary hover:underline font-bold">← Return to Course</Link>
@@ -45,15 +45,15 @@ export default function CourseExamPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-6">
+        <div className="min-h-screen bg-muted py-12 px-6">
             <div className="max-w-4xl mx-auto">
                 <header className="mb-10 flex items-center justify-between">
                     <div>
-                        <Link href={`/courses/${courseId}`} className="text-xs font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-2 mb-2">
+                        <Link href={`/courses/${courseId}`} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-2 mb-2">
                             ← Exit Exam
                         </Link>
-                        <h1 className="text-3xl font-extrabold text-gray-900">{exam.title}</h1>
-                        <p className="text-gray-500 mt-1">Course Certification Assessment</p>
+                        <h1 className="text-3xl font-extrabold text-foreground">{exam.title}</h1>
+                        <p className="text-muted-foreground mt-1">Course Certification Assessment</p>
                     </div>
                     <div className="bg-orange-50 text-orange-700 px-4 py-2 rounded-xl border border-orange-100 flex items-center gap-2">
                         <span className="text-xl">🏆</span>
@@ -71,7 +71,7 @@ export default function CourseExamPage() {
                     />
                 </main>
 
-                <footer className="mt-12 text-center text-gray-400 text-sm">
+                <footer className="mt-12 text-center text-muted-foreground text-sm">
                     <p>Completing this exam with a passing score will award you a completion certificate.</p>
                 </footer>
             </div>

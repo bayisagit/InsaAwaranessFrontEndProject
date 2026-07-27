@@ -89,8 +89,8 @@ export default function ApplyPage() {
     // ── Submitted / confirmation state ──────────────────────────────────────
     if (pageState === 'submitted') {
         return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
-                <div className="w-full max-w-lg bg-white p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
+                <div className="w-full max-w-lg bg-card p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                     <div className="flex justify-center mb-6">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                             <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,11 +98,11 @@ export default function ApplyPage() {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-3">Application Submitted!</h1>
-                    <p className="text-gray-600 text-sm mb-2">
+                    <h1 className="text-2xl font-bold text-foreground mb-3">Application Submitted!</h1>
+                    <p className="text-muted-foreground text-sm mb-2">
                         Thank you for applying on behalf of <strong>{submittedName}</strong>.
                     </p>
-                    <p className="text-gray-500 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
+                    <p className="text-muted-foreground text-sm mb-8 leading-relaxed max-w-sm mx-auto">
                         Your application is now <strong className="text-yellow-700">under review</strong>. Our team will contact you at the email you provided once a decision has been made.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -127,25 +127,25 @@ export default function ApplyPage() {
 
     // ── Application Form ─────────────────────────────────────────────────────
     return (
-        <div className="min-h-screen bg-gray-50 py-16 px-4">
+        <div className="min-h-screen bg-muted py-16 px-4">
             <div className="max-w-2xl mx-auto">
                 {/* Page header */}
                 <div className="text-center mb-10">
                     <span className="inline-block px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-semibold tracking-wider mb-4">
                         OFFICIAL REGISTRATION
                     </span>
-                    <h1 className="text-4xl font-extrabold text-gray-900 mb-3">
+                    <h1 className="text-4xl font-extrabold text-foreground mb-3">
                         Apply for Organization Access
                     </h1>
-                    <p className="text-gray-500 max-w-md mx-auto leading-relaxed">
+                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
                         Submit your organization&apos;s details to join the INSA Cyber Awareness Platform. Our team will review your application within 3–5 business days.
                     </p>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
+                <div className="bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-8 md:p-10">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {fieldErrors.non_field && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-start gap-2">
+                            <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-start gap-2">
                                 <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -155,7 +155,7 @@ export default function ApplyPage() {
 
                         {/* Section: Organization Info */}
                         <div>
-                            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Organization Information</h2>
+                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Organization Information</h2>
                             <div className="space-y-4">
                                 <Input
                                     label="Organization Name"
@@ -167,11 +167,11 @@ export default function ApplyPage() {
                                     error={fieldErrors.name}
                                 />
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-foreground mb-1">
                                         Description <span className="text-primary ml-1">*</span>
                                     </label>
                                     <textarea
-                                        className={`block w-full rounded-md border py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white resize-none min-h-[100px] ${fieldErrors.description ? 'border-primary' : 'border-gray-300 focus:border-primary'}`}
+                                        className={`block w-full rounded-lg border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-card resize-none min-h-[100px] ${fieldErrors.description ? 'border-primary' : 'border-border focus:border-primary'}`}
                                         placeholder="Describe your organization's activities and why you need access to this platform…"
                                         value={form.description}
                                         onChange={handleChange('description')}
@@ -201,8 +201,8 @@ export default function ApplyPage() {
                             </div>
                         </div>
 
-                        <div className="border-t border-gray-100 pt-5">
-                            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Contact Details</h2>
+                        <div className="border-t border-border pt-5">
+                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Contact Details</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Input
                                     label="Contact Email"
@@ -238,7 +238,7 @@ export default function ApplyPage() {
                             </div>
                         </div>
 
-                        <Button type="submit" variant="secondary" fullWidth className="py-3 mt-2 rounded-lg" disabled={isLoading}>
+                        <Button type="submit" variant="secondary" fullWidth className="py-3 mt-2 rounded-xl" disabled={isLoading}>
                             {isLoading ? (
                                 <span className="flex items-center gap-2">
                                     <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -252,7 +252,7 @@ export default function ApplyPage() {
                     </form>
                 </div>
 
-                <p className="mt-6 text-center text-sm text-gray-500">
+                <p className="mt-6 text-center text-sm text-muted-foreground">
                     Already have an account?{' '}
                     <Link href="/login" className="font-semibold text-primary hover:underline">Sign in</Link>
                 </p>

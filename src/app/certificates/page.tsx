@@ -94,20 +94,20 @@ export default function CertificatesPage() {
 
     if (authLoading || isLoadingCertificates) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-muted flex items-center justify-center">
                 <div aria-label="Loading" className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <section className="bg-white border-b border-gray-100">
+        <div className="min-h-screen bg-muted pb-20">
+            <section className="bg-card border-b border-border">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 text-center">
-                    <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-4">
                         My Certificates
                     </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                         View and download your earned cybersecurity certifications.
                     </p>
                     <div className="max-w-md mx-auto">
@@ -130,7 +130,7 @@ export default function CertificatesPage() {
                 </div>
             ) : error ? (
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 py-10">
-                    <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-lg border border-red-100">{error}</div>
+                    <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100">{error}</div>
                 </div>
             ) : (
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 pt-10">
@@ -148,7 +148,7 @@ export default function CertificatesPage() {
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
                                 {certificates.map(cert => (
-                                    <div key={cert.id} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all group">
+                                    <div key={cert.id} className="bg-card rounded-2xl border border-border p-6 shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none transition-all group">
                                         <div className="flex items-start gap-4">
                                             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,23 +156,23 @@ export default function CertificatesPage() {
                                                 </svg>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-gray-900 truncate">
+                                                <h3 className="font-bold text-foreground truncate">
                                                     Certificate ID: {cert.certificate_id?.split('-')[0].toUpperCase() || 'Cybersecurity Verification'}
                                                 </h3>
-                                                <p className="text-sm text-gray-500 mt-0.5">
-                                                    Issued to: <span className="font-medium text-gray-700">{user?.first_name} {user?.last_name}</span>
+                                                <p className="text-sm text-muted-foreground mt-0.5">
+                                                    Issued to: <span className="font-medium text-foreground">{user?.first_name} {user?.last_name}</span>
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                        <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
                                             <div>
-                                                <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Issue Date</p>
-                                                <p className="text-sm font-semibold text-gray-900">{formatDate(cert.issued_at)}</p>
+                                                <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Issue Date</p>
+                                                <p className="text-sm font-semibold text-foreground">{formatDate(cert.issued_at)}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Certificate ID</p>
-                                                <p className="text-sm font-mono text-gray-600 truncate max-w-[120px]" title={cert.certificate_id}>{cert.certificate_id || '—'}</p>
+                                                <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Certificate ID</p>
+                                                <p className="text-sm font-mono text-muted-foreground truncate max-w-[120px]" title={cert.certificate_id}>{cert.certificate_id || '—'}</p>
                                             </div>
                                         </div>
 
@@ -181,7 +181,7 @@ export default function CertificatesPage() {
                                                 <button
                                                     onClick={() => handleDownload(cert.id)}
                                                     disabled={actionLoading === cert.id}
-                                                    className="flex-1 py-2.5 bg-gray-50 text-gray-700 font-bold rounded-lg border border-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                                    className="flex-1 py-2.5 bg-muted text-foreground font-bold rounded-xl border border-border hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -192,7 +192,7 @@ export default function CertificatesPage() {
                                                 <button
                                                     onClick={() => handleGeneratePdf(cert.id)}
                                                     disabled={actionLoading === cert.id}
-                                                    className="flex-1 py-2.5 bg-primary/10 text-primary font-bold rounded-lg border border-primary/20 hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                                    className="flex-1 py-2.5 bg-primary/10 text-primary font-bold rounded-xl border border-primary/20 hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                                 >
                                                     {actionLoading === cert.id ? 'Generating...' : 'Generate PDF'}
                                                 </button>

@@ -95,8 +95,8 @@ export default function LoginPage() {
     }, []);
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
-            <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
+            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                 <div className="flex justify-center mb-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                         <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center">
@@ -105,8 +105,8 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-                <p className="text-sm font-medium text-gray-600 mb-8 max-w-xs mx-auto">
+                <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
+                <p className="text-sm font-medium text-muted-foreground mb-8 max-w-xs mx-auto">
                     Secure Access To The National Cyber Resilience Portal
                 </p>
 
@@ -115,7 +115,7 @@ export default function LoginPage() {
                     <Button
                         variant="social"
                         fullWidth
-                        className="py-3 rounded-lg"
+                        className="py-3 rounded-xl"
                         onClick={() => googleLogin()}
                         loading={socialLoading === 'google'}
                         iconLeft={
@@ -132,7 +132,7 @@ export default function LoginPage() {
                     <Button
                         variant="social"
                         fullWidth
-                        className="py-3 rounded-lg"
+                        className="py-3 rounded-xl"
                         onClick={handleGitHubLogin}
                         loading={socialLoading === 'github'}
                         iconLeft={
@@ -148,16 +148,16 @@ export default function LoginPage() {
                 {/* Divider */}
                 <div className="relative mb-6">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-200" />
+                        <div className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center">
-                        <span className="bg-white px-3 text-xs text-gray-400 font-medium">OR</span>
+                        <span className="bg-card px-3 text-xs text-muted-foreground font-medium">OR</span>
                     </div>
                 </div>
 
                 <form className="space-y-5 text-left" onSubmit={handleSubmit} method="POST">
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-start gap-2">
+                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-start gap-2">
                             <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -199,12 +199,12 @@ export default function LoginPage() {
                         </Link>
                     </div>
 
-                    <Button variant="primary" type="submit" fullWidth className="py-3 rounded-lg" loading={isLoading}>
+                    <Button variant="primary" type="submit" fullWidth className="py-3 rounded-xl" loading={isLoading}>
                         Sign in
                     </Button>
                 </form>
 
-                <p className="mt-8 text-sm text-gray-600">
+                <p className="mt-8 text-sm text-muted-foreground">
                     Don&apos;t have an account?{' '}
                     <Link href="/signup" className="font-semibold text-primary hover:underline">
                         Sign up

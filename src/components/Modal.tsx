@@ -72,14 +72,14 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 12 }}
                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                        className={`bg-white rounded-xl shadow-modal w-full ${maxWidthClasses[maxWidth]} max-h-[85vh] flex flex-col overflow-hidden relative`}
+                        className={`bg-card rounded-xl shadow-modal w-full ${maxWidthClasses[maxWidth]} max-h-[85vh] flex flex-col overflow-hidden relative`}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
-                            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+                            <h2 className="text-lg font-semibold text-foreground">{title}</h2>
                             <button
                                 onClick={onClose}
-                                className="text-gray-400 hover:text-gray-600 transition-colors p-1.5 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                className="text-muted-foreground hover:text-muted-foreground transition-colors p-1.5 rounded-xl hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                 aria-label="Close dialog"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">

@@ -154,9 +154,9 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
     return (
         <SidebarProvider>
             {/* Course Specific Sidebar */}
-            <Sidebar collapsible="icon" className="border-r border-gray-200 bg-white">
+            <Sidebar collapsible="icon" className="border-r border-border bg-card">
                 <SidebarHeader className="py-4 px-2">
-                    <Link href="/admin" className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-primary transition-colors uppercase tracking-widest mb-4 px-2">
+                    <Link href="/admin" className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest mb-4 px-2">
                         <ArrowLeft className="w-4 h-4" />
                         Back to Admin
                     </Link>
@@ -166,8 +166,8 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                                 <BookOpen className="size-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-bold leading-tight line-clamp-2 text-gray-900">{courseName}</h2>
-                                <p className="text-xs text-gray-500 mt-0.5">Course Workspace</p>
+                                <h2 className="text-sm font-bold leading-tight line-clamp-2 text-foreground">{courseName}</h2>
+                                <p className="text-xs text-muted-foreground mt-0.5">Course Workspace</p>
                             </div>
                         </div>
                     </div>
@@ -181,7 +181,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                             const isActive = isOverview ? pathname === item.url : pathname.startsWith(item.url + '/') || pathname === item.url;
                             return (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton isActive={isActive} tooltip={item.title} render={<Link href={item.url} />} className="hover:bg-gray-100">
+                                    <SidebarMenuButton isActive={isActive} tooltip={item.title} render={<Link href={item.url} />} className="hover:bg-muted/50">
                                         <item.icon className="size-4 shrink-0" />
                                         <span>{item.title}</span>
                                     </SidebarMenuButton>
@@ -193,15 +193,15 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
             </Sidebar>
 
             {/* Main Content Area */}
-            <SidebarInset className="flex flex-col flex-1 overflow-hidden h-screen bg-gray-50">
-                <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-white px-4 shadow-sm z-10 sticky top-0">
-                    <SidebarTrigger className="-ml-1 text-gray-500" />
+            <SidebarInset className="flex flex-col flex-1 overflow-hidden h-screen bg-muted">
+                <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-card px-4 shadow-sm shadow-black/5 dark:shadow-none z-10 sticky top-0">
+                    <SidebarTrigger className="-ml-1 text-muted-foreground" />
                     
                     {/* Breadcrumbs */}
-                    <div className="flex-1 flex items-center text-sm font-medium text-gray-500">
+                    <div className="flex-1 flex items-center text-sm font-medium text-muted-foreground">
                         <Link href="/admin/courses" className="hover:text-primary transition-colors">Courses</Link>
                         <span className="mx-2 text-gray-300">/</span>
-                        <Link href={`/admin/courses/${courseId}`} className={`hover:text-primary transition-colors ${!moduleName ? 'text-gray-900' : ''}`}>
+                        <Link href={`/admin/courses/${courseId}`} className={`hover:text-primary transition-colors ${!moduleName ? 'text-foreground' : ''}`}>
                             {courseName}
                         </Link>
                         {moduleName && moduleId && (
@@ -209,7 +209,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                                 <span className="mx-2 text-gray-300">/</span>
                                 <Link
                                     href={courseId ? `/admin/courses/${courseId}/modules/${moduleId}` : `/admin/modules/${moduleId}`}
-                                    className={`hover:text-primary transition-colors ${!lessonName ? 'text-gray-900' : ''}`}
+                                    className={`hover:text-primary transition-colors ${!lessonName ? 'text-foreground' : ''}`}
                                 >
                                     {moduleName}
                                 </Link>
@@ -220,7 +220,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                                 <span className="mx-2 text-gray-300">/</span>
                                 <Link
                                     href={courseId && moduleId ? `/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}` : `/admin/lessons/${lessonId}`}
-                                    className="text-gray-900 hover:text-primary transition-colors"
+                                    className="text-foreground hover:text-primary transition-colors"
                                 >
                                     {lessonName}
                                 </Link>
@@ -232,7 +232,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                         <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <Button variant="ghost" className="relative h-9 w-9 rounded-full ml-1">
-                                    <Avatar className="h-9 w-9 border border-gray-200">
+                                    <Avatar className="h-9 w-9 border border-border">
                                         {user?.profile_photo ? (
                                             <AvatarImage src={user.profile_photo} alt="Profile" className="h-full w-full object-cover rounded-full" />
                                         ) : null}

@@ -65,14 +65,14 @@ export default function AuditLogsPage() {
             update: 'bg-blue-50 text-blue-700',
             delete: 'bg-red-50 text-red-700',
         };
-        return styles[action] || 'bg-gray-100 text-gray-700';
+        return styles[action] || 'bg-muted/50 text-foreground';
     };
 
     if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
     if (!user || user.role !== 'super_admin') return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             <PageHeader
                 title="Audit Logs"
                 description="Monitor system activity and security events."
@@ -88,7 +88,7 @@ export default function AuditLogsPage() {
                         <select
                             value={actionFilter}
                             onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}
-                            className="rounded-md border border-gray-300 py-2 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                            className="rounded-lg border border-border py-2 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
                         >
                             <option value="">All actions</option>
                             <option value="create">Create</option>
@@ -98,7 +98,7 @@ export default function AuditLogsPage() {
                         <select
                             value={appFilter}
                             onChange={(e) => { setAppFilter(e.target.value); setPage(1); }}
-                            className="rounded-md border border-gray-300 py-2 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                            className="rounded-lg border border-border py-2 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
                         >
                             <option value="">All apps</option>
                             <option value="accounts">Accounts</option>
@@ -112,16 +112,16 @@ export default function AuditLogsPage() {
                 }
             />
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
                 <div className="relative">
                     {isFetching && (
                         <div className="absolute inset-0 bg-white/60 z-10 flex items-start justify-center pt-16 rounded-xl">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         </div>
                     )}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                        <table className="w-full text-left text-sm text-muted-foreground">
+                            <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                 <tr>
                                     <th className="px-6 py-4">Timestamp</th>
                                     <th className="px-6 py-4">Actor</th>
@@ -131,16 +131,16 @@ export default function AuditLogsPage() {
                                     <th className="px-6 py-4">Changes</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-border">
                                 {logs.length === 0 ? (
-                                    <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">No audit logs found.</td></tr>
+                                    <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">No audit logs found.</td></tr>
                                 ) : logs.map(log => (
-                                    <tr key={log.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-600">
+                                    <tr key={log.id} className="hover:bg-muted transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
                                             {formatDate(log.created_at)}
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900">
-                                            {log.actor_email || <span className="text-gray-400 italic">system</span>}
+                                        <td className="px-6 py-4 font-medium text-foreground">
+                                            {log.actor_email || <span className="text-muted-foreground italic">system</span>}
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${actionBadge(log.action)}`}>
@@ -148,14 +148,14 @@ export default function AuditLogsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="text-xs font-mono text-gray-500">{log.app_label}</span>
+                                            <span className="text-xs font-mono text-muted-foreground">{log.app_label}</span>
                                             <span className="mx-1 text-gray-300">/</span>
                                             <span className="text-xs font-mono">{log.model}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-xs font-mono text-gray-500 max-w-[120px] truncate" title={log.object_id}>
+                                        <td className="px-6 py-4 text-xs font-mono text-muted-foreground max-w-[120px] truncate" title={log.object_id}>
                                             {log.object_id}
                                         </td>
-                                        <td className="px-6 py-4 text-xs text-gray-600 max-w-[200px] truncate" title={JSON.stringify(log.changes)}>
+                                        <td className="px-6 py-4 text-xs text-muted-foreground max-w-[200px] truncate" title={JSON.stringify(log.changes)}>
                                             {Object.keys(log.changes).length > 0
                                                 ? Object.entries(log.changes).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(', ')
                                                 : '—'}

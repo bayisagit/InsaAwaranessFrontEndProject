@@ -42,29 +42,29 @@ export default function CourseModuleDetailPage() {
 
     return (
         <div className="space-y-8 pb-20 max-w-7xl mx-auto">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 border-t-4 border-t-primary">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{moduleData.title}</h1>
-                <p className="text-gray-500">{moduleData.description || 'No description provided.'}</p>
-                <div className="mt-4 pt-4 border-t border-gray-100 flex gap-4">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 border-t-4 border-t-primary">
+                <h1 className="text-2xl font-bold text-foreground mb-2">{moduleData.title}</h1>
+                <p className="text-muted-foreground">{moduleData.description || 'No description provided.'}</p>
+                <div className="mt-4 pt-4 border-t border-border flex gap-4">
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Order:</span>
-                        <span className="ml-2 font-bold text-gray-700">{moduleData.order}</span>
+                        <span className="text-muted-foreground font-medium">Order:</span>
+                        <span className="ml-2 font-bold text-foreground">{moduleData.order}</span>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-6 pt-6 pb-2 border-b border-gray-100">
-                    <h2 className="text-xl font-bold text-gray-900">Lessons</h2>
-                    <p className="text-sm text-gray-500">Manage lessons in this module.</p>
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                <div className="px-6 pt-6 pb-2 border-b border-border">
+                    <h2 className="text-xl font-bold text-foreground">Lessons</h2>
+                    <p className="text-sm text-muted-foreground">Manage lessons in this module.</p>
                 </div>
                 <LessonsManager lockedModuleId={moduleId} lockedCourseId={courseId} />
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-6 pt-6 pb-2 border-b border-gray-100">
-                    <h2 className="text-xl font-bold text-gray-900">Module Quizzes</h2>
-                    <p className="text-sm text-gray-500">Manage quizzes for this module.</p>
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                <div className="px-6 pt-6 pb-2 border-b border-border">
+                    <h2 className="text-xl font-bold text-foreground">Module Quizzes</h2>
+                    <p className="text-sm text-muted-foreground">Manage quizzes for this module.</p>
                 </div>
                 <AssessmentsManager lockedModuleId={moduleId} />
             </div>

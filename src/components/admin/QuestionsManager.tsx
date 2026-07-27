@@ -14,8 +14,8 @@ import { ConfirmModal } from '@/components/ConfirmModal';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 import { Plus, Trash2 } from 'lucide-react';
 
-const SELECT_CLS = 'block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white';
-const LBL = 'block text-sm font-semibold text-gray-700 mb-1';
+const SELECT_CLS = 'block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card';
+const LBL = 'block text-sm font-semibold text-foreground mb-1';
 
 const QUESTION_TYPES: { value: QuestionType; label: string; icon: string }[] = [
     { value: 'multiple_choice', label: 'Multiple Choice', icon: '⭕' },
@@ -214,13 +214,13 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
 
         if (qForm.type === 'true_false') {
             return (
-                <div className="border border-green-200 rounded-lg p-4 bg-green-50 space-y-3 mt-4">
+                <div className="border border-green-200 rounded-xl p-4 bg-green-50 space-y-3 mt-4">
                     <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-3">True / False Answer</p>
                     {qForm.choices.map((c, i) => (
-                        <label key={i} className="flex items-center gap-3 p-3 bg-white border border-green-200 rounded-lg cursor-pointer hover:bg-green-50 transition-colors">
+                        <label key={i} className="flex items-center gap-3 p-3 bg-card border border-green-200 rounded-xl cursor-pointer hover:bg-green-50 transition-colors">
                             <input type="radio" name="tf_correct" className="text-green-600 focus:ring-green-500 w-4 h-4"
                                 checked={c.is_correct} onChange={() => updateChoice(i, 'is_correct', true)} disabled={isActionLoading} />
-                            <span className="text-sm font-bold text-gray-700">{c.text}</span>
+                            <span className="text-sm font-bold text-foreground">{c.text}</span>
                         </label>
                     ))}
                 </div>
@@ -228,7 +228,7 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
         }
 
         return (
-            <div className="border border-blue-200 rounded-lg p-4 bg-blue-50/50 space-y-3 mt-4">
+            <div className="border border-blue-200 rounded-xl p-4 bg-blue-50/50 space-y-3 mt-4">
                 <div className="flex justify-between items-center mb-2">
                     <p className="text-xs font-bold text-blue-700 uppercase tracking-wider">Answer Choices</p>
                     <span className="text-xs text-blue-500 font-medium">
@@ -238,7 +238,7 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
 
                 <div className="space-y-2">
                     {qForm.choices.map((c, i) => (
-                        <div key={i} className={`flex items-center gap-3 p-2 bg-white border rounded-lg ${c.is_correct ? 'border-green-400 ring-1 ring-green-400 shadow-sm' : 'border-gray-200'}`}>
+                        <div key={i} className={`flex items-center gap-3 p-2 bg-card border rounded-xl ${c.is_correct ? 'border-green-400 ring-1 ring-green-400 shadow-sm shadow-black/5 dark:shadow-none' : 'border-border'}`}>
                             <div className="flex-shrink-0 pl-2">
                                 <input
                                     type={qForm.type === 'multiple_select' ? 'checkbox' : 'radio'}
@@ -258,14 +258,14 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
                                 disabled={isActionLoading}
                                 required
                             />
-                            <button type="button" onClick={() => removeChoice(i)} disabled={isActionLoading || qForm.choices.length <= 2} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50">
+                            <button type="button" onClick={() => removeChoice(i)} disabled={isActionLoading || qForm.choices.length <= 2} className="p-2 text-muted-foreground hover:text-red-500 hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-50">
                                 <Trash2 className="size-4" />
                             </button>
                         </div>
                     ))}
                 </div>
 
-                <button type="button" onClick={addChoice} disabled={isActionLoading} className="mt-2 w-full py-2 border-2 border-dashed border-blue-200 rounded-lg text-sm font-semibold text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-colors flex items-center justify-center gap-2">
+                <button type="button" onClick={addChoice} disabled={isActionLoading} className="mt-2 w-full py-2 border-2 border-dashed border-blue-200 rounded-xl text-sm font-semibold text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-colors flex items-center justify-center gap-2">
                     <Plus className="size-4" /> Add Option
                 </button>
             </div>
@@ -276,7 +276,7 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
 
     return (
         <div>
-            {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+            {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
             <ExpandableCreateSection
                 title="Add Question"
@@ -284,7 +284,7 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
                 onToggle={toggleCreateQ}
             >
                 <form onSubmit={handleQSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -301,18 +301,18 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
 
                     <div>
                         <label className={LBL}>Question Prompt <span className="text-primary">*</span></label>
-                        <textarea className="w-full px-3 py-2.5 border border-gray-300 rounded-md text-sm focus:border-primary focus:ring-1 outline-none min-h-[80px] resize-y"
+                        <textarea className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-1 outline-none min-h-[80px] resize-y"
                             placeholder="Enter your question here…" value={qForm.prompt} onChange={e => setQForm({ ...qForm, prompt: e.target.value })} required disabled={isActionLoading} autoFocus />
                     </div>
 
                     <div>
-                        <label className={LBL}>Explanation <span className="text-gray-400 font-normal">(shown after answering)</span></label>
-                        <textarea className="w-full px-3 py-2.5 border border-gray-300 rounded-md text-sm focus:border-primary focus:ring-1 outline-none min-h-[60px] resize-y"
+                        <label className={LBL}>Explanation <span className="text-muted-foreground font-normal">(shown after answering)</span></label>
+                        <textarea className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-1 outline-none min-h-[60px] resize-y"
                             placeholder="Why is this the correct answer?…" value={qForm.explanation} onChange={e => setQForm({ ...qForm, explanation: e.target.value })} disabled={isActionLoading} />
                     </div>
 
                     {NEEDS_TEXT_ANSWER.includes(qForm.type) && (
-                        <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50 space-y-3">
+                        <div className="border border-yellow-200 rounded-xl p-4 bg-yellow-50 space-y-3">
                             <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Fill-in-the-Blank Answer</p>
                             <Input label="Correct Text Answer" value={qForm.correct_text_answer} onChange={e => setQForm({ ...qForm, correct_text_answer: e.target.value })} placeholder="e.g. Paris" disabled={isActionLoading} required />
                             <label className="flex items-center gap-2 text-sm text-yellow-800 cursor-pointer">
@@ -325,17 +325,17 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
                     {renderChoicesBuilder()}
 
                     {MANUAL_GRADED.includes(qForm.type) && (
-                        <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-3 text-sm text-yellow-700">
+                        <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-3 text-sm text-yellow-700">
                             <strong>Manual Grading Required:</strong> {qForm.type === 'short_answer' ? 'Short answer' : 'Essay'} questions must be graded by an instructor after submission.
                         </div>
                     )}
 
                     <div className="flex items-center gap-2">
-                        <input type="checkbox" id="is_required_create" className="rounded border-gray-300 text-primary focus:ring-primary" checked={qForm.is_required} onChange={e => setQForm({ ...qForm, is_required: e.target.checked })} />
-                        <label htmlFor="is_required_create" className="text-sm font-semibold text-gray-700 cursor-pointer">Required question</label>
+                        <input type="checkbox" id="is_required_create" className="rounded border-border text-primary focus:ring-primary" checked={qForm.is_required} onChange={e => setQForm({ ...qForm, is_required: e.target.checked })} />
+                        <label htmlFor="is_required_create" className="text-sm font-semibold text-foreground cursor-pointer">Required question</label>
                     </div>
 
-                    <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
+                    <div className="pt-4 flex justify-end gap-3 border-t border-border">
                         <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Create Question'}</Button>
                     </div>
@@ -343,16 +343,16 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
             </ExpandableCreateSection>
 
             {questions.length === 0 ? (
-                <div className="bg-white rounded-xl border-2 border-dashed border-gray-200 p-16 text-center">
+                <div className="bg-card rounded-xl border-2 border-dashed border-border p-16 text-center">
                     <div className="text-5xl mb-4 opacity-20">❓</div>
-                    <p className="text-gray-500 font-semibold mb-2">No questions yet</p>
-                    <p className="text-gray-400 text-sm mb-6">Add your first question using the section above.</p>
+                    <p className="text-muted-foreground font-semibold mb-2">No questions yet</p>
+                    <p className="text-muted-foreground text-sm mb-6">Add your first question using the section above.</p>
                     <Button variant="outline" onClick={toggleCreateQ}>Add First Question</Button>
                 </div>
             ) : (
                 <div className="space-y-4">
                     {questions.sort((a, b) => a.order - b.order).map((q, idx) => (
-                        <div key={q.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div key={q.id} className="bg-card rounded-xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden">
                             <div className="flex items-start gap-4 p-6">
                                 <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">{idx + 1}</div>
                                 <div className="flex-1 min-w-0">
@@ -360,27 +360,27 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
                                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${TYPE_BADGE[q.type]}`}>
                                             {QUESTION_TYPES.find(t => t.value === q.type)?.icon} {QUESTION_TYPES.find(t => t.value === q.type)?.label}
                                         </span>
-                                        <span className="text-[10px] text-gray-400 font-medium">{q.points} pt{q.points !== 1 ? 's' : ''}</span>
+                                        <span className="text-[10px] text-muted-foreground font-medium">{q.points} pt{q.points !== 1 ? 's' : ''}</span>
                                         {q.requires_manual_grading && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-50 text-yellow-600">Manual Grading</span>}
-                                        {!q.is_required && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-500">Optional</span>}
+                                        {!q.is_required && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-muted/50 text-muted-foreground">Optional</span>}
                                     </div>
-                                    <p className="text-gray-900 font-semibold text-sm leading-relaxed">{q.prompt}</p>
-                                    {q.explanation && <p className="text-gray-500 text-xs mt-1 italic">Explanation: {q.explanation}</p>}
+                                    <p className="text-foreground font-semibold text-sm leading-relaxed">{q.prompt}</p>
+                                    {q.explanation && <p className="text-muted-foreground text-xs mt-1 italic">Explanation: {q.explanation}</p>}
                                     {NEEDS_TEXT_ANSWER.includes(q.type) && q.correct_text_answer && (
                                         <p className="text-green-600 text-xs mt-1 font-semibold">✓ Answer: {q.correct_text_answer} {q.case_sensitive ? '(case-sensitive)' : ''}</p>
                                     )}
                                 </div>
                                 <div className="flex gap-2 shrink-0">
-                                    <button onClick={() => openEditQ(q)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
-                                    <button onClick={() => { setQToDelete(q); setIsDeleteQOpen(true); }} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                    <button onClick={() => openEditQ(q)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
+                                    <button onClick={() => { setQToDelete(q); setIsDeleteQOpen(true); }} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors">Delete</button>
                                 </div>
                             </div>
 
                             {NEEDS_CHOICES.includes(q.type) && q.choices && q.choices.length > 0 && (
-                                <div className="border-t border-gray-100 px-6 py-3 bg-gray-50/50">
+                                <div className="border-t border-border px-6 py-3 bg-gray-50/50">
                                     <div className="flex flex-wrap gap-2">
                                         {q.choices.sort((a, b) => a.order - b.order).map(c => (
-                                            <span key={c.id} className={`px-3 py-1 rounded-full text-xs font-semibold border ${c.is_correct ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-200 text-gray-600'}`}>
+                                            <span key={c.id} className={`px-3 py-1 rounded-full text-xs font-semibold border ${c.is_correct ? 'bg-green-50 border-green-200 text-green-700' : 'bg-card border-border text-muted-foreground'}`}>
                                                 {c.is_correct ? '✓ ' : ''}{c.text}
                                             </span>
                                         ))}
@@ -394,7 +394,7 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
 
             <Modal isOpen={isQModalOpen} onClose={() => setIsQModalOpen(false)} title="Edit Question" maxWidth="2xl">
                 <form onSubmit={handleQSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -402,7 +402,7 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
                             <select className={SELECT_CLS} value={qForm.type} onChange={e => setQForm({ ...qForm, type: e.target.value as QuestionType })} disabled={true} required>
                                 {QUESTION_TYPES.map(t => <option key={t.value} value={t.value}>{t.icon} {t.label}</option>)}
                             </select>
-                            <p className="text-[10px] text-gray-400 mt-1">Type cannot be changed after creation.</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">Type cannot be changed after creation.</p>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                             <Input label="Points" type="number" value={qForm.points.toString()} onChange={e => setQForm({ ...qForm, points: parseInt(e.target.value) || 1 })} disabled={isActionLoading} />
@@ -412,18 +412,18 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
 
                     <div>
                         <label className={LBL}>Question Prompt <span className="text-primary">*</span></label>
-                        <textarea className="w-full px-3 py-2.5 border border-gray-300 rounded-md text-sm focus:border-primary focus:ring-1 outline-none min-h-[80px] resize-y"
+                        <textarea className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-1 outline-none min-h-[80px] resize-y"
                             placeholder="Enter your question here…" value={qForm.prompt} onChange={e => setQForm({ ...qForm, prompt: e.target.value })} required disabled={isActionLoading} autoFocus />
                     </div>
 
                     <div>
-                        <label className={LBL}>Explanation <span className="text-gray-400 font-normal">(shown after answering)</span></label>
-                        <textarea className="w-full px-3 py-2.5 border border-gray-300 rounded-md text-sm focus:border-primary focus:ring-1 outline-none min-h-[60px] resize-y"
+                        <label className={LBL}>Explanation <span className="text-muted-foreground font-normal">(shown after answering)</span></label>
+                        <textarea className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-1 outline-none min-h-[60px] resize-y"
                             placeholder="Why is this the correct answer?…" value={qForm.explanation} onChange={e => setQForm({ ...qForm, explanation: e.target.value })} disabled={isActionLoading} />
                     </div>
 
                     {NEEDS_TEXT_ANSWER.includes(qForm.type) && (
-                        <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50 space-y-3">
+                        <div className="border border-yellow-200 rounded-xl p-4 bg-yellow-50 space-y-3">
                             <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Fill-in-the-Blank Answer</p>
                             <Input label="Correct Text Answer" value={qForm.correct_text_answer} onChange={e => setQForm({ ...qForm, correct_text_answer: e.target.value })} placeholder="e.g. Paris" disabled={isActionLoading} required />
                             <label className="flex items-center gap-2 text-sm text-yellow-800 cursor-pointer">
@@ -436,17 +436,17 @@ export function QuestionsManager({ assessmentId }: QuestionsManagerProps) {
                     {renderChoicesBuilder()}
 
                     {MANUAL_GRADED.includes(qForm.type) && (
-                        <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-3 text-sm text-yellow-700">
+                        <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-3 text-sm text-yellow-700">
                             <strong>Manual Grading Required:</strong> {qForm.type === 'short_answer' ? 'Short answer' : 'Essay'} questions must be graded by an instructor after submission.
                         </div>
                     )}
 
                     <div className="flex items-center gap-2">
-                        <input type="checkbox" id="is_required" className="rounded border-gray-300 text-primary focus:ring-primary" checked={qForm.is_required} onChange={e => setQForm({ ...qForm, is_required: e.target.checked })} />
-                        <label htmlFor="is_required" className="text-sm font-semibold text-gray-700 cursor-pointer">Required question</label>
+                        <input type="checkbox" id="is_required" className="rounded border-border text-primary focus:ring-primary" checked={qForm.is_required} onChange={e => setQForm({ ...qForm, is_required: e.target.checked })} />
+                        <label htmlFor="is_required" className="text-sm font-semibold text-foreground cursor-pointer">Required question</label>
                     </div>
 
-                    <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
+                    <div className="pt-4 flex justify-end gap-3 border-t border-border">
                         <Button type="button" variant="outline" onClick={() => setIsQModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving…' : 'Save Changes'}</Button>
                     </div>

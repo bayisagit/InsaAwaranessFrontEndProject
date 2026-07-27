@@ -32,13 +32,13 @@ function VerifyEmailContent() {
     }, [uid, token]);
 
     return (
-        <div className="min-h-[80vh] bg-gray-50 flex items-center justify-center p-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 max-w-md w-full text-center">
+        <div className="min-h-[80vh] bg-muted flex items-center justify-center p-6">
+            <div className="bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-10 max-w-md w-full text-center">
                 {status === 'verifying' && (
                     <div className="py-8">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-6" role="status" aria-label="Verifying" />
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Verifying your email...</h1>
-                        <p className="text-gray-500">Please wait while we verify your email address.</p>
+                        <h1 className="text-2xl font-bold text-foreground mb-2">Verifying your email...</h1>
+                        <p className="text-muted-foreground">Please wait while we verify your email address.</p>
                     </div>
                 )}
                 {status === 'success' && (
@@ -48,8 +48,8 @@ function VerifyEmailContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Email Verified!</h1>
-                        <p className="text-gray-500 mb-8">{message}</p>
+                        <h1 className="text-2xl font-bold text-foreground mb-2">Email Verified!</h1>
+                        <p className="text-muted-foreground mb-8">{message}</p>
                         <Link href="/login">
                             <Button variant="primary" className="w-full">Go to Login</Button>
                         </Link>
@@ -62,8 +62,8 @@ function VerifyEmailContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Verification Failed</h1>
-                        <p className="text-gray-500 mb-8">{message}</p>
+                        <h1 className="text-2xl font-bold text-foreground mb-2">Verification Failed</h1>
+                        <p className="text-muted-foreground mb-8">{message}</p>
                         <Link href="/signup">
                             <Button variant="outline" className="w-full">Back to Sign Up</Button>
                         </Link>
@@ -77,7 +77,7 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-[80vh] bg-gray-50 flex items-center justify-center p-6">
+            <div className="min-h-[80vh] bg-muted flex items-center justify-center p-6">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" role="status" aria-label="Loading" />
             </div>
         }>

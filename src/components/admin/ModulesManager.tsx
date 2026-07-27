@@ -24,7 +24,7 @@ interface Course {
     title: string;
 }
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
 export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -226,13 +226,13 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {!lockedCourseId && (
-                <div className="bg-white border-b border-gray-200">
+                <div className="bg-card border-b border-border">
                     <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-1">Modules Management</h1>
-                            <p className="text-gray-500">Organize courses into structured learning modules.</p>
+                            <h1 className="text-3xl font-bold text-foreground mb-1">Modules Management</h1>
+                            <p className="text-muted-foreground">Organize courses into structured learning modules.</p>
                         </div>
                     </div>
                 </div>
@@ -252,11 +252,11 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                 ] : []}
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     {!urlContext.isLocked && (
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Parent Course</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Parent Course</label>
                             <select
                                 className={SELECT_CLS}
                                 value={form.course}
@@ -273,7 +273,7 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                     )}
                     
                     {urlContext.isLocked && (
-                        <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-3 mb-4 flex items-center justify-between">
+                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3 mb-4 flex items-center justify-between">
                             <div>
                                 <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Parent Context Linked</p>
                                 <p className="text-sm text-blue-900 font-medium">{getCourseName(form.course)}</p>
@@ -315,15 +315,15 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                 {/* Sidebar Filter */}
                 {!lockedCourseId && (
                     <div className="w-full lg:w-64 shrink-0">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                        <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 sticky top-24">
                             <div className="mb-6">
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Search</label>
+                                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Search</label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">🔍</span>
                                     <input
                                         type="text"
                                         placeholder="Search by module title..."
-                                        className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                        className="w-full pl-9 pr-4 py-2 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                         value={searchTerm}
                                         onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                                     />
@@ -331,13 +331,13 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                             </div>
 
                             <div className="mb-8">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Parent Course</h3>
+                                <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Parent Course</h3>
                                 <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                                     {courses.map(course => (
                                         <label key={course.id} className="flex items-start gap-3 cursor-pointer group">
                                             <input
                                                 type="checkbox"
-                                                className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                                className="mt-1 w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                                 checked={selectedCourses.includes(course.id)}
                                                 onChange={() => {
                                                     setSelectedCourses(prev =>
@@ -345,10 +345,10 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                                                     );
                                                 }}
                                             />
-                                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors leading-tight">{course.title}</span>
+                                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-tight">{course.title}</span>
                                         </label>
                                     ))}
-                                    {courses.length === 0 && <p className="text-gray-400 text-xs italic">No courses available.</p>}
+                                    {courses.length === 0 && <p className="text-muted-foreground text-xs italic">No courses available.</p>}
                                 </div>
                             </div>
 
@@ -366,7 +366,7 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
 
                 {/* Main Content */}
                 <div className="flex-1">
-                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                     <div className="relative">
                         {isFetching && (
@@ -374,9 +374,9 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
                         )}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <table className="w-full text-left text-sm text-gray-500">
-                                <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                        <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                            <table className="w-full text-left text-sm text-muted-foreground">
+                                <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                     <tr>
                                         <th className="px-6 py-4">Title</th>
                                         {!lockedCourseId && <th className="px-6 py-4">Course</th>}
@@ -384,24 +384,24 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
                                         <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200">
+                                <tbody className="divide-y divide-border">
                                     {filteredModules.length === 0 ? (
-                                        <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No modules found matching your criteria.</td></tr>
+                                        <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No modules found matching your criteria.</td></tr>
                                     ) : filteredModules.map(m => (
-                                        <tr key={m.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 font-medium text-gray-900">
+                                        <tr key={m.id} className="hover:bg-muted transition-colors">
+                                            <td className="px-6 py-4 font-medium text-foreground">
                                                 <Link href={lockedCourseId ? `/admin/courses/${lockedCourseId}/modules/${m.id}` : `/admin/modules/${m.id}`} className="hover:text-primary transition-colors hover:underline">
                                                     {m.title}
                                                 </Link>
                                             </td>
-                                            {!lockedCourseId && <td className="px-6 py-4 text-gray-600 truncate max-w-[250px]">{getCourseName(m.course)}</td>}
+                                            {!lockedCourseId && <td className="px-6 py-4 text-muted-foreground truncate max-w-[250px]">{getCourseName(m.course)}</td>}
                                             <td className="px-6 py-4 text-center">{m.order}</td>
                                             <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
                                                 {canManage && (
-                                                <button onClick={() => openModal(m)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                                <button onClick={() => openModal(m)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                                 )}
                                                 {canManage && (
-                                                <button onClick={() => handleDelete(m.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                                <button onClick={() => handleDelete(m.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors">Delete</button>
                                                 )}
                                             </td>
                                         </tr>
@@ -412,8 +412,8 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
 
                         {/* Pagination */}
                         {totalCount > pageSize && !selectedCourses.length && !searchTerm && (
-                            <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                                <span className="text-sm text-gray-500">Showing {modules.length} of {totalCount} modules</span>
+                            <div className="mt-6 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                                <span className="text-sm text-muted-foreground">Showing {modules.length} of {totalCount} modules</span>
                                 <div className="flex gap-2">
                                     <Button
                                         variant="outline"
@@ -440,11 +440,11 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Module">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     {!lockedCourseId && (
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Parent Course</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Parent Course</label>
                             <select
                                 className={SELECT_CLS}
                                 value={form.course}

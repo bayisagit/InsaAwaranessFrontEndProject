@@ -25,7 +25,7 @@ const toolThemes: Record<string, { icon: React.ReactNode; color: string }> = {
     },
     'default': {
         icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17l-7.18-4.11m0 0l7.18-4.11m-7.18 4.11v6.16c0 .77.46 1.47 1.18 1.77l6.18 2.57m0-10.5l7.18-4.11m0 0l-7.18-4.11m7.18 4.11v6.16c0 .77-.46 1.47-1.18 1.77l-6.18 2.57M12 21.5V3" /></svg>,
-        color: 'bg-gray-50 text-gray-600'
+        color: 'bg-muted text-muted-foreground'
     }
 };
 
@@ -78,7 +78,7 @@ export default function ToolsLandingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             <PageHeader
                 title="Awareness Tools"
                 description="Practical, hands-on tools designed to build your digital defenses and prepare you for real-world cyber threats."
@@ -111,12 +111,12 @@ export default function ToolsLandingPage() {
                             const theme = getTheme(tool.name);
                             const href = getHref(tool.name);
                             return (
-                                <div key={tool.id} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col items-center text-center">
-                                    <div className={`w-20 h-20 rounded-2xl ${theme.color} flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform`}>
+                                <div key={tool.id} className="bg-card rounded-3xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col items-center text-center">
+                                    <div className={`w-20 h-20 rounded-2xl ${theme.color} flex items-center justify-center mb-6 shadow-sm shadow-black/5 dark:shadow-none group-hover:scale-110 transition-transform`}>
                                         {theme.icon}
                                     </div>
-                                    <h2 className="text-xl font-bold text-gray-900 mb-3">{tool.name}</h2>
-                                    <p className="text-sm text-gray-500 mb-8 flex-1 leading-relaxed">
+                                    <h2 className="text-xl font-bold text-foreground mb-3">{tool.name}</h2>
+                                    <p className="text-sm text-muted-foreground mb-8 flex-1 leading-relaxed">
                                         <LinkifyText text={tool.description} />
                                     </p>
                                     <Link href={href} className="w-full" onClick={() => handleLaunch(tool)}>

@@ -195,13 +195,13 @@ export default function AdminArticlesPage() {
     const getModuleName = (id: string) => modules.find(m => m.id === id)?.title || id;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {/* Header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Articles Management</h1>
-                        <p className="text-gray-500">Manage training module articles and content.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">Articles Management</h1>
+                        <p className="text-muted-foreground">Manage training module articles and content.</p>
                     </div>
                 </div>
             </div>
@@ -209,15 +209,15 @@ export default function AdminArticlesPage() {
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10 flex flex-col lg:flex-row gap-8">
                 {/* Sidebar Filter */}
                 <div className="w-full lg:w-64 shrink-0">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 sticky top-24">
                         <div className="mb-6">
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Search Content</label>
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Search Content</label>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">🔍</span>
                                 <input
                                     type="text"
                                     placeholder="Search articles..."
-                                    className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
+                                    className="w-full pl-9 pr-4 py-2 bg-muted border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -225,13 +225,13 @@ export default function AdminArticlesPage() {
                         </div>
 
                         <div className="mb-6">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Module</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border pb-2">Module</h3>
                             <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                                 {modules.map(module => (
                                     <label key={module.id} className="flex items-start gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
-                                            className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                            className="mt-1 w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                             checked={selectedModules.includes(module.id)}
                                             onChange={() => {
                                                 setSelectedModules(prev =>
@@ -239,20 +239,20 @@ export default function AdminArticlesPage() {
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors leading-tight">{module.title}</span>
+                                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-tight">{module.title}</span>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
                         <div className="mb-6">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Category</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border pb-2">Category</h3>
                             <div className="space-y-2">
                                 {['general', 'technical', 'behavioral', 'compliance'].map(cat => (
                                     <label key={cat} className="flex items-center gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                             checked={selectedCategories.includes(cat)}
                                             onChange={() => {
                                                 setSelectedCategories(prev =>
@@ -260,20 +260,20 @@ export default function AdminArticlesPage() {
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors capitalize">{cat}</span>
+                                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors capitalize">{cat}</span>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
                         <div className="mb-6">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Difficulty</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border pb-2">Difficulty</h3>
                             <div className="space-y-2">
                                 {['beginner', 'intermediate', 'advanced'].map(diff => (
                                     <label key={diff} className="flex items-center gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                             checked={selectedDifficulties.includes(diff)}
                                             onChange={() => {
                                                 setSelectedDifficulties(prev =>
@@ -281,20 +281,20 @@ export default function AdminArticlesPage() {
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors capitalize">{diff}</span>
+                                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors capitalize">{diff}</span>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
                         <div className="mb-8">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Language</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border pb-2">Language</h3>
                             <div className="space-y-2">
                                 {['en', 'am', 'om'].map(lang => (
                                     <label key={lang} className="flex items-center gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                             checked={selectedLanguages.includes(lang)}
                                             onChange={() => {
                                                 setSelectedLanguages(prev =>
@@ -302,7 +302,7 @@ export default function AdminArticlesPage() {
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors uppercase">{lang}</span>
+                                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors uppercase">{lang}</span>
                                     </label>
                                 ))}
                             </div>
@@ -321,7 +321,7 @@ export default function AdminArticlesPage() {
 
                 {/* Main Content */}
                 <div className="flex-1">
-                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                     <ExpandableCreateSection
                         title="Add New Article"
@@ -330,15 +330,15 @@ export default function AdminArticlesPage() {
                     >
                         <form onSubmit={handleFormSubmit} className="space-y-4">
                             {actionError && (
-                                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
+                                <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">
                                     {actionError}
                                 </div>
                             )}
 
                             <div className="mb-4">
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Module <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Module <span className="text-red-500">*</span></label>
                                 <select
-                                    className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium"
+                                    className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card font-medium"
                                     value={formData.module}
                                     onChange={(e) => setFormData({ ...formData, module: e.target.value })}
                                     required
@@ -353,11 +353,11 @@ export default function AdminArticlesPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                <label className="block text-sm font-semibold text-foreground mb-1">
                                     Article Content <span className="text-primary">*</span>
                                 </label>
                                 <textarea
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
+                                    className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
                                     value={formData.content}
                                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                                     required
@@ -367,10 +367,10 @@ export default function AdminArticlesPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Display Order</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Display Order</label>
                                 <input
                                     type="number"
-                                    className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none"
+                                    className="block w-full rounded-lg border border-border py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none"
                                     value={formData.order}
                                     onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
                                     disabled={isActionLoading}
@@ -394,9 +394,9 @@ export default function AdminArticlesPage() {
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
                         )}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <table className="w-full text-left text-sm text-gray-500">
-                                <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                        <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                            <table className="w-full text-left text-sm text-muted-foreground">
+                                <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                     <tr>
                                         <th className="px-6 py-4">Content Preview</th>
                                         <th className="px-6 py-4">Module</th>
@@ -404,16 +404,16 @@ export default function AdminArticlesPage() {
                                         <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200">
+                                <tbody className="divide-y divide-border">
                                     {filteredArticles.length === 0 ? (
-                                        <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No articles found matching your criteria.</td></tr>
+                                        <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No articles found matching your criteria.</td></tr>
                                     ) : filteredArticles.map(a => (
-                                        <tr key={a.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 font-medium text-gray-900 italic truncate max-w-[300px]">"{a.content.substring(0, 80)}..."</td>
-                                            <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{getModuleName(a.module)}</td>
+                                        <tr key={a.id} className="hover:bg-muted transition-colors">
+                                            <td className="px-6 py-4 font-medium text-foreground italic truncate max-w-[300px]">"{a.content.substring(0, 80)}..."</td>
+                                            <td className="px-6 py-4 text-muted-foreground truncate max-w-[200px]">{getModuleName(a.module)}</td>
                                             <td className="px-6 py-4 text-center">{a.order}</td>
                                             <td className="px-6 py-4 text-right whitespace-nowrap">
-                                                <button onClick={() => handleOpenModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                                <button onClick={() => handleOpenModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                                 <button onClick={() => handleDeleteArticle(a.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                             </td>
                                         </tr>
@@ -433,15 +433,15 @@ export default function AdminArticlesPage() {
             >
                 <form onSubmit={handleFormSubmit} className="space-y-4">
                     {actionError && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
+                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">
                             {actionError}
                         </div>
                     )}
 
                     <div className="mb-4">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Module <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Module <span className="text-red-500">*</span></label>
                         <select
-                            className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium"
+                            className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card font-medium"
                             value={formData.module}
                             onChange={(e) => setFormData({ ...formData, module: e.target.value })}
                             required
@@ -456,11 +456,11 @@ export default function AdminArticlesPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-foreground mb-1">
                             Article Content <span className="text-primary">*</span>
                         </label>
                         <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
+                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
                             value={formData.content}
                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                             required
@@ -470,10 +470,10 @@ export default function AdminArticlesPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Display Order</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Display Order</label>
                         <input
                             type="number"
-                            className="block w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none"
+                            className="block w-full rounded-lg border border-border py-2 px-3 text-sm focus:ring-primary focus:border-primary outline-none"
                             value={formData.order}
                             onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
                             disabled={isActionLoading}

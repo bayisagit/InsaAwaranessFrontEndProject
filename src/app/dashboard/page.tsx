@@ -185,11 +185,11 @@ export default function DashboardPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-primary mb-1">Welcome back, {user?.first_name || 'User'}.</h1>
-                        <p className="text-gray-600">
+                        <p className="text-muted-foreground">
                             You have <span className="font-bold text-orange-500">{enrollments.filter(e => e.progress < 100).length} active training sessions</span>. Check latest advisories below.
                         </p>
                     </div>
-                    <button className="bg-white border border-green-200 text-green-700 px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-green-50 transition-colors shadow-sm relative overflow-hidden group">
+                    <button className="bg-card border border-green-200 text-green-700 px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-green-50 transition-colors shadow-sm shadow-black/5 dark:shadow-none relative overflow-hidden group">
                         <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
                         <span className="relative z-10">Live Dashboard &bull; {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         <div className="absolute inset-0 bg-green-50/0 group-hover:bg-green-50/50 transition-colors"></div>
@@ -197,24 +197,24 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Global Alert Banner */}
-                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 mb-8 flex items-start gap-4 shadow-sm relative overflow-hidden">
+                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 mb-8 flex items-start gap-4 shadow-sm shadow-black/5 dark:shadow-none relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-orange-100 to-transparent pointer-events-none"></div>
-                    <div className="w-10 h-10 rounded-full bg-white text-orange-500 flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                    <div className="w-10 h-10 rounded-full bg-card text-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-black/5 dark:shadow-none mt-0.5">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
                     <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
-                            <h3 className="font-bold text-gray-900">{alerts[0]?.title || 'National Threat Advisory'}</h3>
+                            <h3 className="font-bold text-foreground">{alerts[0]?.title || 'National Threat Advisory'}</h3>
                             <span className="bg-orange-600 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded">Action Required</span>
                         </div>
-                        <p className="text-sm text-gray-700 max-w-4xl">
+                        <p className="text-sm text-foreground max-w-4xl">
                             {alerts[0]?.message || 'Phishing campaigns targeting public sector employees increased by 42%. Verify all communications immediately through the official portal.'}
                         </p>
                     </div>
                     <Link href="/dashboard/alerts">
-                        <button className="bg-white border border-orange-200 text-orange-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-50 shrink-0 mt-2 sm:mt-0">
+                        <button className="bg-card border border-orange-200 text-orange-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-orange-50 shrink-0 mt-2 sm:mt-0">
                             View Briefing
                         </button>
                     </Link>
@@ -270,7 +270,7 @@ export default function DashboardPage() {
 
                         {/* Stats Row */}
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold text-gray-900">Resuming Courses</h2>
+                            <h2 className="text-lg font-bold text-foreground">Resuming Courses</h2>
                             <Link href="/courses/enrolled" className="text-xs font-bold text-primary hover:underline">See all enrolled &rarr;</Link>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -279,23 +279,23 @@ export default function DashboardPage() {
                                 const resumeUrl = `/courses/${courseId}`;
 
                                 return (
-                                    <Link key={enrollment.id} href={resumeUrl} className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all group flex gap-4 cursor-pointer relative overflow-hidden">
-                                        <div className="w-16 h-16 shrink-0 bg-gray-100 rounded-xl flex items-center justify-center text-3xl group-hover:scale-110 group-hover:bg-red-50 transition-all overflow-hidden border border-gray-50">
+                                    <Link key={enrollment.id} href={resumeUrl} className="bg-card rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group flex gap-4 cursor-pointer relative overflow-hidden">
+                                        <div className="w-16 h-16 shrink-0 bg-muted/50 rounded-xl flex items-center justify-center text-3xl group-hover:scale-110 group-hover:bg-red-50 transition-all overflow-hidden border border-gray-50">
                                                     {enrollment.course?.thumbnail_url ? (
                                                 <img src={enrollment.course.thumbnail_url} alt={typeof enrollment.course === 'object' ? enrollment.course.title : 'Course thumbnail'} className="w-full h-full object-cover" />
                                             ) : (
-                                                <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                                <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                                 </svg>
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">{typeof enrollment.course === 'object' ? enrollment.course.title : 'Researching Course...'}</h4>
-                                            <p className="text-xs text-gray-500 mb-2">Progress • {enrollment.progress}% completed</p>
-                                            <div className="w-full bg-gray-100 rounded-full h-1.5 mb-1 overflow-hidden">
+                                            <h4 className="font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">{typeof enrollment.course === 'object' ? enrollment.course.title : 'Researching Course...'}</h4>
+                                            <p className="text-xs text-muted-foreground mb-2">Progress • {enrollment.progress}% completed</p>
+                                            <div className="w-full bg-muted/50 rounded-full h-1.5 mb-1 overflow-hidden">
                                                 <div className="bg-primary h-1.5 rounded-full transition-all duration-500" style={{ width: `${enrollment.progress}%` }}></div>
                                             </div>
-                                            <div className="flex justify-between text-[10px] font-bold text-gray-400 mt-2">
+                                            <div className="flex justify-between text-[10px] font-bold text-muted-foreground mt-2">
                                                 <span>{enrollment.progress}% COMPLETED</span>
                                                 <span className="text-primary group-hover:underline cursor-pointer">RESUME &rarr;</span>
                                             </div>
@@ -322,7 +322,7 @@ export default function DashboardPage() {
                         <div>
                             <div className="flex justify-between items-center mb-4">
                                 <div className="flex items-center gap-2">
-                                    <h2 className="text-lg font-bold text-gray-900 border-l-4 border-orange-500 pl-3">Top Recommendations</h2>
+                                    <h2 className="text-lg font-bold text-foreground border-l-4 border-orange-500 pl-3">Top Recommendations</h2>
                                     <span className="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded font-bold">{recommendedCourses.length}</span>
                                 </div>
                                 <Link href="/courses" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">View full catalog &rarr;</Link>
@@ -330,8 +330,8 @@ export default function DashboardPage() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 {recommendedCourses.map((course) => (
-                                    <div key={course.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:border-primary/30 transition-colors">
-                                        <div className="h-32 bg-secondary relative overflow-hidden border-b border-gray-800 flex items-center justify-center">
+                                    <div key={course.id} className="bg-card rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden flex flex-col hover:border-primary/30 transition-colors">
+                                        <div className="h-32 bg-secondary relative overflow-hidden border-b border-border flex items-center justify-center">
                                             {course.thumbnail_url ? (
                                                 <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
                                             ) : (
@@ -342,22 +342,22 @@ export default function DashboardPage() {
                                             )}
 
                                             <div className="absolute bottom-3 left-3 flex gap-2">
-                                                <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">NEW</span>
-                                                <span className={`text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm shadow-sm ${(course as any).level === 'beginner' ? 'bg-green-500/50' : (course as any).level === 'medium' ? 'bg-yellow-500/50' : 'bg-red-500/50'
+                                                <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm shadow-black/5 dark:shadow-none">NEW</span>
+                                                <span className={`text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm shadow-sm shadow-black/5 dark:shadow-none ${(course as any).level === 'beginner' ? 'bg-green-500/50' : (course as any).level === 'medium' ? 'bg-yellow-500/50' : 'bg-red-500/50'
                                                     }`}>
                                                     {(course as any).level || 'beginner'}
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="p-5 flex flex-col flex-1">
-                                            <h3 className="font-bold text-gray-900 mb-2">{course.title}</h3>
-                                            <p className="text-xs text-gray-500 mb-6 flex-1 line-clamp-2">
+                                            <h3 className="font-bold text-foreground mb-2">{course.title}</h3>
+                                            <p className="text-xs text-muted-foreground mb-6 flex-1 line-clamp-2">
                                                 <LinkifyText text={course.description} />
                                             </p>
                                             <button
                                                 onClick={() => handleEnroll(course.id)}
                                                 disabled={actionLoading === course.id}
-                                                className="w-full bg-primary text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm disabled:opacity-50"
+                                                className="w-full bg-primary text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm shadow-black/5 dark:shadow-none disabled:opacity-50"
                                             >
                                                 {actionLoading === course.id ? 'Enrolling...' : 'Enroll Now'}
                                             </button>
@@ -387,45 +387,45 @@ export default function DashboardPage() {
                         <div>
                             <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">Quick Actions</h2>
                             <div className="space-y-3">
-                                <Link href="/tools/phishing" className="bg-white border text-left border-gray-100 p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm cursor-pointer transition-all group w-full">
+                                <Link href="/tools/phishing" className="bg-card border text-left border-border p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm shadow-black/5 dark:shadow-none cursor-pointer transition-all group w-full">
                                     <div className="w-10 h-10 rounded-full bg-red-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                         </svg>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-bold text-gray-900 text-sm">Phishing Test</h4>
-                                        <p className="text-xs text-gray-500">Practice spotting threats.</p>
+                                        <h4 className="font-bold text-foreground text-sm">Phishing Test</h4>
+                                        <p className="text-xs text-muted-foreground">Practice spotting threats.</p>
                                     </div>
                                     <svg className="w-4 h-4 text-gray-300 group-hover:text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 </Link>
 
-                                <Link href="/tools/password-strength" className="bg-white border text-left border-gray-100 p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm cursor-pointer transition-all group w-full">
+                                <Link href="/tools/password-strength" className="bg-card border text-left border-border p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm shadow-black/5 dark:shadow-none cursor-pointer transition-all group w-full">
                                     <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                         </svg>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-bold text-gray-900 text-sm">Password Check</h4>
-                                        <p className="text-xs text-gray-500">Test credentials strength.</p>
+                                        <h4 className="font-bold text-foreground text-sm">Password Check</h4>
+                                        <p className="text-xs text-muted-foreground">Test credentials strength.</p>
                                     </div>
                                     <svg className="w-4 h-4 text-gray-300 group-hover:text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 </Link>
 
-                                <div className="bg-white border text-left border-gray-100 p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm cursor-pointer transition-all group w-full" onClick={() => setIsRequestModalOpen(true)}>
+                                <div className="bg-card border text-left border-border p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm shadow-black/5 dark:shadow-none cursor-pointer transition-all group w-full" onClick={() => setIsRequestModalOpen(true)}>
                                     <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-colors shrink-0">
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                         </svg>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-bold text-gray-900 text-sm">Request Training</h4>
-                                        <p className="text-xs text-gray-500">Need specific content?</p>
+                                        <h4 className="font-bold text-foreground text-sm">Request Training</h4>
+                                        <p className="text-xs text-muted-foreground">Need specific content?</p>
                                     </div>
                                     <svg className="w-4 h-4 text-gray-300 group-hover:text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -440,9 +440,9 @@ export default function DashboardPage() {
                                 <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">My Requests</h2>
                                 <div className="space-y-3">
                                     {myRequests.slice(0, 3).map(req => (
-                                        <div key={req.id} className="bg-white border border-gray-100 p-4 rounded-xl shadow-sm">
+                                        <div key={req.id} className="bg-card border border-border p-4 rounded-xl shadow-sm shadow-black/5 dark:shadow-none">
                                             <div className="flex justify-between items-start mb-1">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate max-w-[120px]">
+                                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate max-w-[120px]">
                                                     <LinkifyText text={req.description} />
                                                 </span>
                                                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-tighter ${req.status === 'approved' ? 'bg-green-50 text-green-600' :
@@ -452,7 +452,7 @@ export default function DashboardPage() {
                                                     {req.status || 'pending'}
                                                 </span>
                                             </div>
-                                            <p className="text-[10px] text-gray-400">{new Date(req.created_at).toLocaleDateString()}</p>
+                                            <p className="text-[10px] text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -463,13 +463,13 @@ export default function DashboardPage() {
                         <div>
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-sm font-bold text-primary tracking-wider uppercase">Latest Intelligence</h2>
-                                <button className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors" aria-label="Refresh intelligence">
+                                <button className="text-muted-foreground hover:text-muted-foreground p-1 rounded-lg hover:bg-muted/50 transition-colors" aria-label="Refresh intelligence">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
                                 </button>
                             </div>
-                            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm relative hover:shadow-md transition-shadow">
+                            <div className="bg-card border border-border rounded-2xl p-5 shadow-sm shadow-black/5 dark:shadow-none relative hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
                                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-gray-50 flex justify-end p-2 rounded-tr-2xl text-gray-300 pointer-events-none">
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -478,24 +478,24 @@ export default function DashboardPage() {
 
                                 <div className="space-y-4">
                                     {alerts.slice(0, 3).map((alert, i) => (
-                                        <div key={alert.id} className={i !== 2 ? "border-b border-gray-100 pb-4" : ""}>
-                                            <div className="flex justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+                                        <div key={alert.id} className={i !== 2 ? "border-b border-border pb-4" : ""}>
+                                            <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">
                                                 <span className={alert.severity === 'high' ? 'text-red-500' : 'text-primary'}>
                                                     {alert.severity}
                                                 </span>
                                                 <span>{new Date(alert.published_at).toLocaleDateString()}</span>
                                             </div>
-                                            <p className="text-sm font-medium text-gray-900 hover:text-primary cursor-pointer leading-tight transition-colors line-clamp-2">
+                                            <p className="text-sm font-medium text-foreground hover:text-primary cursor-pointer leading-tight transition-colors line-clamp-2">
                                                 {alert.title}
                                             </p>
                                         </div>
                                     ))}
                                     {alerts.length === 0 && !isFetching && (
-                                        <p className="text-xs text-gray-500 text-center py-4">No active advisories.</p>
+                                        <p className="text-xs text-muted-foreground text-center py-4">No active advisories.</p>
                                     )}
                                 </div>
 
-                                <div className="mt-5 pt-4 border-t border-gray-100 text-center">
+                                <div className="mt-5 pt-4 border-t border-border text-center">
                                     <Link href="/alerts" className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-500 uppercase tracking-widest hover:underline">
                                         View Full Intel Briefing
                                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -516,11 +516,11 @@ export default function DashboardPage() {
             >
                 <form onSubmit={handleRequestSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-foreground mb-1">
                             Training Description
                         </label>
                         <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px]"
+                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px]"
                             placeholder="Describe the training requirements for your organization..."
                             value={requestFormData.description}
                             onChange={(e) => setRequestFormData({ ...requestFormData, description: e.target.value })}
@@ -529,7 +529,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="space-y-1">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-foreground mb-1">
                             Supporting Document (Optional PDF)
                         </label>
                         <CloudinaryUpload
@@ -558,13 +558,13 @@ export default function DashboardPage() {
 
             <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title="Complete Your Profile">
                 <div className="text-center py-4">
-                    <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
                         <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">Profile Required</h3>
-                    <p className="text-sm text-gray-600 mb-6 max-w-xs mx-auto">
+                    <h3 className="text-lg font-bold text-foreground mb-2">Profile Required</h3>
+                    <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
                         Please complete your background profile before enrolling in this course.
                     </p>
                     <div className="flex flex-col gap-3">

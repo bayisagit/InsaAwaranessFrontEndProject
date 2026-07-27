@@ -77,13 +77,13 @@ export default function SelfAssessmentPage() {
     if (isFinished) {
         const result = getResult();
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
-                <div className="max-w-xl w-full bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-12 relative overflow-hidden">
+            <div className="min-h-screen bg-muted flex items-center justify-center p-6 text-center">
+                <div className="max-w-xl w-full bg-card rounded-[3rem] shadow-2xl border border-border p-12 relative overflow-hidden">
                     <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-primary via-secondary to-primary"></div>
                     <div className="text-6xl mb-6">{result.icon}</div>
-                    <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Your Assessment Result</h2>
+                    <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">Your Assessment Result</h2>
                     <h3 className={`text-4xl font-extrabold mb-4 ${result.color}`}>{result.title}</h3>
-                    <p className="text-gray-600 mb-10 leading-relaxed text-lg">{result.desc}</p>
+                    <p className="text-muted-foreground mb-10 leading-relaxed text-lg">{result.desc}</p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                         <Link href="/courses" className="w-full">
@@ -96,7 +96,7 @@ export default function SelfAssessmentPage() {
 
                     <button
                         onClick={() => { setCurrentStep(0); setScore(0); setIsFinished(false); }}
-                        className="text-xs font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-widest"
+                        className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
                     >
                         Retake Assessment
                     </button>
@@ -108,7 +108,7 @@ export default function SelfAssessmentPage() {
     const current = questions[currentStep];
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             <PageHero
                 title="Knowledge Assessment"
                 description="Benchmark your cybersecurity posture."
@@ -123,9 +123,9 @@ export default function SelfAssessmentPage() {
             />
 
             <div className="max-w-3xl mx-auto px-6 mt-20">
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-10 md:p-16">
+                <div className="bg-card rounded-3xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-10 md:p-16">
                     <span className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-4 block">Question {currentStep + 1} of {questions.length}</span>
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-12 leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-12 leading-tight">
                         {current.question}
                     </h2>
 
@@ -134,16 +134,16 @@ export default function SelfAssessmentPage() {
                             <button
                                 key={i}
                                 onClick={() => handleAnswer(opt.points)}
-                                className="w-full text-left p-6 rounded-2xl border border-gray-100 hover:border-primary/30 hover:bg-primary/[0.02] hover:shadow-md transition-all group flex items-center justify-between"
+                                className="w-full text-left p-6 rounded-2xl border border-border hover:border-primary/30 hover:bg-primary/[0.02] hover:shadow-md shadow-black/10 dark:shadow-none transition-all group flex items-center justify-between"
                             >
-                                <span className="font-medium text-gray-700 group-hover:text-gray-900">{opt.text}</span>
-                                <span className="w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center text-[10px] group-hover:bg-primary group-hover:border-primary transition-colors text-transparent group-hover:text-white">✓</span>
+                                <span className="font-medium text-foreground group-hover:text-foreground">{opt.text}</span>
+                                <span className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-[10px] group-hover:bg-primary group-hover:border-primary transition-colors text-transparent group-hover:text-white">✓</span>
                             </button>
                         ))}
                     </div>
                 </div>
 
-                <p className="mt-8 text-center text-xs text-gray-400 italic">
+                <p className="mt-8 text-center text-xs text-muted-foreground italic">
                     All answers are confidential and used only to provide you with better learning recommendations.
                 </p>
             </div>

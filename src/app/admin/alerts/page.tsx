@@ -27,7 +27,7 @@ interface Organization {
     name: string;
 }
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
 export default function AdminAlertsPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -173,17 +173,17 @@ export default function AdminAlertsPage() {
     if (!user || user.role !== 'super_admin') return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
+        <div className="min-h-screen bg-muted pb-20">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Alerts Management</h1>
-                        <p className="text-gray-500">Create and publish cybersecurity advisories.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-1">Alerts Management</h1>
+                        <p className="text-muted-foreground">Create and publish cybersecurity advisories.</p>
                     </div>
                 </div>
             </div>
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="flex-1">
@@ -201,41 +201,41 @@ export default function AdminAlertsPage() {
                     onToggle={toggleCreate}
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
                         <Input label="Alert Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
                                 <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
-                                    <option value="" className="text-gray-900">Select Organization</option>
-                                    {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
+                                    <option value="" className="text-foreground">Select Organization</option>
+                                    {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Severity</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Severity</label>
                                 <select className={SELECT_CLS} value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value })} disabled={isActionLoading}>
-                                    <option value="low" className="text-gray-900">Low</option>
-                                    <option value="medium" className="text-gray-900">Medium</option>
-                                    <option value="high" className="text-gray-900">High</option>
+                                    <option value="low" className="text-foreground">Low</option>
+                                    <option value="medium" className="text-foreground">Medium</option>
+                                    <option value="high" className="text-foreground">High</option>
                                 </select>
                             </div>
                         </div>
 
                         <div className="flex gap-6 py-2">
                             <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" checked={form.notify_email} onChange={e => setForm({ ...form, notify_email: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" />
-                                <span className="text-sm text-gray-700 font-medium">Notify via Email</span>
+                                <input type="checkbox" checked={form.notify_email} onChange={e => setForm({ ...form, notify_email: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-border focus:ring-primary" />
+                                <span className="text-sm text-foreground font-medium">Notify via Email</span>
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" checked={form.notify_sms} onChange={e => setForm({ ...form, notify_sms: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" />
-                                <span className="text-sm text-gray-700 font-medium">Notify via SMS</span>
+                                <input type="checkbox" checked={form.notify_sms} onChange={e => setForm({ ...form, notify_sms: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-border focus:ring-primary" />
+                                <span className="text-sm text-foreground font-medium">Notify via SMS</span>
                             </label>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Message Content</label>
-                            <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter alert message details..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
+                            <label className="block text-sm font-semibold text-foreground mb-1">Message Content</label>
+                            <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter alert message details..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
                         </div>
                         <div className="pt-4 flex justify-end gap-3">
                             <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
@@ -244,9 +244,9 @@ export default function AdminAlertsPage() {
                     </form>
                 </ExpandableCreateSection>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table className="w-full text-left text-sm text-gray-500">
-                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                    <table className="w-full text-left text-sm text-muted-foreground">
+                        <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                             <tr>
                                 <th className="px-6 py-4">Severity / Status</th>
                                 <th className="px-6 py-4">Title / Message</th>
@@ -254,11 +254,11 @@ export default function AdminAlertsPage() {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-border">
                             {alerts.length === 0 ? (
-                                <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-500">No alerts yet.</td></tr>
+                                <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No alerts yet.</td></tr>
                             ) : alerts.map(a => (
-                                <tr key={a.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={a.id} className="hover:bg-muted transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
                                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest w-fit ${a.severity === 'high' ? 'bg-red-50 text-red-700' :
@@ -267,15 +267,15 @@ export default function AdminAlertsPage() {
                                                 }`}>
                                                 {a.severity}
                                             </span>
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest w-fit ${a.status === 'published' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest w-fit ${a.status === 'published' ? 'bg-green-50 text-green-700' : 'bg-muted/50 text-muted-foreground'
                                                 }`}>
                                                 {a.status}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="font-medium text-gray-900">{a.title}</div>
-                                        <div className="text-gray-500 truncate max-w-sm">{a.message}</div>
+                                        <div className="font-medium text-foreground">{a.title}</div>
+                                        <div className="text-muted-foreground truncate max-w-sm">{a.message}</div>
                                     </td>
                                     <td className="px-6 py-4 text-xs whitespace-nowrap">
                                         {a.published_at ? new Date(a.published_at).toLocaleDateString() : 'Not published'}
@@ -284,7 +284,7 @@ export default function AdminAlertsPage() {
                                         {a.status !== 'published' && (
                                             <button onClick={() => handlePublish(a.id)} className="text-green-600 hover:text-green-800 font-medium mr-3 transition-colors">Publish</button>
                                         )}
-                                        <button onClick={() => openModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                        <button onClick={() => openModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                         <button onClick={() => handleDelete(a.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                     </td>
                                 </tr>
@@ -294,8 +294,8 @@ export default function AdminAlertsPage() {
                 </div>
 
                 {totalCount > pageSize && (
-                    <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                        <span className="text-sm text-gray-500">Showing {alerts.length} of {totalCount} alerts</span>
+                    <div className="mt-6 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                        <span className="text-sm text-muted-foreground">Showing {alerts.length} of {totalCount} alerts</span>
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"
@@ -319,41 +319,41 @@ export default function AdminAlertsPage() {
             </div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Alert">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
                     <Input label="Alert Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
                             <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
-                                <option value="" className="text-gray-900">Select Organization</option>
-                                {orgs.map(o => <option key={o.id} value={o.id} className="text-gray-900">{o.name}</option>)}
+                                <option value="" className="text-foreground">Select Organization</option>
+                                {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Severity</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Severity</label>
                             <select className={SELECT_CLS} value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value })} disabled={isActionLoading}>
-                                <option value="low" className="text-gray-900">Low</option>
-                                <option value="medium" className="text-gray-900">Medium</option>
-                                <option value="high" className="text-gray-900">High</option>
+                                <option value="low" className="text-foreground">Low</option>
+                                <option value="medium" className="text-foreground">Medium</option>
+                                <option value="high" className="text-foreground">High</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="flex gap-6 py-2">
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" checked={form.notify_email} onChange={e => setForm({ ...form, notify_email: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" />
-                            <span className="text-sm text-gray-700 font-medium">Notify via Email</span>
+                            <input type="checkbox" checked={form.notify_email} onChange={e => setForm({ ...form, notify_email: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-border focus:ring-primary" />
+                            <span className="text-sm text-foreground font-medium">Notify via Email</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" checked={form.notify_sms} onChange={e => setForm({ ...form, notify_sms: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" />
-                            <span className="text-sm text-gray-700 font-medium">Notify via SMS</span>
+                            <input type="checkbox" checked={form.notify_sms} onChange={e => setForm({ ...form, notify_sms: e.target.checked })} disabled={isActionLoading} className="w-4 h-4 text-primary rounded border-border focus:ring-primary" />
+                            <span className="text-sm text-foreground font-medium">Notify via SMS</span>
                         </label>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Message Content</label>
-                        <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter alert message details..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
+                        <label className="block text-sm font-semibold text-foreground mb-1">Message Content</label>
+                        <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter alert message details..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
                     </div>
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>

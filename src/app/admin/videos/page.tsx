@@ -132,12 +132,12 @@ export default function AdminVideosPage() {
     const getModuleName = (id: string) => modules.find(m => m.id === id)?.title || id;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
+        <div className="min-h-screen bg-muted pb-20">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Videos Management</h1>
-                        <p className="text-gray-500">Add and manage training videos for modules.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-1">Videos Management</h1>
+                        <p className="text-muted-foreground">Add and manage training videos for modules.</p>
                     </div>
                 </div>
             </div>
@@ -145,29 +145,29 @@ export default function AdminVideosPage() {
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10 flex flex-col lg:flex-row gap-8">
                 {/* Sidebar Filter */}
                 <div className="w-full lg:w-64 shrink-0">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 sticky top-24">
                         <div className="mb-6">
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Search</label>
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Search</label>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">🔍</span>
                                 <input
                                     type="text"
                                     placeholder="Search by video URL..."
-                                    className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                    className="w-full pl-9 pr-4 py-2 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
                         </div>
 
-                        <div className="mb-8 border-b border-gray-100 pb-2">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Module</h3>
+                        <div className="mb-8 border-b border-border pb-2">
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Module</h3>
                             <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                                 {modules.map(module => (
                                     <label key={module.id} className="flex items-start gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
-                                            className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                            className="mt-1 w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                             checked={selectedModules.includes(module.id)}
                                             onChange={() => {
                                                 setSelectedModules(prev =>
@@ -175,7 +175,7 @@ export default function AdminVideosPage() {
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors leading-tight">{module.title}</span>
+                                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-tight">{module.title}</span>
                                     </label>
                                 ))}
                             </div>
@@ -194,7 +194,7 @@ export default function AdminVideosPage() {
 
                 {/* Main Content */}
                 <div className="flex-1">
-                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                     <ExpandableCreateSection
                         title="Add New Video"
@@ -202,11 +202,11 @@ export default function AdminVideosPage() {
                         onToggle={toggleCreate}
                     >
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                            {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Module <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Module <span className="text-red-500">*</span></label>
                                 <select
-                                    className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium"
+                                    className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card font-medium"
                                     value={form.module}
                                     onChange={e => setForm({ ...form, module: e.target.value })}
                                     required
@@ -236,9 +236,9 @@ export default function AdminVideosPage() {
                         </form>
                     </ExpandableCreateSection>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                        <table className="w-full text-left text-sm text-muted-foreground">
+                            <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                 <tr>
                                     <th className="px-6 py-4">Video URL</th>
                                     <th className="px-6 py-4">Module</th>
@@ -247,21 +247,21 @@ export default function AdminVideosPage() {
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-border">
                                 {filteredVideos.length === 0 ? (
-                                    <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">No videos found matching your criteria.</td></tr>
+                                    <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">No videos found matching your criteria.</td></tr>
                                 ) : filteredVideos.map(v => (
-                                    <tr key={v.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900 truncate max-w-[200px]">
+                                    <tr key={v.id} className="hover:bg-muted transition-colors">
+                                        <td className="px-6 py-4 font-medium text-foreground truncate max-w-[200px]">
                                             <a href={v.video_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                                                 {v.video_url}
                                             </a>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{getModuleName(v.module)}</td>
+                                        <td className="px-6 py-4 text-muted-foreground truncate max-w-[200px]">{getModuleName(v.module)}</td>
                                         <td className="px-6 py-4 text-center">{v.duration} min</td>
                                         <td className="px-6 py-4 text-center">{v.order}</td>
                                         <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            <button onClick={() => openModal(v)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                            <button onClick={() => openModal(v)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                             <button onClick={() => handleDelete(v.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                         </td>
                                     </tr>
@@ -274,11 +274,11 @@ export default function AdminVideosPage() {
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Video">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Module <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Module <span className="text-red-500">*</span></label>
                         <select
-                            className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium"
+                            className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card font-medium"
                             value={form.module}
                             onChange={e => setForm({ ...form, module: e.target.value })}
                             required

@@ -80,15 +80,15 @@ function CallbackContent() {
 
     if (status === 'error') {
         return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 bg-gray-50">
-                <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 bg-muted">
+                <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                     <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">Sign-in Failed</h2>
-                    <p className="text-sm text-gray-600 mb-6">{errorMsg}</p>
+                    <h2 className="text-2xl font-bold text-foreground mb-3">Sign-in Failed</h2>
+                    <p className="text-sm text-muted-foreground mb-6">{errorMsg}</p>
                     <button
                         onClick={() => router.push('/login')}
                         className="text-sm font-semibold text-primary hover:underline"
@@ -101,8 +101,8 @@ function CallbackContent() {
     }
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 bg-gray-50">
-            <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 bg-muted">
+            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                 <div className="flex justify-center mb-6">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                         <svg className="w-8 h-8 text-primary animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,8 +110,8 @@ function CallbackContent() {
                         </svg>
                     </div>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">Completing Sign-in</h2>
-                <p className="text-sm text-gray-600">Please wait while we securely connect your account...</p>
+                <h2 className="text-2xl font-bold text-foreground mb-3">Completing Sign-in</h2>
+                <p className="text-sm text-muted-foreground">Please wait while we securely connect your account...</p>
             </div>
         </div>
     );
@@ -120,7 +120,7 @@ function CallbackContent() {
 export default function AuthCallbackPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-[80vh] flex items-center justify-center bg-gray-50">
+            <div className="min-h-[80vh] flex items-center justify-center bg-muted">
                 <div aria-label="Loading" className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
             </div>
         }>

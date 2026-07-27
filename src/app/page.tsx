@@ -6,7 +6,7 @@ import { ContactSection } from '@/components/sections/ContactSection';
 
 export default function Home() {
   return (
-    <div className="w-full flex-col flex bg-white">
+    <div className="w-full flex-col flex bg-card">
       {/* Hero Section */}
       <section className="relative overflow-hidden w-full px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center flex flex-col items-center"
         style={{ backgroundImage: "url('/background.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
@@ -32,7 +32,7 @@ export default function Home() {
             <Button variant="primary" size="lg">Explore Courses &rarr;</Button>
           </Link>
           <Link href="/login" aria-label="Sign In to your account">
-            <Button variant="outline" size="lg" className="border-gray-300 text-white hover:bg-white/10">Sign In</Button>
+            <Button variant="outline" size="lg" className="border-border text-white hover:bg-white/10">Sign In</Button>
           </Link>
         </div>
 
@@ -59,23 +59,23 @@ export default function Home() {
       </section>
 
       {/* Strategic Pillars */}
-      <section className="py-24 bg-gray-50 px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-muted px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Strategic Pillars of Defense</h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Strategic Pillars of Defense</h2>
+          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
             Guiding principles outlining our national commitment to a secure digital environment for all citizens and organizations.
           </p>
 
           <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Pillar 1 */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow">
+            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
               <div className="w-12 h-12 rounded-xl bg-red-50 text-primary flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Educate & Train</h3>
-              <p className="mt-3 text-gray-600 text-sm leading-relaxed mb-6">
+              <h3 className="text-lg font-semibold text-foreground">Educate & Train</h3>
+              <p className="mt-3 text-muted-foreground text-sm leading-relaxed mb-6">
                 Equipping all citizens and organizations with essential cybersecurity skills through interactive modules.
               </p>
               <Link href="/courses" className="text-primary font-semibold text-sm hover:underline flex items-center gap-1" aria-label="Explore educational modules">
@@ -84,14 +84,14 @@ export default function Home() {
             </div>
 
             {/* Pillar 2 */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow">
+            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
               <div className="w-12 h-12 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Alert & Inform</h3>
-              <p className="mt-3 text-gray-600 text-sm leading-relaxed mb-6">
+              <h3 className="text-lg font-semibold text-foreground">Alert & Inform</h3>
+              <p className="mt-3 text-muted-foreground text-sm leading-relaxed mb-6">
                 Providing timely, reliable alerts regarding active ransomware and phishing campaigns.
               </p>
               <Link href="/dashboard" className="text-yellow-600 font-semibold text-sm hover:underline flex items-center gap-1" aria-label="View latest security alerts">
@@ -100,14 +100,14 @@ export default function Home() {
             </div>
 
             {/* Pillar 3 */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow">
+            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
               <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Protect & Empower</h3>
-              <p className="mt-3 text-gray-600 text-sm leading-relaxed mb-6">
+              <h3 className="text-lg font-semibold text-foreground">Protect & Empower</h3>
+              <p className="mt-3 text-muted-foreground text-sm leading-relaxed mb-6">
                 Delivering actionable guidance and tools to establish robust digital defenses for all sectors.
               </p>
               <Link href="/tools" className="text-green-600 font-semibold text-sm hover:underline flex items-center gap-1" aria-label="Explore security tools">
@@ -119,12 +119,12 @@ export default function Home() {
       </section>
 
       {/* Tailored Guidance */}
-      <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-card px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
           <div className="lg:col-span-1">
             <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 block">Sector Specific</span>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Tailored Guidance for Every Sector</h2>
-            <p className="mt-4 text-gray-600 leading-relaxed">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Tailored Guidance for Every Sector</h2>
+            <p className="mt-4 text-muted-foreground leading-relaxed">
               Cyber threats don&apos;t stop when you log off. Access specialized resources, frameworks, and actionable advice crafted specifically for your sector&apos;s needs.
             </p>
             <Link href="/resources" aria-label="View all resource categories">
@@ -133,71 +133,71 @@ export default function Home() {
           </div>
 
           <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
-              <h4 className="font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Incident Response Playbooks</h4>
-              <p className="text-sm text-gray-600 line-clamp-2">Step-by-step guides for containing and eradicating active threats in your environment.</p>
+            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+              <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">Incident Response Playbooks</h4>
+              <p className="text-sm text-muted-foreground line-clamp-2">Step-by-step guides for containing and eradicating active threats in your environment.</p>
             </div>
-            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
-              <h4 className="font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Compliance Frameworks</h4>
-              <p className="text-sm text-gray-600 line-clamp-2">Mapped controls for ISO 27001, NIST CSF, and national cybersecurity mandates.</p>
+            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+              <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">Compliance Frameworks</h4>
+              <p className="text-sm text-muted-foreground line-clamp-2">Mapped controls for ISO 27001, NIST CSF, and national cybersecurity mandates.</p>
             </div>
-            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
-              <h4 className="font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Threat Modeling Templates</h4>
-              <p className="text-sm text-gray-600 line-clamp-2">Standardized documentation for identifying architectural vulnerabilities before deployment.</p>
+            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+              <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">Threat Modeling Templates</h4>
+              <p className="text-sm text-muted-foreground line-clamp-2">Standardized documentation for identifying architectural vulnerabilities before deployment.</p>
             </div>
-            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
-              <h4 className="font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Security Awareness Kits</h4>
-              <p className="text-sm text-gray-600 line-clamp-2">Printable posters, email templates, and presentation decks for internal campaigns.</p>
+            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+              <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">Security Awareness Kits</h4>
+              <p className="text-sm text-muted-foreground line-clamp-2">Printable posters, email templates, and presentation decks for internal campaigns.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Recent Threat Alerts */}
-      <section className="py-24 bg-gray-50 px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-muted px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
               <span className="w-1.5 h-6 bg-primary rounded-full"></span> Recent Threat Alerts
             </h2>
-            <Link href="/dashboard" className="text-sm font-semibold text-gray-500 hover:text-gray-900" aria-label="View all threat alerts">
+            <Link href="/dashboard" className="text-sm font-semibold text-muted-foreground hover:text-foreground" aria-label="View all threat alerts">
               View All Alerts &rarr;
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 border-t-4 border-red-500 rounded-b-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300 group">
+            <div className="bg-card p-6 border-t-4 border-red-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-red-500 uppercase tracking-wider bg-red-50 px-2 py-1 rounded">Critical</span>
-                <span className="text-xs text-gray-400">1 hour ago</span>
+                <span className="text-xs text-muted-foreground">1 hour ago</span>
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors">Global Ransomware Campaign</h4>
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">A coordinated ransomware attack is targeting national infrastructure. Ensure all systems are patched and offline backups are secured immediately.</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline group-hover:text-primary transition-colors" aria-label="Read details about Global Ransomware Campaign alert">
+              <h4 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">Global Ransomware Campaign</h4>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">A coordinated ransomware attack is targeting national infrastructure. Ensure all systems are patched and offline backups are secured immediately.</p>
+              <Link href="/dashboard" className="text-xs font-semibold text-foreground underline group-hover:text-primary transition-colors" aria-label="Read details about Global Ransomware Campaign alert">
                 Read Details &rarr;
               </Link>
             </div>
 
-            <div className="bg-white p-6 border-t-4 border-yellow-500 rounded-b-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300 group">
+            <div className="bg-card p-6 border-t-4 border-yellow-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-yellow-600 uppercase tracking-wider bg-yellow-50 px-2 py-1 rounded">High</span>
-                <span className="text-xs text-gray-400">5 hours ago</span>
+                <span className="text-xs text-muted-foreground">5 hours ago</span>
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Tax Season Phishing</h4>
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">Cybercriminals are sending fraudulent emails impersonating the tax authority. Do not click links or download attachments from unknown senders.</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline" aria-label="Read details about Tax Season Phishing alert">
+              <h4 className="font-semibold text-foreground mb-2">Tax Season Phishing</h4>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">Cybercriminals are sending fraudulent emails impersonating the tax authority. Do not click links or download attachments from unknown senders.</p>
+              <Link href="/dashboard" className="text-xs font-semibold text-foreground underline" aria-label="Read details about Tax Season Phishing alert">
                 Read Details &rarr;
               </Link>
             </div>
 
-            <div className="bg-white p-6 border-t-4 border-blue-500 rounded-b-xl shadow-sm">
+            <div className="bg-card p-6 border-t-4 border-blue-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-2 py-1 rounded">Update</span>
-                <span className="text-xs text-gray-400">1 day ago</span>
+                <span className="text-xs text-muted-foreground">1 day ago</span>
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Browser Security Patch</h4>
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">Major browser vendors have released critical updates to address a zero-day vulnerability in rendering engines. Please update immediately.</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-gray-900 underline" aria-label="Read details about Browser Security Patch update">
+              <h4 className="font-semibold text-foreground mb-2">Browser Security Patch</h4>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">Major browser vendors have released critical updates to address a zero-day vulnerability in rendering engines. Please update immediately.</p>
+              <Link href="/dashboard" className="text-xs font-semibold text-foreground underline" aria-label="Read details about Browser Security Patch update">
                 Read Details &rarr;
               </Link>
             </div>
@@ -222,12 +222,12 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/signup" aria-label="Create a free account">
-              <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+              <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all">
                 Create Free Account
               </Button>
             </Link>
             <Link href="/resources" aria-label="Explore cybersecurity resources">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
                 Explore Resources
               </Button>
             </Link>

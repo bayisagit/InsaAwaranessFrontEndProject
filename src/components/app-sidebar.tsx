@@ -389,7 +389,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} tooltip="Log out" className="flex items-center gap-3 w-full text-red-500 hover:text-red-600 hover:bg-red-50">
+            <SidebarMenuButton onClick={handleLogout} tooltip="Log out" className="flex items-center gap-3 w-full text-red-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10">
               <LogOut className="size-4 shrink-0" />
               <span>Log out</span>
             </SidebarMenuButton>

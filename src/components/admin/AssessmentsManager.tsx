@@ -23,8 +23,8 @@ import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
-const SELECT_CLS = 'block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white';
-const LABEL_CLS = 'block text-sm font-semibold text-gray-700 mb-1';
+const SELECT_CLS = 'block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card';
+const LABEL_CLS = 'block text-sm font-semibold text-foreground mb-1';
 
 type ParentType = 'lesson_assessment' | 'module_quiz' | 'course_exam';
 
@@ -277,28 +277,28 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
     const canManage = user.role === 'super_admin' || user.role === 'course_provider';
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {/* Header */}
             {!lockedLessonId && (
-                <div className="bg-white border-b border-gray-200">
+                <div className="bg-card border-b border-border">
                     <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-1">Assessment Management</h1>
-                            <p className="text-gray-500">Create and manage course exams, module quizzes, and lesson assessments.</p>
+                            <h1 className="text-3xl font-bold text-foreground mb-1">Assessment Management</h1>
+                            <p className="text-muted-foreground">Create and manage course exams, module quizzes, and lesson assessments.</p>
                         </div>
                     </div>
                 </div>
             )}
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 {/* Type filter */}
                 {!lockedLessonId && !lockedModuleId && (
                     <div className="flex gap-3 mb-6 flex-wrap">
                         {(['', 'lesson_assessment', 'module_quiz', 'course_exam'] as const).map(t => (
                             <button key={t} onClick={() => { setFilterType(t); setPage(1); }}
-                                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${filterType === t ? 'bg-primary text-white border-primary' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}>
+                                className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${filterType === t ? 'bg-primary text-white border-primary' : 'bg-card text-muted-foreground border-border hover:border-gray-400'}`}>
                                 {t === '' ? 'All' : `${PARENT_LABELS[t].icon} ${PARENT_LABELS[t].label}`}
                             </button>
                         ))}
@@ -318,13 +318,13 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                     ] : []}
                 >
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                         <div>
                             <label className={LABEL_CLS}>Assessment Type <span className="text-primary">*</span></label>
                             {urlContext.isLocked ? (
                                 <div className="flex gap-3">
-                                    <div className="flex-1 py-2.5 px-4 rounded-lg border font-semibold text-sm bg-primary text-white border-primary shadow text-center">
+                                    <div className="flex-1 py-2.5 px-4 rounded-xl border font-semibold text-sm bg-primary text-white border-primary shadow text-center">
                                         {PARENT_LABELS[form.parent_type].icon} {PARENT_LABELS[form.parent_type].label}
                                     </div>
                                 </div>
@@ -333,7 +333,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                                     {(['lesson_assessment', 'module_quiz', 'course_exam'] as ParentType[]).map(t => (
                                         <button key={t} type="button"
                                             onClick={() => setForm({ ...form, parent_type: t, lesson_id: '', module_id: '' })}
-                                            className={`flex-1 py-2.5 px-4 rounded-lg border font-semibold text-sm transition-all ${form.parent_type === t ? 'bg-primary text-white border-primary shadow' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}>
+                                            className={`flex-1 py-2.5 px-4 rounded-xl border font-semibold text-sm transition-all ${form.parent_type === t ? 'bg-primary text-white border-primary shadow' : 'bg-card text-muted-foreground border-border hover:border-gray-400'}`}>
                                             {PARENT_LABELS[t].icon} {PARENT_LABELS[t].label}
                                         </button>
                                     ))}
@@ -352,7 +352,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
 
                         <div>
                             <label className={LABEL_CLS}>Description</label>
-                            <textarea className="w-full px-3 py-2.5 border border-gray-300 rounded-md text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[80px] resize-y"
+                            <textarea className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[80px] resize-y"
                                 placeholder="Brief description of this assessment…"
                                 value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
                                 disabled={isActionLoading} />
@@ -364,22 +364,22 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                                 <input type="number" className={SELECT_CLS} value={form.time_limit_minutes}
                                     onChange={e => setForm({ ...form, time_limit_minutes: parseInt(e.target.value) || 0 })}
                                     placeholder="0 = no limit" disabled={isActionLoading} />
-                                <p className="text-[10px] text-gray-400 mt-1">Set to 0 for no time limit.</p>
+                                <p className="text-[10px] text-muted-foreground mt-1">Set to 0 for no time limit.</p>
                             </div>
                             <div className="flex items-center gap-3 mt-6">
-                                <input type="checkbox" id="shuffle" className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                <input type="checkbox" id="shuffle" className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
                                     checked={form.shuffle_questions} onChange={e => setForm({ ...form, shuffle_questions: e.target.checked })}
                                     disabled={isActionLoading} />
-                                <label htmlFor="shuffle" className="text-sm font-semibold text-gray-700 cursor-pointer">Shuffle Questions</label>
+                                <label htmlFor="shuffle" className="text-sm font-semibold text-foreground cursor-pointer">Shuffle Questions</label>
                             </div>
                         </div>
 
                         {/* Parent selection — create only */}
-                        <div className="border-t border-gray-100 pt-5 space-y-4">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Link to Parent</p>
+                        <div className="border-t border-border pt-5 space-y-4">
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Link to Parent</p>
 
                             {urlContext.isLocked ? (
-                                <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-3 flex items-center justify-between">
+                                <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3 flex items-center justify-between">
                                     <div>
                                         <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Parent Context Linked</p>
                                         <p className="text-sm text-blue-900 font-medium">
@@ -463,7 +463,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                             )}
                         </div>
 
-                        <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
+                        <div className="pt-4 flex justify-end gap-3 border-t border-border">
                             <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
                             <Button type="submit" variant="primary" disabled={isActionLoading}>
                                 {isActionLoading ? 'Saving…' : 'Create Assessment'}
@@ -473,12 +473,12 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                 </ExpandableCreateSection>
                 )}
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
                     {isFetching ? (
                         <div className="p-12 flex justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" /></div>
                     ) : (
                         <table className="w-full text-left text-sm">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                            <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                 <tr>
                                     <th className="px-6 py-4">Title</th>
                                     {!lockedLessonId && !lockedModuleId && <th className="px-6 py-4">Type</th>}
@@ -488,16 +488,16 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-border">
                                 {filtered.length === 0 ? (
                                     <tr><td colSpan={6} className="px-6 py-16 text-center">
                                         <div className="text-4xl mb-3 opacity-30">📝</div>
-                                        <p className="text-gray-500 font-medium">No assessments found.</p>
-                                        <p className="text-gray-400 text-xs mt-1">Click &quot;+ New Assessment&quot; to create the first one.</p>
+                                        <p className="text-muted-foreground font-medium">No assessments found.</p>
+                                        <p className="text-muted-foreground text-xs mt-1">Click &quot;+ New Assessment&quot; to create the first one.</p>
                                     </td></tr>
                                 ) : filtered.map(a => (
-                                    <tr key={a.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-semibold text-gray-900">{a.title || <span className="text-gray-400 italic">Untitled</span>}</td>
+                                    <tr key={a.id} className="hover:bg-muted transition-colors">
+                                        <td className="px-6 py-4 font-semibold text-foreground">{a.title || <span className="text-muted-foreground italic">Untitled</span>}</td>
                                         {!lockedLessonId && !lockedModuleId && (
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${a.parent_type === 'course_exam' ? 'bg-purple-50 text-purple-700' : a.parent_type === 'module_quiz' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
@@ -508,15 +508,15 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                                         <td className="px-6 py-4 text-center">
                                             <span className="px-2 py-1 rounded bg-orange-50 text-orange-600 font-bold text-xs">{a.questions?.length ?? 0}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-center font-medium text-gray-700">{a.passing_score}%</td>
-                                        <td className="px-6 py-4 text-center text-gray-500">{a.time_limit_minutes > 0 ? `${a.time_limit_minutes} min` : '∞'}</td>
+                                        <td className="px-6 py-4 text-center font-medium text-foreground">{a.passing_score}%</td>
+                                        <td className="px-6 py-4 text-center text-muted-foreground">{a.time_limit_minutes > 0 ? `${a.time_limit_minutes} min` : '∞'}</td>
                                         <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
-                                            <Link href={lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments/${a.id}/questions` : `/admin/assessments/${a.id}/questions`} className="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-md text-xs font-bold transition-colors inline-block">Questions</Link>
+                                            <Link href={lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments/${a.id}/questions` : `/admin/assessments/${a.id}/questions`} className="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-xs font-bold transition-colors inline-block">Questions</Link>
                                             {canManage && (
-                                            <button onClick={() => openEdit(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors inline-block">Edit</button>
+                                            <button onClick={() => openEdit(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors inline-block">Edit</button>
                                             )}
                                             {canManage && (
-                                            <button onClick={() => handleDelete(a)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors inline-block">Delete</button>
+                                            <button onClick={() => handleDelete(a)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors inline-block">Delete</button>
                                             )}
                                         </td>
                                     </tr>
@@ -528,8 +528,8 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
 
                 {/* Pagination */}
                 {totalCount > pageSize && !filterType && (
-                    <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                        <span className="text-sm text-gray-500">Showing {filtered.length} of {totalCount} assessments</span>
+                    <div className="mt-6 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                        <span className="text-sm text-muted-foreground">Showing {filtered.length} of {totalCount} assessments</span>
                         <div className="flex gap-2">
                             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Previous</Button>
                             <Button variant="outline" size="sm" disabled={(page * pageSize) >= totalCount} onClick={() => setPage(p => p + 1)}>Next</Button>
@@ -543,7 +543,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                 title="Edit Assessment"
                 maxWidth="2xl">
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     {/* Metadata */}
                     <div className="grid grid-cols-2 gap-4">
@@ -556,7 +556,7 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
 
                     <div>
                         <label className={LABEL_CLS}>Description</label>
-                        <textarea className="w-full px-3 py-2.5 border border-gray-300 rounded-md text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[80px] resize-y"
+                        <textarea className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[80px] resize-y"
                             placeholder="Brief description of this assessment…"
                             value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
                             disabled={isActionLoading} />
@@ -568,21 +568,21 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
                             <input type="number" className={SELECT_CLS} value={form.time_limit_minutes}
                                 onChange={e => setForm({ ...form, time_limit_minutes: parseInt(e.target.value) || 0 })}
                                 placeholder="0 = no limit" disabled={isActionLoading} />
-                            <p className="text-[10px] text-gray-400 mt-1">Set to 0 for no time limit.</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">Set to 0 for no time limit.</p>
                         </div>
                         <div className="flex items-center gap-3 mt-6">
-                            <input type="checkbox" id="shuffle" className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                            <input type="checkbox" id="shuffle" className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
                                 checked={form.shuffle_questions} onChange={e => setForm({ ...form, shuffle_questions: e.target.checked })}
                                 disabled={isActionLoading} />
-                            <label htmlFor="shuffle" className="text-sm font-semibold text-gray-700 cursor-pointer">Shuffle Questions</label>
+                            <label htmlFor="shuffle" className="text-sm font-semibold text-foreground cursor-pointer">Shuffle Questions</label>
                         </div>
                     </div>
 
-                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-sm text-blue-700">
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-sm text-blue-700">
                         <strong>Note:</strong> To manage questions for this assessment, use the <strong>Questions</strong> button in the table row.
                     </div>
 
-                    <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
+                    <div className="pt-4 flex justify-end gap-3 border-t border-border">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
                             {isActionLoading ? 'Saving…' : 'Save Changes'}

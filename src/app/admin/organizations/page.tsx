@@ -153,13 +153,13 @@ export default function AdminOrganizationsPage() {
     if (!user || user.role !== 'super_admin') return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {/* Page header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Organizations</h1>
-                        <p className="text-gray-500">
+                        <h1 className="text-3xl font-bold text-foreground mb-1">Organizations</h1>
+                        <p className="text-muted-foreground">
                             {totalCount > 0 ? `${totalCount} organization${totalCount !== 1 ? 's' : ''} registered` : 'Manage organizations on the platform.'}
                         </p>
                     </div>
@@ -167,7 +167,7 @@ export default function AdminOrganizationsPage() {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 {/* Search */}
                 <div className="mb-5 max-w-sm">
@@ -185,7 +185,7 @@ export default function AdminOrganizationsPage() {
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {actionError && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>
+                            <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>
                         )}
                         <Input
                             label="Organization Name"
@@ -197,9 +197,9 @@ export default function AdminOrganizationsPage() {
                             autoFocus
                         />
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-gray-400 font-normal">(optional)</span></label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Description <span className="text-muted-foreground font-normal">(optional)</span></label>
                             <textarea
-                                className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white resize-none min-h-[80px]"
+                                className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card resize-none min-h-[80px]"
                                 placeholder="Brief description of this organization's purpose…"
                                 value={form.description}
                                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
@@ -218,9 +218,9 @@ export default function AdminOrganizationsPage() {
                 </ExpandableCreateSection>
 
                 {/* Table */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table className="w-full text-left text-sm text-gray-500">
-                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                    <table className="w-full text-left text-sm text-muted-foreground">
+                        <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                             <tr>
                                 <th className="px-6 py-4">Name</th>
                                 <th className="px-6 py-4 hidden md:table-cell">Description</th>
@@ -228,14 +228,14 @@ export default function AdminOrganizationsPage() {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-border">
                             {isFetching ? (
                                 /* Skeleton rows */
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i}>
                                         {[1, 2, 3, 4].map(j => (
                                             <td key={j} className="px-6 py-4">
-                                                <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+                                                <div className="h-4 bg-muted/50 rounded animate-pulse w-3/4" />
                                             </td>
                                         ))}
                                     </tr>
@@ -244,25 +244,25 @@ export default function AdminOrganizationsPage() {
                                 <tr>
                                     <td colSpan={4} className="px-6 py-16 text-center">
                                         <div className="text-4xl mb-3">🏢</div>
-                                        <p className="font-medium text-gray-700">No organizations found</p>
-                                        <p className="text-sm text-gray-400 mt-1">
+                                        <p className="font-medium text-foreground">No organizations found</p>
+                                        <p className="text-sm text-muted-foreground mt-1">
                                             {searchTerm ? 'Try a different search term.' : 'Create the first organization above.'}
                                         </p>
                                     </td>
                                 </tr>
                             ) : orgs.map(o => (
-                                <tr key={o.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-semibold text-gray-900">{o.name}</td>
-                                    <td className="px-6 py-4 text-gray-500 max-w-xs hidden md:table-cell">
+                                <tr key={o.id} className="hover:bg-muted transition-colors">
+                                    <td className="px-6 py-4 font-semibold text-foreground">{o.name}</td>
+                                    <td className="px-6 py-4 text-muted-foreground max-w-xs hidden md:table-cell">
                                         <span className="line-clamp-1">{o.description || <span className="italic text-gray-300">No description</span>}</span>
                                     </td>
-                                    <td className="px-6 py-4 text-xs text-gray-400 hidden lg:table-cell">
+                                    <td className="px-6 py-4 text-xs text-muted-foreground hidden lg:table-cell">
                                         {o.created_at ? new Date(o.created_at).toLocaleDateString() : '—'}
                                     </td>
                                     <td className="px-6 py-4 text-right whitespace-nowrap">
                                         <button
                                             onClick={() => openModal(o)}
-                                            className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors"
+                                            className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors"
                                         >
                                             Edit
                                         </button>
@@ -281,8 +281,8 @@ export default function AdminOrganizationsPage() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="mt-5 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                        <span className="text-sm text-gray-500">
+                    <div className="mt-5 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                        <span className="text-sm text-muted-foreground">
                             Page {page} of {totalPages} · {totalCount} total
                         </span>
                         <div className="flex gap-2">
@@ -305,7 +305,7 @@ export default function AdminOrganizationsPage() {
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {actionError && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>
+                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>
                     )}
                     <Input
                         label="Organization Name"
@@ -317,9 +317,9 @@ export default function AdminOrganizationsPage() {
                         autoFocus
                     />
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-gray-400 font-normal">(optional)</span></label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Description <span className="text-muted-foreground font-normal">(optional)</span></label>
                         <textarea
-                            className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white resize-none min-h-[80px]"
+                            className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card resize-none min-h-[80px]"
                             placeholder="Brief description of this organization's purpose…"
                             value={form.description}
                             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}

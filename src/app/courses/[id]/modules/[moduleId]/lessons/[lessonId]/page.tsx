@@ -135,7 +135,7 @@ export default function LessonDetailPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="min-h-screen bg-card flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
@@ -143,7 +143,7 @@ export default function LessonDetailPage() {
 
     if (error || !lesson) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center p-6 text-center">
+            <div className="min-h-screen bg-card flex items-center justify-center p-6 text-center">
                 <div>
                     <div className="text-4xl mb-4">📖</div>
                     <p className="text-red-600 font-bold mb-4">{error || 'Lesson not found.'}</p>
@@ -154,16 +154,16 @@ export default function LessonDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white pb-32">
+        <div className="min-h-screen bg-card pb-32">
             {/* Top Reader Bar */}
-            <div className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
+            <div className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-border">
                 <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href={`/courses/${courseId}/modules/${moduleId}`} className="text-xs font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-2">
+                    <Link href={`/courses/${courseId}/modules/${moduleId}`} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-2">
                         ← Back to Module
                     </Link>
                     <div className="text-center flex-1 mx-4">
-                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-0.5">{module?.title || 'Lesson'}</span>
-                        <h2 className="text-sm font-bold text-gray-900 truncate max-w-[300px]">{lesson.title}</h2>
+                        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest block mb-0.5">{module?.title || 'Lesson'}</span>
+                        <h2 className="text-sm font-bold text-foreground truncate max-w-[300px]">{lesson.title}</h2>
                     </div>
                     <div className="w-20"></div> {/* Spacer */}
                 </div>
@@ -183,21 +183,21 @@ export default function LessonDetailPage() {
                             <Button
                                 variant="primary"
                                 size="sm"
-                                className="rounded-full shadow-lg shadow-primary/20"
+                                className="rounded-full shadow-lg shadow-black/10 dark:shadow-none shadow-primary/20"
                                 onClick={() => document.getElementById('assessment-section')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Take Quiz Now 📝
                             </Button>
                         )}
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-6 leading-tight">
                         {lesson.title}
                     </h1>
                 </header>
 
                 <div className="lesson-content">
                     {lesson.content_type === 'article' && lesson.content && (
-                        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed font-serif">
+                        <div className="prose prose-lg max-w-none text-foreground leading-relaxed font-serif">
                             {lesson.content.split('\n').map((para: string, i: number) => (
                                 <p key={i} className="mb-6"><LinkifyText text={para} /></p>
                             ))}
@@ -206,7 +206,7 @@ export default function LessonDetailPage() {
 
                     {lesson.content_type === 'video' && lesson.media_url && (
                         <div className="mb-8">
-                            <div className="aspect-video bg-gray-900 rounded-3xl overflow-hidden shadow-2xl mb-8 border border-gray-100">
+                            <div className="aspect-video bg-background rounded-3xl overflow-hidden shadow-2xl mb-8 border border-border">
                                 <video
                                     ref={videoRef}
                                     src={lesson.media_url}
@@ -216,7 +216,7 @@ export default function LessonDetailPage() {
                                 />
                             </div>
                             {lesson.content && (
-                                <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed font-serif bg-gray-50 p-8 rounded-3xl">
+                                <div className="prose prose-lg max-w-none text-foreground leading-relaxed font-serif bg-muted p-8 rounded-3xl">
                                     {lesson.content.split('\n').map((para: string, i: number) => (
                                         <p key={i} className="mb-4 last:mb-0"><LinkifyText text={para} /></p>
                                     ))}
@@ -230,10 +230,10 @@ export default function LessonDetailPage() {
                             <img
                                 src={lesson.image_url}
                                 alt={lesson.title || 'Lesson Image'}
-                                className="max-w-full rounded-3xl shadow-xl mx-auto border border-gray-100"
+                                className="max-w-full rounded-3xl shadow-xl mx-auto border border-border"
                             />
                             {lesson.content && (
-                                <div className="mt-8 text-left prose prose-lg max-w-none text-gray-700 leading-relaxed font-serif bg-gray-50 p-8 rounded-3xl">
+                                <div className="mt-8 text-left prose prose-lg max-w-none text-foreground leading-relaxed font-serif bg-muted p-8 rounded-3xl">
                                     {lesson.content.split('\n').map((para: string, i: number) => (
                                         <p key={i} className="mb-4 last:mb-0"><LinkifyText text={para} /></p>
                                     ))}
@@ -249,13 +249,13 @@ export default function LessonDetailPage() {
                     )}
                 </div>
 
-                <div className="mt-24 pt-12 border-t border-gray-100 flex flex-col items-center gap-6">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] text-center block">END OF LESSON</span>
+                <div className="mt-24 pt-12 border-t border-border flex flex-col items-center gap-6">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] text-center block">END OF LESSON</span>
                     <div className="flex flex-col items-center gap-3">
                         {isAuthenticated && (
                             <Button
                                 variant={completed ? 'outline' : 'primary'}
-                                className={`rounded-full px-10 ${completed ? '' : 'shadow-lg shadow-primary/20'}`}
+                                className={`rounded-full px-10 ${completed ? '' : 'shadow-lg shadow-black/10 dark:shadow-none shadow-primary/20'}`}
                                 onClick={handleToggleComplete}
                                 disabled={progressSaving}
                             >
@@ -263,7 +263,7 @@ export default function LessonDetailPage() {
                             </Button>
                         )}
                         {lesson.content_type === 'video' && watchedSeconds > 0 && (
-                            <span className="text-[10px] text-gray-400 font-mono">
+                            <span className="text-[10px] text-muted-foreground font-mono">
                                 Watched: {Math.floor(watchedSeconds / 60)}m {Math.floor(watchedSeconds % 60)}s
                             </span>
                         )}

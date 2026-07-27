@@ -63,7 +63,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
                         {breadcrumb.map((crumb, i) => (
                             <React.Fragment key={crumb.label}>
                                 {i > 0 && (
-                                    <svg className="w-3.5 h-3.5 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <svg className="w-3.5 h-3.5 text-muted-foreground shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 )}

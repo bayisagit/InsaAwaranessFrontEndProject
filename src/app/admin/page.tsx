@@ -33,7 +33,7 @@ function SummaryCard({ icon, label, value, sub, color }: {
     icon: React.ReactNode; label: string; value: string; sub?: string; color: string;
 }) {
     return (
-        <Card className="hover:border-primary/50 transition-colors shadow-sm">
+        <Card className="hover:border-primary/50 transition-colors shadow-sm shadow-black/5 dark:shadow-none">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
                 <span className={`text-${color}-500`}>{icon}</span>
@@ -195,13 +195,13 @@ export default function AdminDashboard() {
         <div className="flex flex-col gap-8 pb-10 max-w-7xl mx-auto w-full">
 
             {/* Welcome Section */}
-            <div className="flex flex-col gap-1 md:flex-row md:items-end justify-between bg-white/50 backdrop-blur-sm rounded-xl p-6 border shadow-sm">
+            <div className="flex flex-col gap-1 md:flex-row md:items-end justify-between bg-card/50 backdrop-blur-sm rounded-xl p-6 border shadow-sm shadow-black/5 dark:shadow-none">
                 <div>
                     <div className="flex items-center gap-2 text-sm text-primary font-medium mb-1">
                         <ShieldCheck className="size-4" />
                         {roleLabel[user.role] || user.role}
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">
                         Welcome back, {user.first_name}
                     </h1>
                     <p className="text-muted-foreground mt-2 max-w-2xl">
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
                 </div>
                 {user.role === 'super_admin' && parseInt(reqsCount) > 0 && (
                     <Link href="/admin/training-requests">
-                        <Button variant="destructive" className="mt-4 md:mt-0 gap-2 shadow-sm">
+                        <Button variant="destructive" className="mt-4 md:mt-0 gap-2 shadow-sm shadow-black/5 dark:shadow-none">
                             <Clock className="size-4" />
                             {reqsCount} Pending Requests
                         </Button>
@@ -233,10 +233,10 @@ export default function AdminDashboard() {
 
                     {/* Growth Charts */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-blue-100 text-blue-600 rounded-md"><TrendingUp className="size-4" /></div>
+                                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
                                         <CardTitle>Enrollment Growth</CardTitle>
                                         <CardDescription>Monthly enrollment trend (last 12 months)</CardDescription>
@@ -260,10 +260,10 @@ export default function AdminDashboard() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-green-100 text-green-600 rounded-md"><TrendingUp className="size-4" /></div>
+                                    <div className="p-2 bg-green-100 text-green-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
                                         <CardTitle>User Growth</CardTitle>
                                         <CardDescription>Monthly new user registrations (last 12 months)</CardDescription>
@@ -290,10 +290,10 @@ export default function AdminDashboard() {
 
                     {/* Course Performance & Top Courses */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-purple-100 text-purple-600 rounded-md"><GraduationCap className="size-4" /></div>
+                                    <div className="p-2 bg-purple-100 text-purple-600 rounded-lg"><GraduationCap className="size-4" /></div>
                                     <div>
                                         <CardTitle>Course Performance</CardTitle>
                                         <CardDescription>Enrollment vs completion across courses</CardDescription>
@@ -334,10 +334,10 @@ export default function AdminDashboard() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-amber-100 text-amber-600 rounded-md"><Award className="size-4" /></div>
+                                    <div className="p-2 bg-amber-100 text-amber-600 rounded-lg"><Award className="size-4" /></div>
                                     <div>
                                         <CardTitle>Top Performing Courses</CardTitle>
                                         <CardDescription>Highest enrollment courses</CardDescription>
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
                                                     <span className="text-xs font-bold text-muted-foreground w-5">{idx + 1}.</span>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex justify-between text-sm mb-1">
-                                                            <span className="truncate font-medium text-gray-900">{course.course_title}</span>
+                                                            <span className="truncate font-medium text-foreground">{course.course_title}</span>
                                                             <span className="font-bold text-primary">{course.total_enrolled}</span>
                                                         </div>
                                                         <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
@@ -374,20 +374,20 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Filters & Course Comparison */}
-                    <Card className="shadow-sm">
+                    <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                         <CardHeader>
                             <div className="flex items-center justify-between flex-wrap gap-4">
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-indigo-100 text-indigo-600 rounded-md"><TrendingUp className="size-4" /></div>
+                                    <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
                                         <CardTitle>Course Comparison</CardTitle>
                                         <CardDescription>Compare enrollment metrics across courses</CardDescription>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="block rounded-md border border-gray-300 py-1.5 px-3 text-xs shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white" placeholder="From" />
-                                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="block rounded-md border border-gray-300 py-1.5 px-3 text-xs shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white" placeholder="To" />
-                                    <select value={filterCourseIds} onChange={e => setFilterCourseIds(e.target.value)} className="block rounded-md border border-gray-300 py-1.5 px-3 text-xs shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white">
+                                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card" placeholder="From" />
+                                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card" placeholder="To" />
+                                    <select value={filterCourseIds} onChange={e => setFilterCourseIds(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card">
                                         <option value="">All Courses</option>
                                         {allCourses.map(c => (
                                             <option key={c.id} value={c.id}>{c.title}</option>
@@ -417,7 +417,7 @@ export default function AdminDashboard() {
                                         <tbody>
                                             {comparison.map(c => (
                                                 <tr key={c.course_id} className="border-b hover:bg-muted/30 transition-colors">
-                                                    <td className="py-3 px-4 font-medium text-gray-900">
+                                                    <td className="py-3 px-4 font-medium text-foreground">
                                                         <Link href={`/admin/courses/${c.course_id}/analytics`} className="hover:text-primary transition-colors">
                                                             {c.course_title}
                                                         </Link>
@@ -443,10 +443,10 @@ export default function AdminDashboard() {
 
                     {/* Platform Engagement (existing) */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <Card className="shadow-sm flex flex-col">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none flex flex-col">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-blue-100 text-blue-600 rounded-md"><TrendingUp className="size-4" /></div>
+                                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
                                         <CardTitle>Platform Engagement</CardTitle>
                                         <CardDescription>Learning progress across all users</CardDescription>
@@ -499,10 +499,10 @@ export default function AdminDashboard() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-sm flex flex-col">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none flex flex-col">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-green-100 text-green-600 rounded-md"><Building2 className="size-4" /></div>
+                                    <div className="p-2 bg-green-100 text-green-600 rounded-lg"><Building2 className="size-4" /></div>
                                     <div>
                                         <CardTitle>Recent Organizations</CardTitle>
                                         <CardDescription>Latest onboarded partners</CardDescription>
@@ -520,7 +520,7 @@ export default function AdminDashboard() {
                                                     {org.name.substring(0, 2).toUpperCase()}
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-medium text-gray-900">{org.name}</span>
+                                                    <span className="text-sm font-medium text-foreground">{org.name}</span>
                                                     <span className="text-xs text-muted-foreground">Joined {new Date(org.created_at).toLocaleDateString()}</span>
                                                 </div>
                                             </div>
@@ -536,7 +536,7 @@ export default function AdminDashboard() {
 
                     {/* Quick Actions Grid */}
                     <div>
-                        <h2 className="text-lg font-bold text-gray-900 mb-4 px-1">Quick Actions</h2>
+                        <h2 className="text-lg font-bold text-foreground mb-4 px-1">Quick Actions</h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                             {[
                                 { href: '/admin/users', icon: <Users className="size-5 text-blue-500 mb-1" />, label: 'Manage Users' },
@@ -562,7 +562,7 @@ export default function AdminDashboard() {
             {user.role === 'org_admin' && (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Organization Members</CardTitle>
                                 <Users className="size-4 text-blue-500" />
@@ -571,7 +571,7 @@ export default function AdminDashboard() {
                                 <div className="text-2xl font-bold">{orgsCount}</div>
                             </CardContent>
                         </Card>
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Available Courses</CardTitle>
                                 <GraduationCap className="size-4 text-green-500" />
@@ -580,7 +580,7 @@ export default function AdminDashboard() {
                                 <div className="text-2xl font-bold">{coursesCount}</div>
                             </CardContent>
                         </Card>
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Training Requests</CardTitle>
                                 <FileText className="size-4 text-amber-500" />
@@ -636,7 +636,7 @@ export default function AdminDashboard() {
             {user.role === 'course_provider' && (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">My Courses</CardTitle>
                                 <GraduationCap className="size-4 text-blue-500" />
@@ -645,7 +645,7 @@ export default function AdminDashboard() {
                                 <div className="text-2xl font-bold">{coursesCount}</div>
                             </CardContent>
                         </Card>
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Resources</CardTitle>
                                 <BookOpen className="size-4 text-green-500" />
@@ -654,7 +654,7 @@ export default function AdminDashboard() {
                                 <div className="text-2xl font-bold">{resourcesCount}</div>
                             </CardContent>
                         </Card>
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Assessments</CardTitle>
                                 <FileCheck className="size-4 text-amber-500" />
@@ -663,7 +663,7 @@ export default function AdminDashboard() {
                                 <div className="text-2xl font-bold">—</div>
                             </CardContent>
                         </Card>
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Articles</CardTitle>
                                 <FileText className="size-4 text-purple-500" />
@@ -674,11 +674,11 @@ export default function AdminDashboard() {
                         </Card>
                     </div>
 
-                    <div className="mt-4 bg-amber-50/50 border border-amber-200/60 p-5 rounded-xl text-sm flex gap-3 shadow-sm">
+                    <div className="mt-4 bg-amber-500/10 border border-amber-500/20 p-5 rounded-xl text-sm flex gap-3 shadow-sm shadow-black/5 dark:shadow-none">
                         <ShieldAlert className="size-5 text-amber-500 shrink-0 mt-0.5" />
                         <div>
-                            <strong className="text-amber-800 font-semibold block mb-1">Content Approval Workflow</strong>
-                            <span className="text-amber-700/80 leading-relaxed">
+                            <strong className="text-amber-500 font-semibold block mb-1">Content Approval Workflow</strong>
+                            <span className="text-amber-500/80 leading-relaxed">
                                 Draft → Submit for Review → Submitted (pending) → Approve / Reject. Course providers can submit content for review; System Administrators can approve or reject with a reason. Rejected content returns to Draft with feedback. Archived content can be restored to Draft.
                             </span>
                         </div>

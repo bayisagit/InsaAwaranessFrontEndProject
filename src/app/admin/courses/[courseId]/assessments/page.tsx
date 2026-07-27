@@ -10,7 +10,7 @@ export default function CourseAssessmentsPage() {
 
     return (
         <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
                 <AssessmentsManager lockedCourseId={courseId} />
             </div>
         </div>

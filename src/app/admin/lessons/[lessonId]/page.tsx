@@ -9,7 +9,7 @@ import { Input } from '@/components/Input';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { AssessmentsManager } from '@/components/admin/AssessmentsManager';
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
 export default function LessonWorkspacePage() {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -130,25 +130,25 @@ export default function LessonWorkspacePage() {
 
     return (
         <div className="space-y-8 pb-20 max-w-7xl mx-auto">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 border-t-4 border-t-primary">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 border-t-4 border-t-primary">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">{lessonData.title}</h1>
-                        <p className="text-gray-500 capitalize">Type: {lessonData.content_type?.replace('_', ' ')}</p>
+                        <h1 className="text-2xl font-bold text-foreground mb-2">{lessonData.title}</h1>
+                        <p className="text-muted-foreground capitalize">Type: {lessonData.content_type?.replace('_', ' ')}</p>
                     </div>
                     {!isEditing && (
                         <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>Edit Lesson</Button>
                     )}
                 </div>
                 
-                <div className="mt-4 pt-4 border-t border-gray-100 flex gap-4">
+                <div className="mt-4 pt-4 border-t border-border flex gap-4">
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Order:</span>
-                        <span className="ml-2 font-bold text-gray-700">{lessonData.order}</span>
+                        <span className="text-muted-foreground font-medium">Order:</span>
+                        <span className="ml-2 font-bold text-foreground">{lessonData.order}</span>
                     </div>
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Language:</span>
-                        <span className="ml-2 font-bold text-gray-700 uppercase">{lessonData.language}</span>
+                        <span className="text-muted-foreground font-medium">Language:</span>
+                        <span className="ml-2 font-bold text-foreground uppercase">{lessonData.language}</span>
                     </div>
                 </div>
             </div>
@@ -156,12 +156,12 @@ export default function LessonWorkspacePage() {
             <div className="grid grid-cols-3 gap-6">
                 <div className="col-span-3 space-y-6">
                     {/* Inline Content Editor */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6">
                         {isEditing ? (
                             <form onSubmit={handleSave} className="space-y-4">
-                                <h2 className="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Edit Lesson</h2>
+                                <h2 className="text-lg font-bold text-foreground mb-4 border-b border-border pb-2">Edit Lesson</h2>
                                 
-                                {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-xs border border-red-100 mb-4">{actionError}</div>}
+                                {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-xs border border-red-100 mb-4">{actionError}</div>}
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="col-span-2">
@@ -174,7 +174,7 @@ export default function LessonWorkspacePage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
+                                        <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
                                         <select
                                             className={SELECT_CLS}
                                             value={form.language}
@@ -189,7 +189,7 @@ export default function LessonWorkspacePage() {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Content Type</label>
+                                        <label className="block text-sm font-semibold text-foreground mb-1">Content Type</label>
                                         <select
                                             className={SELECT_CLS}
                                             value={form.content_type}
@@ -213,10 +213,10 @@ export default function LessonWorkspacePage() {
                                     </div>
                                 </div>
 
-                                <div className="border-t border-gray-100 pt-4 mt-4">
+                                <div className="border-t border-border pt-4 mt-4">
                                     {form.content_type === 'video' && (
                                         <div className="space-y-4">
-                                            <label className="block text-sm font-semibold text-gray-700">Video Content</label>
+                                            <label className="block text-sm font-semibold text-foreground">Video Content</label>
                                             <CloudinaryUpload
                                                 onUploadSuccess={(url) => setForm({ ...form, media_url: url })}
                                                 folder="lessons/videos"
@@ -233,9 +233,9 @@ export default function LessonWorkspacePage() {
 
                                     {form.content_type === 'article' && (
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-1">Article Content</label>
+                                            <label className="block text-sm font-semibold text-foreground mb-1">Article Content</label>
                                             <textarea
-                                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary outline-none min-h-[300px]"
+                                                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary outline-none min-h-[300px]"
                                                 placeholder="Write your article content here..."
                                                 value={form.content}
                                                 onChange={(e) => setForm({ ...form, content: e.target.value })}
@@ -246,7 +246,7 @@ export default function LessonWorkspacePage() {
 
                                     {form.content_type === 'image' && (
                                         <div className="space-y-4">
-                                            <label className="block text-sm font-semibold text-gray-700">Image</label>
+                                            <label className="block text-sm font-semibold text-foreground">Image</label>
                                             <CloudinaryUpload
                                                 onUploadSuccess={(url) => setForm({ ...form, image_url: url })}
                                                 folder="lessons/images"
@@ -263,7 +263,7 @@ export default function LessonWorkspacePage() {
                                     {form.content_type === 'assessment' && (
                                         <div className="grid grid-cols-1 gap-4">
                                             <div>
-                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Assessment Type</label>
+                                                <label className="block text-sm font-semibold text-foreground mb-1">Assessment Type</label>
                                                 <select
                                                     className={SELECT_CLS}
                                                     value={form.assessment_type}
@@ -276,20 +276,20 @@ export default function LessonWorkspacePage() {
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Passing Score (%)</label>
+                                                <label className="block text-sm font-semibold text-foreground mb-1">Passing Score (%)</label>
                                                 <input
                                                     type="number"
                                                     min={0} max={100}
-                                                    className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                                                    className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
                                                     value={form.passing_score}
                                                     onChange={(e) => setForm({ ...form, passing_score: parseInt(e.target.value) || 0 })}
                                                     required
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Assessment JSON Payload</label>
+                                                <label className="block text-sm font-semibold text-foreground mb-1">Assessment JSON Payload</label>
                                                 <textarea
-                                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[180px] resize-y"
+                                                    className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[180px] resize-y"
                                                     placeholder='{"questions": [{"id":"q1","type":"multiple_choice","question":"...","options":[{"id":"a","text":"..."},{"id":"b","text":"..."}],"correct_answer":"a"}]}'
                                                     value={form.assessment_payload}
                                                     onChange={(e) => setForm({ ...form, assessment_payload: e.target.value })}
@@ -300,7 +300,7 @@ export default function LessonWorkspacePage() {
                                     )}
                                 </div>
 
-                                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
+                                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-border">
                                     <Button type="button" variant="outline" onClick={() => { setIsEditing(false); setForm(lessonData); }}>Cancel</Button>
                                     <Button type="submit" variant="primary" disabled={isActionLoading}>
                                         {isActionLoading ? 'Saving...' : 'Save Lesson'}
@@ -309,26 +309,26 @@ export default function LessonWorkspacePage() {
                             </form>
                         ) : (
                             <div>
-                                <h2 className="text-lg font-bold text-gray-900 mb-4">Lesson Content</h2>
+                                <h2 className="text-lg font-bold text-foreground mb-4">Lesson Content</h2>
                                 {lessonData.content_type === 'video' && lessonData.media_url ? (
-                                    <div className="aspect-video bg-black rounded-lg overflow-hidden flex items-center justify-center">
+                                    <div className="aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center">
                                         <video controls src={lessonData.media_url} className="w-full h-full object-contain" />
                                     </div>
                                 ) : lessonData.content_type === 'image' && lessonData.image_url ? (
-                                    <div className="rounded-lg overflow-hidden bg-gray-100 p-2 flex justify-center">
+                                    <div className="rounded-xl overflow-hidden bg-muted/50 p-2 flex justify-center">
                                         <img src={lessonData.image_url} alt={lessonData.title} className="max-w-full h-auto object-contain rounded" />
                                     </div>
                                 ) : lessonData.content_type === 'assessment' ? (
-                                    <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                                        <p className="font-bold text-gray-700">Assessment: {lessonData.assessment_type}</p>
-                                        <p className="text-sm text-gray-500">Passing Score: {lessonData.passing_score}%</p>
-                                        <pre className="mt-4 text-xs bg-white p-4 border border-gray-100 rounded overflow-x-auto">
+                                    <div className="bg-muted p-6 rounded-xl border border-border">
+                                        <p className="font-bold text-foreground">Assessment: {lessonData.assessment_type}</p>
+                                        <p className="text-sm text-muted-foreground">Passing Score: {lessonData.passing_score}%</p>
+                                        <pre className="mt-4 text-xs bg-card p-4 border border-border rounded overflow-x-auto">
                                             {JSON.stringify(lessonData.assessment_payload, null, 2)}
                                         </pre>
                                     </div>
                                 ) : (
-                                    <div className="prose prose-sm max-w-none bg-gray-50 p-6 rounded-lg border border-gray-100 min-h-[200px]" 
-                                         dangerouslySetInnerHTML={{ __html: lessonData.content || '<p class="text-gray-400 italic">No content available.</p>' }} />
+                                    <div className="prose prose-sm max-w-none bg-muted p-6 rounded-xl border border-border min-h-[200px]" 
+                                         dangerouslySetInnerHTML={{ __html: lessonData.content || '<p class="text-muted-foreground italic">No content available.</p>' }} />
                                 )}
                             </div>
                         )}
@@ -336,7 +336,7 @@ export default function LessonWorkspacePage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden mt-8">
                 <AssessmentsManager lockedLessonId={lessonId} />
             </div>
         </div>

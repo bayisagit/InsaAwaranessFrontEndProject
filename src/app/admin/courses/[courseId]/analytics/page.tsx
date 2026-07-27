@@ -20,7 +20,7 @@ function StatCard({ icon, label, value, sub, color }: {
     icon: React.ReactNode; label: string; value: string; sub?: string; color: string;
 }) {
     return (
-        <Card className="hover:border-primary/50 transition-colors shadow-sm">
+        <Card className="hover:border-primary/50 transition-colors shadow-sm shadow-black/5 dark:shadow-none">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
                 <span className={`text-${color}-500`}>{icon}</span>
@@ -86,21 +86,21 @@ export default function CourseAnalytics() {
     return (
         <div className="space-y-8 pb-20 max-w-7xl mx-auto">
             {/* Course Header */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 border-t-4 border-t-primary">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{course.title}</h1>
-                <p className="text-gray-500 text-sm">Course analytics and performance metrics</p>
-                <div className="mt-4 pt-4 border-t border-gray-100 flex gap-6 flex-wrap">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 border-t-4 border-t-primary">
+                <h1 className="text-2xl font-bold text-foreground mb-2">{course.title}</h1>
+                <p className="text-muted-foreground text-sm">Course analytics and performance metrics</p>
+                <div className="mt-4 pt-4 border-t border-border flex gap-6 flex-wrap">
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Level:</span>
-                        <span className="ml-2 capitalize font-bold text-gray-700">{course.level}</span>
+                        <span className="text-muted-foreground font-medium">Level:</span>
+                        <span className="ml-2 capitalize font-bold text-foreground">{course.level}</span>
                     </div>
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Language:</span>
-                        <span className="ml-2 uppercase font-bold text-gray-700">{course.language}</span>
+                        <span className="text-muted-foreground font-medium">Language:</span>
+                        <span className="ml-2 uppercase font-bold text-foreground">{course.language}</span>
                     </div>
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Modules:</span>
-                        <span className="ml-2 font-bold text-gray-700">{course.modules?.length || 0}</span>
+                        <span className="text-muted-foreground font-medium">Modules:</span>
+                        <span className="ml-2 font-bold text-foreground">{course.modules?.length || 0}</span>
                     </div>
                 </div>
             </div>
@@ -117,10 +117,10 @@ export default function CourseAnalytics() {
 
             {/* Trends */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="shadow-sm">
+                <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <div className="p-2 bg-blue-100 text-blue-600 rounded-md"><TrendingUp className="size-4" /></div>
+                            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><TrendingUp className="size-4" /></div>
                             <div>
                                 <CardTitle>Enrollment Trend</CardTitle>
                                 <CardDescription>Monthly enrollments (last 6 months)</CardDescription>
@@ -144,10 +144,10 @@ export default function CourseAnalytics() {
                     </CardContent>
                 </Card>
 
-                <Card className="shadow-sm">
+                <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <div className="p-2 bg-green-100 text-green-600 rounded-md"><Award className="size-4" /></div>
+                            <div className="p-2 bg-green-100 text-green-600 rounded-lg"><Award className="size-4" /></div>
                             <div>
                                 <CardTitle>Completion Trend</CardTitle>
                                 <CardDescription>Monthly completions (last 6 months)</CardDescription>
@@ -173,10 +173,10 @@ export default function CourseAnalytics() {
             </div>
 
             {/* Learner Overview */}
-            <Card className="shadow-sm">
+            <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                 <CardHeader>
                     <div className="flex items-center gap-2">
-                        <div className="p-2 bg-indigo-100 text-indigo-600 rounded-md"><Users className="size-4" /></div>
+                        <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg"><Users className="size-4" /></div>
                         <div>
                             <CardTitle>Learner Overview</CardTitle>
                             <CardDescription>Summary of learner progress in this course</CardDescription>
@@ -196,7 +196,7 @@ export default function CourseAnalytics() {
                                 <p className="text-sm text-green-700 font-medium mt-1">Completed</p>
                                 <p className="text-xs text-green-500 mt-1">Finished the course</p>
                             </div>
-                            <div className="bg-amber-50 rounded-xl p-5 text-center border border-amber-100">
+                            <div className="bg-amber-500/10 rounded-xl p-5 text-center border border-amber-100">
                                 <div className="text-3xl font-bold text-amber-600">{lo.in_progress.toLocaleString()}</div>
                                 <p className="text-sm text-amber-700 font-medium mt-1">In Progress</p>
                                 <p className="text-xs text-amber-500 mt-1">Still actively learning</p>

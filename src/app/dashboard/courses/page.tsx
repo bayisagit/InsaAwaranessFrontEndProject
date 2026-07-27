@@ -55,8 +55,8 @@ export default function DashboardCoursesPage() {
         <div className="pb-20">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900">My Enrolled Courses</h1>
-                    <p className="text-gray-500 mt-1">Manage and track your active training sessions</p>
+                    <h1 className="text-3xl font-extrabold text-foreground">My Enrolled Courses</h1>
+                    <p className="text-muted-foreground mt-1">Manage and track your active training sessions</p>
                 </div>
                 <Link href="/courses">
                     <Button variant="primary" className="rounded-full px-6">Explore Catalog</Button>
@@ -70,14 +70,14 @@ export default function DashboardCoursesPage() {
             )}
 
             {enrollments.length === 0 ? (
-                <div className="bg-white rounded-3xl border border-dashed border-gray-200 p-20 text-center shadow-sm">
+                <div className="bg-card rounded-3xl border border-dashed border-border p-20 text-center shadow-sm shadow-black/5 dark:shadow-none">
                     <div className="text-6xl mb-6 grayscale opacity-30">📚</div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">No active enrollments</h2>
-                    <p className="text-gray-500 mb-8 max-w-sm mx-auto">
+                    <h2 className="text-xl font-bold text-foreground mb-2">No active enrollments</h2>
+                    <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
                         You haven't enrolled in any courses yet. Start your journey by exploring our course catalog.
                     </p>
                     <Link href="/dashboard/catalog">
-                        <Button variant="primary" className="px-8 rounded-full shadow-lg">Browse Catalog</Button>
+                        <Button variant="primary" className="px-8 rounded-full shadow-lg shadow-black/10 dark:shadow-none">Browse Catalog</Button>
                     </Link>
                 </div>
             ) : (
@@ -88,8 +88,8 @@ export default function DashboardCoursesPage() {
                         const resumeUrl = `/courses/${courseId}`;
 
                         return (
-                            <div key={enrollment.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col">
-                                <div className="relative h-40 bg-gray-100">
+                            <div key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col">
+                                <div className="relative h-40 bg-muted/50">
                                     {course.thumbnail_url ? (
                                         <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
                                     ) : (
@@ -97,19 +97,19 @@ export default function DashboardCoursesPage() {
                                             📖
                                         </div>
                                     )}
-                                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+                                    <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm shadow-black/5 dark:shadow-none">
                                         <span className="text-[10px] font-bold text-primary uppercase tracking-wider">{course.level || 'Beginner'}</span>
                                     </div>
                                 </div>
 
                                 <div className="p-6 flex-1 flex flex-col">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors line-clamp-1">{course.title || 'Course Details'}</h3>
+                                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1">{course.title || 'Course Details'}</h3>
                                     <div className="flex justify-between items-center mb-6">
-                                        <span className="text-xs font-semibold text-gray-500">Progress</span>
+                                        <span className="text-xs font-semibold text-muted-foreground">Progress</span>
                                         <span className="text-xs font-bold text-primary">{enrollment.progress}%</span>
                                     </div>
 
-                                    <div className="w-full bg-gray-50 h-2 rounded-full mb-8 overflow-hidden">
+                                    <div className="w-full bg-muted h-2 rounded-full mb-8 overflow-hidden">
                                         <div
                                             className="bg-primary h-full rounded-full transition-all duration-1000"
                                             style={{ width: `${enrollment.progress}%` }}
@@ -117,7 +117,7 @@ export default function DashboardCoursesPage() {
                                     </div>
 
                                     <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                                        <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                        <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
                                             ID: {courseId?.substring(0, 8)}...
                                         </div>
                                         <Link href={resumeUrl}>

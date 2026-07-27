@@ -114,7 +114,7 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
 
     return (
         <div className={`space-y-2 ${className}`}>
-            {label && <label className="block text-sm font-semibold text-gray-700">{label}</label>}
+            {label && <label className="block text-sm font-semibold text-foreground">{label}</label>}
 
             <div className="relative">
                 <div
@@ -122,7 +122,7 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                     className={`
                         w-full px-4 py-3 border-2 border-dashed rounded-xl ${!disabled && !isUploading ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}
                         transition-all duration-200 flex items-center justify-between
-                        ${isUploading ? 'bg-gray-50 border-gray-200' : disabled ? 'bg-gray-100 border-gray-300' : 'bg-white border-gray-300 hover:border-primary hover:bg-primary/5'}
+                        ${isUploading ? 'bg-muted border-border' : disabled ? 'bg-muted/50 border-border' : 'bg-card border-border hover:border-primary hover:bg-primary/5'}
                         ${value && !isUploading && !disabled ? 'border-green-300 bg-green-50/30' : ''}
                     `}
                 >
@@ -130,15 +130,15 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                         {isUploading ? (
                             <div className="flex items-center gap-3">
                                 <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
-                                <span className="text-sm font-medium text-gray-600">Uploading... {progress}%</span>
+                                <span className="text-sm font-medium text-muted-foreground">Uploading... {progress}%</span>
                             </div>
                         ) : value ? (
                             <div className="flex items-center gap-2">
                                 <span className="text-green-600">✓</span>
-                                <span className="text-sm font-medium text-gray-700 truncate">{value}</span>
+                                <span className="text-sm font-medium text-foreground truncate">{value}</span>
                             </div>
                         ) : (
-                            <span className="text-sm text-gray-500">Click to select or drag and drop</span>
+                            <span className="text-sm text-muted-foreground">Click to select or drag and drop</span>
                         )}
                     </div>
 
@@ -169,7 +169,7 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
             {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
 
             {value && !isUploading && (
-                <p className="text-[10px] text-gray-400 truncate">Current URL: {value}</p>
+                <p className="text-[10px] text-muted-foreground truncate">Current URL: {value}</p>
             )}
         </div>
     );

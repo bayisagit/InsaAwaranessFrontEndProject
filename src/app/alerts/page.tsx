@@ -58,22 +58,22 @@ export default function AlertsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <section className="bg-white border-b border-gray-100">
+        <div className="min-h-screen bg-muted pb-20">
+            <section className="bg-card border-b border-border">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 text-center">
-                    <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-4">
                         Cybersecurity Alerts
                     </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                         Real-time advisories on active threats and vulnerabilities.
                     </p>
                     <div className="flex justify-center">
-                        <div className="flex bg-gray-100 p-1 rounded-xl shadow-inner">
+                        <div className="flex bg-muted/50 p-1 rounded-xl shadow-inner">
                             {['all', 'high', 'medium', 'low'].map((s) => (
                                 <button
                                     key={s}
                                     onClick={() => setFilter(s)}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${filter === s ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${filter === s ? 'bg-card text-foreground shadow-sm shadow-black/5 dark:shadow-none' : 'text-muted-foreground hover:text-foreground'}`}
                                 >
                                     {s}
                                 </button>
@@ -107,7 +107,7 @@ export default function AlertsPage() {
                         {filteredAlerts.map((alert) => (
                             <div
                                 key={alert.id}
-                                className={`bg-white rounded-2xl border-l-[6px] shadow-sm overflow-hidden hover:shadow-md transition-shadow ${severityStyles[alert.severity.toLowerCase()] || 'border-gray-200'}`}
+                                className={`bg-card rounded-2xl border-l-[6px] shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow ${severityStyles[alert.severity.toLowerCase()] || 'border-border'}`}
                             >
                                 <div className="p-6">
                                     <div className="flex justify-between items-start mb-3">
@@ -115,13 +115,13 @@ export default function AlertsPage() {
                                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ${severityStyles[alert.severity.toLowerCase()]}`}>
                                                 {alert.severity}
                                             </span>
-                                            <span className="text-xs text-gray-400 font-medium">
+                                            <span className="text-xs text-muted-foreground font-medium">
                                                 {new Date(alert.published_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                                             </span>
                                         </div>
                                     </div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2">{alert.title}</h3>
-                                    <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                                    <h3 className="text-lg font-bold text-foreground mb-2">{alert.title}</h3>
+                                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                                         <LinkifyText text={alert.message} />
                                     </p>
                                     <div className="flex justify-end pt-4 border-t border-gray-50">
@@ -141,9 +141,9 @@ export default function AlertsPage() {
                     </div>
                 )}
 
-                <div className="mt-16 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm text-center">
-                    <h3 className="font-bold text-gray-900 mb-2">Want to receive alerts instantly?</h3>
-                    <p className="text-sm text-gray-500 mb-6">Enable SMS or Email notifications in your profile to stay ahead of emerging threats.</p>
+                <div className="mt-16 bg-card rounded-3xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none text-center">
+                    <h3 className="font-bold text-foreground mb-2">Want to receive alerts instantly?</h3>
+                    <p className="text-sm text-muted-foreground mb-6">Enable SMS or Email notifications in your profile to stay ahead of emerging threats.</p>
                     <Link href="/profile">
                         <Button variant="outline">Update Notification Settings</Button>
                     </Link>

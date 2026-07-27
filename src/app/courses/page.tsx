@@ -91,22 +91,22 @@ export default function TrainingPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center">
+        <div className="min-h-screen bg-muted flex flex-col items-center">
             {/* Hero */}
-            <section className="w-full relative overflow-hidden bg-white px-4 sm:px-6 lg:px-12 py-20 text-center flex flex-col items-center border-b border-gray-100">
+            <section className="w-full relative overflow-hidden bg-card px-4 sm:px-6 lg:px-12 py-20 text-center flex flex-col items-center border-b border-border">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[300px] bg-primary/5 rounded-[100%] filter blur-3xl opacity-70"></div>
                 <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                     CYBERSECURITY TRAINING
                 </span>
-                <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl max-w-2xl">
+                <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl max-w-2xl">
                     Ignite Your <span className="text-primary">Cyber Resilience</span>
                 </h1>
-                <p className="mt-6 text-base leading-7 text-gray-500 max-w-2xl">
+                <p className="mt-6 text-base leading-7 text-muted-foreground max-w-2xl">
                     Expert-led training designed to empower you with the skills to identify threats and protect our digital nation.
                 </p>
-                    <div className="mt-8 max-w-xl w-full flex bg-white border border-gray-200 rounded-full p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary transition-all">
-                        <div className="pl-4 flex items-center text-gray-400">
+                    <div className="mt-8 max-w-xl w-full flex bg-card border border-border rounded-full p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
+                        <div className="pl-4 flex items-center text-muted-foreground">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -129,38 +129,38 @@ export default function TrainingPage() {
                 {/* Sidebar */}
                 <div className="w-full lg:w-64 shrink-0 space-y-8">
                     <div>
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Level</h4>
+                        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Level</h4>
                         <div className="space-y-3">
                             {['beginner', 'medium', 'advanced'].map(item => (
                                 <label key={item} className="flex items-center gap-3 cursor-pointer group">
                                     <input type="checkbox" className="hidden" checked={selectedDifficulty.includes(item)} onChange={() => handleCheckboxChange(setSelectedDifficulty, item)} />
-                                    <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${selectedDifficulty.includes(item) ? 'bg-primary border-primary' : 'bg-white border-gray-300 group-hover:border-primary'}`}>
+                                    <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${selectedDifficulty.includes(item) ? 'bg-primary border-primary' : 'bg-card border-border group-hover:border-primary'}`}>
                                         {selectedDifficulty.includes(item) && (
                                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                             </svg>
                                         )}
                                     </div>
-                                    <span className="text-sm text-gray-600 group-hover:text-primary transition-colors capitalize">{item}</span>
+                                    <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors capitalize">{item}</span>
                                 </label>
                             ))}
                         </div>
                     </div>
 
                     <div>
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Language</h4>
+                        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Language</h4>
                         <div className="space-y-3">
                             {['en', 'am', 'om', 'so', 'ti'].map(item => (
                                 <label key={item} className="flex items-center gap-3 cursor-pointer group">
                                     <input type="checkbox" className="hidden" checked={selectedLanguages.includes(item)} onChange={() => handleCheckboxChange(setSelectedLanguages, item)} />
-                                    <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${selectedLanguages.includes(item) ? 'bg-primary border-primary' : 'bg-white border-gray-300 group-hover:border-primary'}`}>
+                                    <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${selectedLanguages.includes(item) ? 'bg-primary border-primary' : 'bg-card border-border group-hover:border-primary'}`}>
                                         {selectedLanguages.includes(item) && (
                                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                             </svg>
                                         )}
                                     </div>
-                                    <span className="text-sm text-gray-600 group-hover:text-primary transition-colors uppercase">{item}</span>
+                                    <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors uppercase">{item}</span>
                                 </label>
                             ))}
                         </div>
@@ -182,11 +182,11 @@ export default function TrainingPage() {
                 {/* Main Grid */}
                 <div className="flex-1">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                            All Courses <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{filteredCourses.length} total</span>
+                        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                            All Courses <span className="text-xs font-normal text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">{filteredCourses.length} total</span>
                         </h3>
                         <select
-                            className="border border-gray-200 rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                            className="border border-border rounded-lg bg-card px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
                         >
@@ -199,7 +199,7 @@ export default function TrainingPage() {
                     {isLoading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             {[1, 2, 3, 4, 5, 6].map(i => (
-                                <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 animate-pulse h-48"></div>
+                                <div key={i} className="bg-card rounded-2xl p-6 border border-border animate-pulse h-48"></div>
                             ))}
                         </div>
                     ) : filteredCourses.length === 0 ? (
@@ -218,13 +218,13 @@ export default function TrainingPage() {
                                 const diff = course.difficulty?.toLowerCase() || '';
                                 const color = difficultyColors[diff] || 'gray';
                                 return (
-                                    <div key={course.id} className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-primary/20 transition-all cursor-pointer flex flex-col h-full relative group">
+                                    <div key={course.id} className="bg-card rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/20 transition-all cursor-pointer flex flex-col h-full relative group">
                                         {(course.level || course.difficulty) && (
                                             <div className={`absolute top-6 right-6 px-2 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${
                                                 (course.level || course.difficulty || '').toLowerCase() === 'beginner' ? 'bg-green-50 text-green-600' :
                                                 (course.level || course.difficulty || '').toLowerCase() === 'medium' ? 'bg-yellow-50 text-yellow-600' :
                                                 (course.level || course.difficulty || '').toLowerCase() === 'advanced' ? 'bg-red-50 text-red-600' :
-                                                'bg-gray-50 text-gray-600'
+                                                'bg-muted text-muted-foreground'
                                             }`}>
                                                 {course.level || course.difficulty}
                                             </div>
@@ -238,13 +238,13 @@ export default function TrainingPage() {
                                                 {icons[i % icons.length]}
                                             </div>
                                         )}
-                                        <h4 className="font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors pr-16">{course.title}</h4>
-                                        <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-3">
+                                        <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors pr-16">{course.title}</h4>
+                                        <p className="text-xs text-muted-foreground mb-4 flex-1 line-clamp-3">
                                             <LinkifyText text={course.description || 'Explore this cybersecurity course and build your skills.'} />
                                         </p>
                                         <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
                                             {course.language && (
-                                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded font-medium uppercase">{course.language}</span>
+                                                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded font-medium uppercase">{course.language}</span>
                                             )}
                                             <Link href={`/courses/${course.id}`} className="text-xs font-semibold text-primary hover:underline ml-auto inline-flex items-center gap-1">
                                                 View Course

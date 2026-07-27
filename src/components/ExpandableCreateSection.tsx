@@ -38,10 +38,10 @@ export function ExpandableCreateSection({
 }: ExpandableCreateSectionProps) {
     return (
         <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-6 mb-4">
-            <div className={`bg-white rounded-xl shadow-sm border overflow-hidden transition-all duration-300 ${isOpen ? 'border-primary/50 ring-1 ring-primary/20' : 'border-gray-200'}`}>
+            <div className={`bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border overflow-hidden transition-all duration-300 ${isOpen ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border'}`}>
                 <button
                     onClick={onToggle}
-                    className="w-full flex items-center px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left font-semibold text-gray-700 focus:outline-none"
+                    className="w-full flex items-center px-6 py-4 bg-muted hover:bg-muted/50 transition-colors text-left font-semibold text-foreground focus:outline-none"
                     type="button"
                 >
                     <span className="flex items-center gap-2">
@@ -56,14 +56,14 @@ export function ExpandableCreateSection({
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2, ease: 'easeInOut' }}
                         >
-                            <div className="border-t border-gray-200 bg-white p-6">
+                            <div className="border-t border-border bg-card p-6">
                                 {isSuccess ? (
                                     <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in zoom-in duration-300">
                                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                                             <span className="text-3xl text-green-600">✓</span>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2">{successTitle}</h3>
-                                        <p className="text-gray-500 mb-8">{successDescription}</p>
+                                        <h3 className="text-xl font-bold text-foreground mb-2">{successTitle}</h3>
+                                        <p className="text-muted-foreground mb-8">{successDescription}</p>
                                         
                                         <div className="flex flex-wrap gap-3 justify-center">
                                             {nextSteps.map((step, idx) => (

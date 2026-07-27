@@ -156,13 +156,13 @@ export default function AdminTrainingRequestsPage() {
     if (!user || !VIEW_ROLES.includes(user.role)) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {/* Header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Training Requests</h1>
-                        <p className="text-gray-500">
+                        <h1 className="text-3xl font-bold text-foreground mb-1">Training Requests</h1>
+                        <p className="text-muted-foreground">
                             {canApproveReject
                                 ? 'Review and approve organizational training requests.'
                                 : 'Submit and track your organization\'s training requests.'}
@@ -171,7 +171,7 @@ export default function AdminTrainingRequestsPage() {
                 </div>
 
                 {/* Status filter tabs */}
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 flex gap-0 border-t border-gray-100">
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 flex gap-0 border-t border-border">
                     {(['all', 'pending', 'approved', 'rejected'] as StatusFilter[]).map(tab => (
                         <button
                             key={tab}
@@ -179,7 +179,7 @@ export default function AdminTrainingRequestsPage() {
                             className={`px-5 py-3 text-sm font-semibold capitalize border-b-2 transition-colors ${
                                 statusFilter === tab
                                     ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground'
                             }`}
                         >
                             {tab === 'all' ? 'All' : tab}
@@ -189,7 +189,7 @@ export default function AdminTrainingRequestsPage() {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 {canSubmit && (
                     <div className="mb-6">
@@ -200,15 +200,15 @@ export default function AdminTrainingRequestsPage() {
                         >
                             <form onSubmit={handleCreateSubmit} className="space-y-4">
                                 {createError && (
-                                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{createError}</div>
+                                    <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{createError}</div>
                                 )}
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    <label className="block text-sm font-semibold text-foreground mb-1">
                                         Description <span className="text-primary">*</span>
                                     </label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
+                                        className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px] resize-y"
                                         placeholder="Describe the training requirements, topics, number of employees, and expected outcomes…"
                                         value={formData.description}
                                         onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
@@ -219,7 +219,7 @@ export default function AdminTrainingRequestsPage() {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    <label className="block text-sm font-semibold text-foreground mb-1">
                                         Supporting Document <span className="text-primary">*</span>
                                     </label>
                                     <CloudinaryUpload
@@ -230,7 +230,7 @@ export default function AdminTrainingRequestsPage() {
                                     )}
                                 </div>
 
-                                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
+                                <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-700">
                                     Your request will be automatically linked to your organization and submitted for Super Admin review.
                                 </div>
 
@@ -255,38 +255,38 @@ export default function AdminTrainingRequestsPage() {
                 {isFetching ? (
                     <div className="space-y-4">
                         {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
-                                <div className="h-5 bg-gray-100 rounded w-1/3 mb-3" />
-                                <div className="h-4 bg-gray-100 rounded w-2/3 mb-2" />
-                                <div className="h-3 bg-gray-100 rounded w-1/4" />
+                            <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse">
+                                <div className="h-5 bg-muted/50 rounded w-1/3 mb-3" />
+                                <div className="h-4 bg-muted/50 rounded w-2/3 mb-2" />
+                                <div className="h-3 bg-muted/50 rounded w-1/4" />
                             </div>
                         ))}
                     </div>
                 ) : requests.length === 0 ? (
-                    <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
+                    <div className="bg-card rounded-xl border border-border p-16 text-center">
                         <div className="text-4xl mb-4">📋</div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-foreground">
                             {statusFilter === 'all' ? 'No training requests yet.' : `No ${statusFilter} requests.`}
                         </p>
-                        <p className="text-gray-500 text-sm mt-1">
+                        <p className="text-muted-foreground text-sm mt-1">
                             {canSubmit ? 'Submit a request using the button above.' : 'Training requests from your organization will appear here.'}
                         </p>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         {requests.map(req => (
-                            <div key={req.id} className="bg-white rounded-xl border border-gray-200 p-6">
+                            <div key={req.id} className="bg-card rounded-xl border border-border p-6">
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${STATUS_COLORS[req.status] ?? 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${STATUS_COLORS[req.status] ?? 'bg-muted text-muted-foreground border-border'}`}>
                                                 {req.status}
                                             </span>
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-muted-foreground">
                                                 {new Date(req.created_at).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className="text-gray-700 text-sm leading-relaxed mb-3 line-clamp-3">
+                                        <p className="text-foreground text-sm leading-relaxed mb-3 line-clamp-3">
                                             {req.description}
                                         </p>
                                         {req.attachment_url && (
@@ -294,7 +294,7 @@ export default function AdminTrainingRequestsPage() {
                                                 href={req.attachment_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:underline bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10 transition-colors"
+                                                className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:underline bg-primary/5 px-2.5 py-1.5 rounded-xl border border-primary/10 transition-colors"
                                             >
                                                 <span>📎</span> View Attachment
                                             </a>

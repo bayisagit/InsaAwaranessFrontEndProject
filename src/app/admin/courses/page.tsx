@@ -20,12 +20,12 @@ import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; role: string; }
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white disabled:opacity-75 disabled:bg-gray-100 disabled:cursor-not-allowed";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card disabled:opacity-75 disabled:bg-muted/50 disabled:cursor-not-allowed";
 const STATUS_COLORS: Record<string, string> = {
     published: 'bg-green-50 text-green-700',
     draft: 'bg-yellow-50 text-yellow-700',
     submitted: 'bg-blue-50 text-blue-700',
-    archived: 'bg-gray-100 text-gray-600',
+    archived: 'bg-muted/50 text-muted-foreground',
 };
 
 export default function AdminCoursesPage() {
@@ -313,18 +313,18 @@ export default function AdminCoursesPage() {
     const canManage = isSuperAdmin || user.role === 'course_provider';
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
+        <div className="min-h-screen bg-muted pb-20">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Courses Management</h1>
-                        <p className="text-gray-500">Create and manage cybersecurity training courses.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-1">Courses Management</h1>
+                        <p className="text-muted-foreground">Create and manage cybersecurity training courses.</p>
                     </div>
                     <div className="w-full lg:w-72 shrink-0">
                         <input
                             type="text"
                             placeholder="Search course title…"
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
+                            className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                         />
@@ -346,7 +346,7 @@ export default function AdminCoursesPage() {
                 ] : []}
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
@@ -359,15 +359,15 @@ export default function AdminCoursesPage() {
                         disabled={isActionLoading}
                     />
                     {form.thumbnail_url && (
-                        <div className="rounded-xl overflow-hidden border border-gray-200 h-32 w-48 mt-2">
+                        <div className="rounded-xl overflow-hidden border border-border h-32 w-48 mt-2">
                             <img src={form.thumbnail_url} alt="Thumbnail" className="w-full h-full object-cover" />
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Description</label>
                         <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px] resize-y"
+                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px] resize-y"
                             placeholder="Course description…"
                             value={form.description}
                             onChange={e => setForm({ ...form, description: e.target.value })}
@@ -377,7 +377,7 @@ export default function AdminCoursesPage() {
 
                     {isSuperAdmin && (
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-gray-400 font-normal">(optional)</span></label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Organization <span className="text-muted-foreground font-normal">(optional)</span></label>
                             <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
                                 <option value="">None</option>
                                 {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
@@ -387,7 +387,7 @@ export default function AdminCoursesPage() {
 
                     {isSuperAdmin && (
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Course Provider <span className="text-primary">*</span></label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Course Provider <span className="text-primary">*</span></label>
                             <select className={SELECT_CLS} value={form.course_provider} onChange={e => setForm({ ...form, course_provider: e.target.value })} disabled={isActionLoading} required>
                                 <option value="">Select provider</option>
                                 {providers.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>)}
@@ -398,7 +398,7 @@ export default function AdminCoursesPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
                             <select className={SELECT_CLS} value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} disabled={isActionLoading}>
                                 <option value="en">English (en)</option>
                                 <option value="am">Amharic (am)</option>
@@ -408,7 +408,7 @@ export default function AdminCoursesPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Level</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Level</label>
                             <select className={SELECT_CLS} value={form.level} onChange={e => setForm({ ...form, level: e.target.value })} disabled={isActionLoading}>
                                 <option value="Beginner">Beginner</option>
                                 <option value="Intermediate">Intermediate</option>
@@ -416,7 +416,7 @@ export default function AdminCoursesPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
                             <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
                                 <option value="draft">Draft</option>
                                 <option value="submitted">Submitted</option>
@@ -438,9 +438,9 @@ export default function AdminCoursesPage() {
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
                 <div className="flex flex-wrap items-center gap-4 mb-6">
                     <div className="flex items-center gap-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Status</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Status</label>
                         <select
-                            className="rounded-md border border-gray-300 py-1.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                            className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
                             value={statusFilter}
                             onChange={e => setStatusFilter(e.target.value)}
                         >
@@ -453,9 +453,9 @@ export default function AdminCoursesPage() {
                     </div>
                     {user?.role !== 'org_admin' && (
                     <div className="flex items-center gap-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Organization</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Organization</label>
                         <select
-                            className="rounded-md border border-gray-300 py-1.5 px-2 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white min-w-[200px]"
+                            className="rounded-lg border border-border py-1.5 px-2 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card min-w-[200px]"
                             value={orgFilter}
                             onChange={e => setOrgFilter(e.target.value)}
                         >
@@ -468,9 +468,9 @@ export default function AdminCoursesPage() {
                     )}
                     {isSuperAdmin && (
                     <div className="flex items-center gap-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Provider</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Provider</label>
                         <select
-                            className="rounded-md border border-gray-300 py-1.5 px-2 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white max-w-[140px]"
+                            className="rounded-lg border border-border py-1.5 px-2 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card max-w-[140px]"
                             value={providerFilter}
                             onChange={e => setProviderFilter(e.target.value)}
                         >
@@ -493,10 +493,10 @@ export default function AdminCoursesPage() {
 
                 {/* Main Content */}
                 <div>
-                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                        <table className="w-full text-left text-sm text-muted-foreground">
+                            <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                 <tr>
                                     <th className="px-4 py-3">Title</th>
                                     <th className="px-4 py-3">Level</th>
@@ -506,17 +506,17 @@ export default function AdminCoursesPage() {
                                     <th className="px-4 py-3 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-border">
                                 {filteredCourses.length === 0 ? (
-                                    <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">No courses found.</td></tr>
+                                    <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No courses found.</td></tr>
                                 ) : filteredCourses.map(c => (
-                                    <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                    <tr key={c.id} className="hover:bg-muted transition-colors">
+                                        <td className="px-4 py-3 font-medium text-foreground">
                                             <div className="flex items-center gap-3">
                                                 {c.thumbnail_url ? (
-                                                    <img src={c.thumbnail_url} alt={c.title} className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0" />
+                                                    <img src={c.thumbnail_url} alt={c.title} className="w-10 h-10 rounded-xl object-cover border border-border shrink-0" />
                                                 ) : (
-                                                    <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
+                                                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground shrink-0">
                                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
                                                     </div>
                                                 )}
@@ -527,36 +527,36 @@ export default function AdminCoursesPage() {
                                         </td>
                                         <td className="px-4 py-3 capitalize">{c.level || '—'}</td>
                                         <td className="px-4 py-3 uppercase text-xs">{c.language || '—'}</td>
-                                        <td className="px-4 py-3 text-xs text-gray-600">
+                                        <td className="px-4 py-3 text-xs text-muted-foreground">
                                             {c.organization ? (orgs.find(o => o.id === c.organization)?.name || c.organization) : '—'}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[c.status] || 'bg-gray-100 text-gray-600'}`}>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[c.status] || 'bg-muted/50 text-muted-foreground'}`}>
                                                 {c.status || 'draft'}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                             {canManage && (
-                                                <button onClick={() => openModal(c)} className="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                                <button onClick={() => openModal(c)} className="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                             )}
                                             {c.status === 'draft' && user.role === 'course_provider' && (
-                                                <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-md text-xs font-bold transition-colors">Submit</button>
+                                                <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-xs font-bold transition-colors">Submit</button>
                                             )}
                                             {c.status === 'submitted' && user.role === 'course_provider' && (
-                                                <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 rounded-md text-xs font-bold transition-colors">Withdraw</button>
+                                                <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 rounded-lg text-xs font-bold transition-colors">Withdraw</button>
                                             )}
                                             {c.status === 'submitted' && isSuperAdmin && (
                                                 <>
-                                                <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-md text-xs font-bold transition-colors">Approve</button>
-                                                <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Reject</button>
+                                                <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-lg text-xs font-bold transition-colors">Approve</button>
+                                                <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors">Reject</button>
                                                 </>
                                             )}
                                             {isSuperAdmin && (
-                                                <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-md text-xs font-bold transition-colors">Provider</button>
+                                                <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-lg text-xs font-bold transition-colors">Provider</button>
                                             )}
                                             {canManage && (
-                                                <button onClick={() => handleDelete(c.id)} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                                <button onClick={() => handleDelete(c.id)} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors">Delete</button>
                                             )}
                                             </div>
                                         </td>
@@ -571,7 +571,7 @@ export default function AdminCoursesPage() {
             {/* Edit Modal */}
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Course">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
@@ -584,15 +584,15 @@ export default function AdminCoursesPage() {
                         disabled={isActionLoading}
                     />
                     {form.thumbnail_url && (
-                        <div className="rounded-xl overflow-hidden border border-gray-200 h-32">
+                        <div className="rounded-xl overflow-hidden border border-border h-32">
                             <img src={form.thumbnail_url} alt="Thumbnail" className="w-full h-full object-cover" />
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Description</label>
                         <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px] resize-y"
+                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px] resize-y"
                             placeholder="Course description…"
                             value={form.description}
                             onChange={e => setForm({ ...form, description: e.target.value })}
@@ -602,7 +602,7 @@ export default function AdminCoursesPage() {
 
                     {isSuperAdmin && (
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization <span className="text-gray-400 font-normal">(optional)</span></label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Organization <span className="text-muted-foreground font-normal">(optional)</span></label>
                             <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
                                 <option value="">None</option>
                                 {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
@@ -612,7 +612,7 @@ export default function AdminCoursesPage() {
 
                     <div className="grid grid-cols-3 gap-3">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
                             <select className={SELECT_CLS} value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} disabled={isActionLoading}>
                                 <option value="en">English (en)</option>
                                 <option value="am">Amharic (am)</option>
@@ -622,7 +622,7 @@ export default function AdminCoursesPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Level</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Level</label>
                             <select className={SELECT_CLS} value={form.level} onChange={e => setForm({ ...form, level: e.target.value })} disabled={isActionLoading}>
                                 <option value="Beginner">Beginner</option>
                                 <option value="Intermediate">Intermediate</option>
@@ -630,7 +630,7 @@ export default function AdminCoursesPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
                             <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading || (!!selectedCourse && selectedCourse.status === 'submitted')}>
                                 <option value="draft">Draft</option>
                                 <option value="submitted">Submitted</option>
@@ -650,7 +650,7 @@ export default function AdminCoursesPage() {
             {/* Assign Provider Modal */}
             <Modal isOpen={isAssignProviderOpen} onClose={() => setIsAssignProviderOpen(false)} title="Reassign Course Provider">
                 <div className="space-y-4">
-                    <p className="text-sm text-gray-600">Select a new course provider for: <strong>{assignProviderCourse?.title}</strong></p>
+                    <p className="text-sm text-muted-foreground">Select a new course provider for: <strong>{assignProviderCourse?.title}</strong></p>
                     <select className={SELECT_CLS} value={selectedProvider} onChange={e => setSelectedProvider(e.target.value)}>
                         <option value="">Select provider</option>
                         {providers.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>)}
@@ -665,7 +665,7 @@ export default function AdminCoursesPage() {
             {/* Assign Organization Modal */}
             <Modal isOpen={isAssignOrgOpen} onClose={() => setIsAssignOrgOpen(false)} title="Assign Organization">
                 <div className="space-y-4">
-                    <p className="text-sm text-gray-600">Link organization for: <strong>{assignOrgCourse?.title}</strong></p>
+                    <p className="text-sm text-muted-foreground">Link organization for: <strong>{assignOrgCourse?.title}</strong></p>
                     <select className={SELECT_CLS} value={selectedOrg} onChange={e => setSelectedOrg(e.target.value)}>
                         <option value="">Unlink (none)</option>
                         {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
@@ -712,11 +712,11 @@ export default function AdminCoursesPage() {
             {/* Rejection Reason Modal */}
             <Modal isOpen={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} title="Reject Course">
                 <div className="space-y-4">
-                <p className="text-sm text-gray-600">Provide a reason for rejecting this course. The course provider will see this feedback.</p>
+                <p className="text-sm text-muted-foreground">Provide a reason for rejecting this course. The course provider will see this feedback.</p>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Rejection Reason <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-semibold text-foreground mb-1">Rejection Reason <span className="text-red-500">*</span></label>
                     <textarea
-                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 outline-none min-h-[100px] resize-y"
+                    className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 outline-none min-h-[100px] resize-y"
                     placeholder="Explain why the course is being rejected…"
                     value={rejectionReason}
                     onChange={e => setRejectionReason(e.target.value)}

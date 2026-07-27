@@ -99,15 +99,15 @@ export default function ResourcesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center">
+        <div className="min-h-screen bg-muted flex flex-col items-center">
             <PageHeader
                 title="Cybersecurity Knowledge Base"
                 description="Equip yourself with the latest guides, tools, and policy frameworks."
                 className="w-full text-center"
             />
             <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-12 -mt-0 mb-12">
-                <form onSubmit={handleSearch} className="max-w-xl mx-auto flex bg-white border border-gray-200 rounded-full p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary transition-all">
-                    <div className="pl-4 flex items-center text-gray-400">
+                <form onSubmit={handleSearch} className="max-w-xl mx-auto flex bg-card border border-border rounded-full p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
+                    <div className="pl-4 flex items-center text-muted-foreground">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -126,12 +126,12 @@ export default function ResourcesPage() {
             </div>
 
             <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 py-12">
-                {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                         Available Resources
-                        <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        <span className="text-xs font-normal text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
                             {totalCount} items
                         </span>
                     </h3>
@@ -157,20 +157,20 @@ export default function ResourcesPage() {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {resources.map(resource => (
-                                <div key={resource.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex gap-5 hover:shadow-md hover:border-primary/20 transition-all group">
+                                <div key={resource.id} className="bg-card rounded-2xl p-6 border border-border shadow-sm shadow-black/5 dark:shadow-none flex gap-5 hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/20 transition-all group">
                                     <div className="w-14 h-14 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
                                         {getIcon(resource)}
                                     </div>
                                     <div className="flex-1 flex flex-col justify-between min-w-0">
                                         <div>
-                                            <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">{resource.title}</h4>
+                                            <h4 className="font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">{resource.title}</h4>
                                             {resource.content && (
-                                                <LinkifyText text={resource.content} className="text-xs text-gray-500 mt-1 line-clamp-2" />
+                                                <LinkifyText text={resource.content} className="text-xs text-muted-foreground mt-1 line-clamp-2" />
                                             )}
                                         </div>
                                         <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
                                             {resource.category && (
-                                                <span className="text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded uppercase">
+                                                <span className="text-xs font-semibold text-muted-foreground bg-muted/50 px-2 py-1 rounded uppercase">
                                                     {resource.category}
                                                 </span>
                                             )}
@@ -180,7 +180,7 @@ export default function ResourcesPage() {
                                                         href={resource.file_url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="text-xs font-semibold text-gray-500 hover:text-primary inline-flex items-center gap-1 transition-colors"
+                                                        className="text-xs font-semibold text-muted-foreground hover:text-primary inline-flex items-center gap-1 transition-colors"
                                                     >
                                                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.25a1.444 1.444 0 000 1.5 2.045 2.045 0 003.497.826L12 7.25l6.467 7.326a2.044 2.044 0 003.497-.826 1.444 1.444 0 000-1.5l-6.467-7.326a2.044 2.044 0 00-3.06 0L4.536 12.25z" />
@@ -237,12 +237,12 @@ export default function ResourcesPage() {
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href="/contact" aria-label="Create a free account">
-                    <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all">
                         Contact Support
                     </Button>
                     </Link>
                     <Link href="/courses" aria-label="Explore cybersecurity resources">
-                    <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
+                    <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
                         Explore Courses
                     </Button>
                     </Link>

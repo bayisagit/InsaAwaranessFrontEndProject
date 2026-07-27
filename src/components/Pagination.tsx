@@ -44,10 +44,10 @@ export const Pagination: React.FC<PaginationProps> = ({
     };
 
     return (
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <span className="text-sm text-gray-500">
-                Showing <span className="font-medium text-gray-700">{showingFrom}–{showingTo}</span> of{' '}
-                <span className="font-medium text-gray-700">{totalCount}</span> {label}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card p-4 rounded-xl border border-border shadow-sm shadow-black/5 dark:shadow-none">
+            <span className="text-sm text-muted-foreground">
+                Showing <span className="font-medium text-foreground">{showingFrom}–{showingTo}</span> of{' '}
+                <span className="font-medium text-foreground">{totalCount}</span> {label}
             </span>
             <nav className="flex items-center gap-1" aria-label="Pagination">
                 <Button
@@ -63,16 +63,16 @@ export const Pagination: React.FC<PaginationProps> = ({
                 </Button>
                 {getPageNumbers().map((p, i) =>
                     p === '...' ? (
-                        <span key={`ellipsis-${i}`} className="px-2 py-1 text-sm text-gray-400">...</span>
+                        <span key={`ellipsis-${i}`} className="px-2 py-1 text-sm text-muted-foreground">...</span>
                     ) : (
                         <button
                             key={p}
                             onClick={() => onPageChange(p)}
                             disabled={isLoading}
-                            className={`min-w-[36px] h-9 text-sm font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                            className={`min-w-[36px] h-9 text-sm font-medium rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                                 p === page
-                                    ? 'bg-primary text-white shadow-sm'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                    ? 'bg-primary text-white shadow-sm shadow-black/5 dark:shadow-none'
+                                    : 'text-muted-foreground hover:bg-muted/50'
                             }`}
                             aria-current={p === page ? 'page' : undefined}
                         >

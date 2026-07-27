@@ -56,7 +56,7 @@ export default function CampaignsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             <PageHero
                 badge="National Initiative"
                 title="Security Awareness Campaigns"
@@ -86,8 +86,8 @@ export default function CampaignsPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {campaigns.map((camp) => (
-                            <div key={camp.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-xl hover:border-primary/20 transition-all group">
-                                <div className="h-48 bg-gray-900 relative">
+                            <div key={camp.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden flex flex-col hover:shadow-xl hover:border-primary/20 transition-all group">
+                                <div className="h-48 bg-background relative">
                                     <div className="w-full h-full bg-gradient-to-br from-secondary to-gray-900 opacity-80"></div>
                                     <div className="absolute top-4 right-4">
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${camp.status === 'live' ? 'bg-green-500 text-white' :
@@ -104,8 +104,8 @@ export default function CampaignsPage() {
                                     </div>
                                 </div>
                                 <div className="p-8 flex flex-col flex-1">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">{camp.title}</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed mb-8 flex-1">
+                                    <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">{camp.title}</h3>
+                                    <p className="text-sm text-muted-foreground leading-relaxed mb-8 flex-1">
                                         <LinkifyText text={camp.message} />
                                     </p>
                                     <Link href={`/courses`} className="inline-block">

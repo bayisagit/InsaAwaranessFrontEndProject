@@ -18,15 +18,15 @@ const Spinner = () => (
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className = '', variant = 'primary', size = 'md', fullWidth = false, loading = false, iconLeft, iconRight, children, disabled, ...props }, ref) => {
-        const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none';
+        const baseStyles = 'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none';
 
         const variants: Record<string, string> = {
-            primary: 'bg-primary text-white hover:bg-primary-hover border border-transparent shadow-sm active:scale-[0.98]',
-            secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary-hover hover:text-white border border-transparent shadow-sm active:scale-[0.98]',
-            outline: 'bg-transparent border border-primary text-primary hover:bg-red-50 active:scale-[0.98]',
-            ghost: 'bg-transparent text-gray-text hover:bg-gray-100 hover:text-foreground active:scale-[0.98]',
-            social: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm active:scale-[0.98]',
-            danger: 'bg-red-600 text-white hover:bg-red-700 border border-transparent shadow-sm active:scale-[0.98]',
+            primary: 'bg-primary text-primary-foreground hover:bg-primary-hover border border-transparent active:scale-[0.98]',
+            secondary: 'bg-secondary text-secondary-foreground hover:bg-muted hover:text-foreground border border-transparent active:scale-[0.98]',
+            outline: 'bg-transparent border border-primary text-primary hover:bg-primary/10 active:scale-[0.98]',
+            ghost: 'bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground active:scale-[0.98]',
+            social: 'bg-card border border-border text-foreground hover:bg-muted active:scale-[0.98]',
+            danger: 'bg-red-600 text-white hover:bg-red-700 border border-transparent active:scale-[0.98]',
         };
 
         const sizes: Record<string, string> = {

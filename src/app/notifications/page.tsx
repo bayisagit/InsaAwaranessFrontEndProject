@@ -77,14 +77,14 @@ export default function NotificationsPage() {
 
     if (authLoading || isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-muted flex items-center justify-center">
                 <div aria-label="Loading" className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             <PageHeader
                 title="Notifications"
                 description="Stay up to date with system alerts and updates."
@@ -101,7 +101,7 @@ export default function NotificationsPage() {
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 mt-8">
                 {error && (
-                    <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>
+                    <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>
                 )}
 
                 {notifications.length === 0 ? (
@@ -119,15 +119,15 @@ export default function NotificationsPage() {
                         {notifications.map((n) => (
                             <div
                                 key={n.id}
-                                className={`group bg-white rounded-xl border p-5 flex gap-4 transition-all hover:border-primary/30 ${n.is_read ? 'border-gray-200' : 'border-primary/20 shadow-sm'}`}
+                                className={`group bg-card rounded-xl border p-5 flex gap-4 transition-all hover:border-primary/30 ${n.is_read ? 'border-border' : 'border-primary/20 shadow-sm shadow-black/5 dark:shadow-none'}`}
                             >
                                 <div className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${n.is_read ? 'bg-gray-200' : 'bg-primary'}`}></div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start gap-4">
-                                        <p className={`text-sm ${n.is_read ? 'text-gray-600' : 'text-gray-900 font-medium'}`}><LinkifyText text={n.message} /></p>
+                                        <p className={`text-sm ${n.is_read ? 'text-muted-foreground' : 'text-foreground font-medium'}`}><LinkifyText text={n.message} /></p>
                                         <button
                                             onClick={() => toggleReadStatus(n.id, n.is_read)}
-                                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap ${n.is_read ? 'text-primary hover:bg-primary/5' : 'text-gray-400 hover:bg-gray-100'}`}
+                                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap ${n.is_read ? 'text-primary hover:bg-primary/5' : 'text-muted-foreground hover:bg-muted/50'}`}
                                             title={n.is_read ? "Mark as unread" : "Mark as read"}
                                         >
                                             {n.is_read ? "Keep as unread" : "Mark read"}
@@ -135,11 +135,11 @@ export default function NotificationsPage() {
                                     </div>
                                     <div className="flex items-center gap-3 mt-2">
                                         {n.type && (
-                                            <span className="text-[10px] bg-gray-50 text-gray-500 px-2 py-0.5 rounded border border-gray-200 font-bold uppercase tracking-tight">
+                                            <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded border border-border font-bold uppercase tracking-tight">
                                                 {n.type.replace(/_/g, ' ')}
                                             </span>
                                         )}
-                                        <span className="text-[11px] text-gray-400 font-medium">{formatDate(n.created_at)}</span>
+                                        <span className="text-[11px] text-muted-foreground font-medium">{formatDate(n.created_at)}</span>
                                     </div>
                                 </div>
                             </div>

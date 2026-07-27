@@ -9,7 +9,7 @@ export default function CourseCertificatesPage() {
     const courseId = params.courseId as string;
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
             <CertificatesManager lockedCourseId={courseId} />
         </div>
     );

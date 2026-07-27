@@ -14,7 +14,7 @@ const colorMap: Record<string, { border: string; bg: string; iconBg: string; tex
 
 export function AwarenessHubGrid() {
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted">
             <PageHero
                 badge="KNOWLEDGE HUB"
                 title="Awareness Topics"
@@ -30,7 +30,7 @@ export function AwarenessHubGrid() {
                         return (
                             <Link key={topic.slug} href={`/awareness/${topic.slug}`} className="group block">
                                 <div
-                                    className={`relative bg-white rounded-2xl shadow-sm border border-gray-100 border-b-4 ${colors.border} p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden h-full`}
+                                    className={`relative bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border border-b-4 ${colors.border} p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden h-full`}
                                 >
                                     {/* Decorative quarter-circle */}
                                     <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-bl-full ${colors.bg} opacity-50`} />
@@ -40,10 +40,10 @@ export function AwarenessHubGrid() {
                                             {topic.icon}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors mb-1">
+                                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
                                                 {topic.title}
                                             </h3>
-                                            <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                                            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                                                 {topic.description}
                                             </p>
                                         </div>
@@ -53,7 +53,7 @@ export function AwarenessHubGrid() {
                                         <span className={`text-xs font-semibold ${colors.text}`}>
                                             {topic.sections.length} guides
                                         </span>
-                                        <span className="text-xs text-gray-400 font-medium group-hover:text-primary transition-colors flex items-center gap-1 ml-auto">
+                                        <span className="text-xs text-muted-foreground font-medium group-hover:text-primary transition-colors flex items-center gap-1 ml-auto">
                                             Explore Topic &rarr;
                                         </span>
                                     </div>

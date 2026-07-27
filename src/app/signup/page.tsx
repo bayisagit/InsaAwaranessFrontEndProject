@@ -163,8 +163,8 @@ export default function SignupPage() {
 
     if (registeredEmail) {
         return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
-                <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
+                <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                     <div className="flex justify-center mb-6">
                         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
                             <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -172,14 +172,14 @@ export default function SignupPage() {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-3">Verify Your Email</h1>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <h1 className="text-2xl font-bold text-foreground mb-3">Verify Your Email</h1>
+                    <p className="text-sm text-muted-foreground mb-2">
                         We&apos;ve sent a verification email to:
                     </p>
-                    <p className="text-sm font-bold text-gray-900 bg-gray-50 px-4 py-2 rounded-lg mb-6 border border-gray-100">
+                    <p className="text-sm font-bold text-foreground bg-muted px-4 py-2 rounded-xl mb-6 border border-border">
                         {registeredEmail}
                     </p>
-                    <p className="text-xs text-gray-500 mb-6 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
                         Click the link in the email to activate your account. Your account will remain inactive until you verify.
                     </p>
                     <button
@@ -189,8 +189,8 @@ export default function SignupPage() {
                     >
                         {isResending ? 'Resending...' : 'Resend verification email'}
                     </button>
-                    <div className="mt-8 pt-6 border-t border-gray-100">
-                        <p className="text-sm text-gray-600">
+                    <div className="mt-8 pt-6 border-t border-border">
+                        <p className="text-sm text-muted-foreground">
                             Already verified?{' '}
                             <Link href="/login" className="font-semibold text-primary hover:underline">
                                 Sign in
@@ -203,7 +203,7 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="flex min-h-screen bg-white">
+        <div className="flex min-h-screen bg-card">
             <div className="hidden lg:flex w-1/2 bg-secondary flex-col justify-center px-16 relative lg:sticky lg:top-0 h-screen">
                 <div className="max-w-md mx-auto z-10">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-semibold tracking-wider mb-6">
@@ -216,11 +216,11 @@ export default function SignupPage() {
                         Forging a Safer <br />
                         <span className="text-primary">Digital Frontier.</span>
                     </h1>
-                    <p className="text-gray-400 mt-4 leading-relaxed max-w-sm mb-12">
+                    <p className="text-muted-foreground mt-4 leading-relaxed max-w-sm mb-12">
                         Join the national initiative. Equip yourself and your organization with the tools to defend against cyber threats in an evolving digital landscape.
                     </p>
                     <div className="space-y-4">
-                        <div className="bg-secondary-hover border border-gray-800 p-5 rounded-2xl flex items-start gap-4">
+                        <div className="bg-secondary-hover border border-border p-5 rounded-2xl flex items-start gap-4">
                             <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -228,10 +228,10 @@ export default function SignupPage() {
                             </div>
                             <div>
                                 <h4 className="text-white font-medium">National Defense</h4>
-                                <p className="text-sm text-gray-500 mt-1">Contribute to the collective cyber resilience of our critical infrastructure.</p>
+                                <p className="text-sm text-muted-foreground mt-1">Contribute to the collective cyber resilience of our critical infrastructure.</p>
                             </div>
                         </div>
-                        <div className="bg-secondary-hover border border-gray-800 p-5 rounded-2xl flex items-start gap-4">
+                        <div className="bg-secondary-hover border border-border p-5 rounded-2xl flex items-start gap-4">
                             <div className="w-10 h-10 rounded-full bg-yellow-500/10 text-yellow-500 flex items-center justify-center shrink-0">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -239,23 +239,23 @@ export default function SignupPage() {
                             </div>
                             <div>
                                 <h4 className="text-white font-medium">Verified Alerts</h4>
-                                <p className="text-sm text-gray-500 mt-1">Receive official warnings about phishing campaigns and ransomware.</p>
+                                <p className="text-sm text-muted-foreground mt-1">Receive official warnings about phishing campaigns and ransomware.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-white py-12 overflow-y-auto">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-card py-12 overflow-y-auto">
                 <div className="max-w-md w-full mx-auto">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h2>
-                    <p className="text-gray-500 text-sm mb-8">Enter your details to access the secure portal.</p>
+                    <h2 className="text-3xl font-bold text-foreground mb-2">Create your account</h2>
+                    <p className="text-muted-foreground text-sm mb-8">Enter your details to access the secure portal.</p>
 
                     {/* Social Signup Buttons */}
                     <div className="space-y-3 mb-6">
                         <Button
                             variant="social"
                             fullWidth
-                            className="py-3 rounded-lg"
+                            className="py-3 rounded-xl"
                             onClick={() => googleLogin()}
                             loading={socialLoading === 'google'}
                             iconLeft={
@@ -272,7 +272,7 @@ export default function SignupPage() {
                         <Button
                             variant="social"
                             fullWidth
-                            className="py-3 rounded-lg"
+                            className="py-3 rounded-xl"
                             onClick={handleGitHubSignup}
                             loading={socialLoading === 'github'}
                             iconLeft={
@@ -288,16 +288,16 @@ export default function SignupPage() {
                     {/* Divider */}
                     <div className="relative mb-6">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200" />
+                            <div className="w-full border-t border-border" />
                         </div>
                         <div className="relative flex justify-center">
-                            <span className="bg-white px-3 text-xs text-gray-400 font-medium">OR</span>
+                            <span className="bg-card px-3 text-xs text-muted-foreground font-medium">OR</span>
                         </div>
                     </div>
 
                     <form className="space-y-5" onSubmit={handleSubmit} method="POST">
                         {fieldErrors.non_field && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-start gap-2">
+                            <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-start gap-2">
                                 <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -310,8 +310,8 @@ export default function SignupPage() {
                         </div>
                         <Input label="Email Address" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isLoading} error={fieldErrors.email} autoComplete="email" />
                         <div className="w-full">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Language</label>
-                            <select value={preferredLanguage} onChange={(e) => setPreferredLanguage(e.target.value)} disabled={isLoading} className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white disabled:bg-gray-50 disabled:text-gray-500">
+                            <label className="block text-sm font-medium text-foreground mb-1">Preferred Language</label>
+                            <select value={preferredLanguage} onChange={(e) => setPreferredLanguage(e.target.value)} disabled={isLoading} className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card disabled:bg-muted disabled:text-muted-foreground">
                                 {LANGUAGE_OPTIONS.map(o => (
                                     <option key={o.value} value={o.value}>{o.label}</option>
                                 ))}
@@ -322,7 +322,7 @@ export default function SignupPage() {
                                 <Input label="Password" name="password" type="password" placeholder="Create a strong password" value={password} onChange={(e) => setPassword(e.target.value)} required showPasswordToggle error={fieldErrors.password} autoComplete="new-password" />
                                 {password && (
                                     <div className="flex items-center gap-2 mt-1">
-                                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="flex-1 h-1.5 bg-muted/50 rounded-full overflow-hidden">
                                             <div className={`h-full ${passStrength.color} ${passStrength.w} transition-all duration-300`}></div>
                                         </div>
                                         <span className={`text-[10px] font-bold ${passStrength.color.replace('bg-', 'text-')}`}>{passStrength.label}</span>
@@ -331,14 +331,14 @@ export default function SignupPage() {
                             </div>
                             <Input label="Confirm Password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required showPasswordToggle disabled={isLoading} autoComplete="new-password" />
                         </div>
-                        <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl">
-                            <h5 className="text-xs font-semibold text-gray-700 mb-3 flex items-center gap-1">
+                        <div className="bg-muted border border-border p-4 rounded-xl">
+                            <h5 className="text-xs font-semibold text-foreground mb-3 flex items-center gap-1">
                                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 Password requirements:
                             </h5>
-                            <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-500">
+                            <div className="grid grid-cols-2 gap-y-2 text-xs text-muted-foreground">
                                 {[
                                     { test: password.length >= 8, label: '8+ characters' },
                                     { test: /[A-Z]/.test(password), label: '1 uppercase letter' },
@@ -360,9 +360,9 @@ export default function SignupPage() {
                         </div>
                         <div className="flex items-start gap-3 mt-6">
                             <div className="flex items-center h-5">
-                                <input id="terms" type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} required disabled={isLoading} className="w-4 h-4 text-primary bg-white border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                <input id="terms" type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} required disabled={isLoading} className="w-4 h-4 text-primary bg-card border-border rounded focus:ring-primary focus:ring-2" />
                             </div>
-                            <label htmlFor="terms" className="text-xs text-gray-600 leading-relaxed">
+                            <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed">
                                 I affirm that the information is accurate and agree to the{' '}
                                 <Link href="/about" className="font-semibold text-primary hover:underline">Terms of Service</Link>.
                             </label>
@@ -371,7 +371,7 @@ export default function SignupPage() {
                             Create Account
                         </Button>
                     </form>
-                    <p className="mt-8 text-center text-sm text-gray-600">
+                    <p className="mt-8 text-center text-sm text-muted-foreground">
                         Already have a CyberSafe ID?{' '}
                         <Link href="/login" className="font-semibold text-primary hover:underline">Sign in securely</Link>
                     </p>

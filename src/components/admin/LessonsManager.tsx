@@ -33,7 +33,7 @@ interface Module {
     title: string;
 }
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
 interface LessonsManagerProps {
     lockedModuleId?: string;
@@ -325,13 +325,13 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {!lockedModuleId && (
-                <div className="bg-white border-b border-gray-200">
+                <div className="bg-card border-b border-border">
                     <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-1">Lessons Management</h1>
-                            <p className="text-gray-500">Create rich content including videos, articles, and assessments.</p>
+                            <h1 className="text-3xl font-bold text-foreground mb-1">Lessons Management</h1>
+                            <p className="text-muted-foreground">Create rich content including videos, articles, and assessments.</p>
                         </div>
                     </div>
                 </div>
@@ -351,7 +351,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                     ] : []}
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-xs border border-red-100 mb-4">{actionError}</div>}
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-xs border border-red-100 mb-4">{actionError}</div>}
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2">
@@ -367,7 +367,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                             {!lockedModuleId && (
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Module</label>
+                                    <label className="block text-sm font-semibold text-foreground mb-1">Module</label>
                                     <select
                                         className={SELECT_CLS}
                                         value={form.module}
@@ -383,7 +383,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                             )}
 
                             {urlContext.isLocked && !lockedModuleId && (
-                                <div className="bg-blue-50/50 border border-blue-100 rounded-lg px-4 py-2 flex items-center justify-between col-span-1 h-full max-h-[68px]">
+                                <div className="bg-blue-50/50 border border-blue-100 rounded-xl px-4 py-2 flex items-center justify-between col-span-1 h-full max-h-[68px]">
                                     <div>
                                         <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Linked Module</p>
                                         <p className="text-sm text-blue-900 font-medium truncate max-w-[200px]">{getModuleName(form.module)}</p>
@@ -393,7 +393,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                             )}
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
                                 <select
                                     className={SELECT_CLS}
                                     value={form.language}
@@ -409,7 +409,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Content Type</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Content Type</label>
                                 <select
                                     className={SELECT_CLS}
                                     value={form.content_type}
@@ -434,10 +434,10 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                             </div>
                         </div>
 
-                        <div className="border-t border-gray-100 pt-4">
+                        <div className="border-t border-border pt-4">
                             {form.content_type === 'video' && (
                                 <div className="space-y-4">
-                                    <label className="block text-sm font-semibold text-gray-700">Video Content</label>
+                                    <label className="block text-sm font-semibold text-foreground">Video Content</label>
                                     <CloudinaryUpload
                                         onUploadSuccess={(url) => setForm({ ...form, media_url: url })}
                                         folder="lessons/videos"
@@ -454,9 +454,9 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                             {form.content_type === 'article' && (
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Article Content</label>
+                                    <label className="block text-sm font-semibold text-foreground mb-1">Article Content</label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary outline-none min-h-[200px]"
+                                        className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary outline-none min-h-[200px]"
                                         placeholder="Write your article content here..."
                                         value={form.content}
                                         onChange={(e) => setForm({ ...form, content: e.target.value })}
@@ -467,7 +467,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                             {form.content_type === 'image' && (
                                 <div className="space-y-4">
-                                    <label className="block text-sm font-semibold text-gray-700">Image</label>
+                                    <label className="block text-sm font-semibold text-foreground">Image</label>
                                     <CloudinaryUpload
                                         onUploadSuccess={(url) => setForm({ ...form, image_url: url })}
                                         folder="lessons/images"
@@ -484,7 +484,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                             {form.content_type === 'assessment' && (
                                 <div className="grid grid-cols-1 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Assessment Type</label>
+                                        <label className="block text-sm font-semibold text-foreground mb-1">Assessment Type</label>
                                         <select
                                             className={SELECT_CLS}
                                             value={form.assessment_type}
@@ -497,33 +497,33 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Passing Score (%)</label>
+                                        <label className="block text-sm font-semibold text-foreground mb-1">Passing Score (%)</label>
                                         <input
                                             type="number"
                                             min={0} max={100}
-                                            className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                                            className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
                                             value={form.passing_score}
                                             onChange={(e) => setForm({ ...form, passing_score: parseInt(e.target.value) || 0 })}
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-1">Assessment JSON Payload</label>
+                                        <label className="block text-sm font-semibold text-foreground mb-1">Assessment JSON Payload</label>
                                         <textarea
-                                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[180px] resize-y"
+                                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[180px] resize-y"
                                             placeholder='{"questions": [{"id":"q1","type":"multiple_choice","question":"...","options":[{"id":"a","text":"..."},{"id":"b","text":"..."}],"correct_answer":"a"}]}'
                                             value={form.assessment_payload}
                                             onChange={(e) => setForm({ ...form, assessment_payload: e.target.value })}
                                             required
                                         />
-                                        <p className="text-[10px] text-gray-400 mt-1">Use types: <code>multiple_choice</code>, <code>true_false</code>, <code>matching</code>. correct_answer must match an option id for multiple_choice, or be boolean for true_false.</p>
+                                        <p className="text-[10px] text-muted-foreground mt-1">Use types: <code>multiple_choice</code>, <code>true_false</code>, <code>matching</code>. correct_answer must match an option id for multiple_choice, or be boolean for true_false.</p>
                                     </div>
                                 </div>
                             )}
 
                         </div>
 
-                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-border">
                             <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)}>Cancel</Button>
                             <Button type="submit" variant="primary" disabled={isActionLoading}>
                                 {isActionLoading ? 'Creating...' : 'Create Lesson'}
@@ -536,15 +536,15 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10 flex flex-col lg:flex-row gap-8">
                 {/* Sidebar Filter */}
                 <div className="w-full lg:w-64 shrink-0">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 sticky top-24">
                         <div className="mb-6">
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Search</label>
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Search</label>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">🔍</span>
                                 <input
                                     type="text"
                                     placeholder="Lesson title..."
-                                    className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
+                                    className="w-full pl-9 pr-4 py-2 bg-muted border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
                                     value={searchTerm}
                                     onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                                 />
@@ -553,13 +553,13 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                         {!lockedModuleId && (
                             <div className="mb-6">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Module</h3>
+                                <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border pb-2">Module</h3>
                                 <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                                     {modules.map(module => (
                                         <label key={module.id} className="flex items-start gap-3 cursor-pointer group">
                                             <input
                                                 type="checkbox"
-                                                className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                                className="mt-1 w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                                 checked={selectedModules.includes(module.id)}
                                                 onChange={() => {
                                                     setSelectedModules(prev =>
@@ -567,7 +567,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                                     );
                                                 }}
                                             />
-                                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors leading-tight">{module.title}</span>
+                                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-tight">{module.title}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -575,13 +575,13 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                         )}
 
                         <div className="mb-6">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Content Type</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border pb-2">Content Type</h3>
                             <div className="space-y-2">
                                 {['article', 'video', 'image', 'assessment'].map(type => (
                                     <label key={type} className="flex items-center gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                             checked={selectedTypes.includes(type)}
                                             onChange={() => {
                                                 setSelectedTypes(prev =>
@@ -589,14 +589,14 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors capitalize">{type}</span>
+                                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors capitalize">{type}</span>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
                         <div className="mb-8">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Language</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 border-b border-border pb-2">Language</h3>
                             <div className="space-y-2">
                                 {[
                                     { id: 'en', name: 'English' },
@@ -608,7 +608,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                     <label key={lang.id} className="flex items-center gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
                                             checked={selectedLanguages.includes(lang.id)}
                                             onChange={() => {
                                                 setSelectedLanguages(prev =>
@@ -616,7 +616,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors uppercase">{lang.id} - {lang.name}</span>
+                                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors uppercase">{lang.id} - {lang.name}</span>
                                     </label>
                                 ))}
                             </div>
@@ -635,7 +635,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                 {/* Main Content */}
                 <div className="flex-1">
-                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                     <div className="relative">
                         {isFetching && (
@@ -643,34 +643,34 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
                         )}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left text-sm text-gray-500">
-                            <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                    <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                        <table className="w-full text-left text-sm text-muted-foreground">
+                            <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                                 <tr>
                                     <th className="px-6 py-4">Title</th>
-                                    {!lockedModuleId && <th className="px-6 py-4 border-l border-gray-200">Module</th>}
+                                    {!lockedModuleId && <th className="px-6 py-4 border-l border-border">Module</th>}
                                     <th className="px-6 py-4">Type</th>
                                     <th className="px-6 py-4">Lang</th>
                                     <th className="px-6 py-4 text-center">Order</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-border">
                                 {filteredLessons.length === 0 ? (
-                                    <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">No lessons found matching your criteria.</td></tr>
+                                    <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">No lessons found matching your criteria.</td></tr>
                                 ) : filteredLessons.map(l => (
-                                    <tr key={l.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900">
+                                    <tr key={l.id} className="hover:bg-muted transition-colors">
+                                        <td className="px-6 py-4 font-medium text-foreground">
                                             <Link href={lockedCourseId && lockedModuleId ? `/admin/courses/${lockedCourseId}/modules/${lockedModuleId}/lessons/${l.id}` : `/admin/lessons/${l.id}`} className="hover:text-primary transition-colors hover:underline">
                                                 {l.title}
                                             </Link>
                                         </td>
-                                        {!lockedModuleId && <td className="px-6 py-4 text-gray-600 border-l border-gray-100 truncate max-w-[200px]">{getModuleName(l.module)}</td>}
+                                        {!lockedModuleId && <td className="px-6 py-4 text-muted-foreground border-l border-border truncate max-w-[200px]">{getModuleName(l.module)}</td>}
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${l.content_type === 'video' ? 'bg-blue-50 text-blue-600' :
                                                 l.content_type === 'article' ? 'bg-green-50 text-green-600' :
                                                     l.content_type === 'assessment' ? 'bg-purple-50 text-purple-600' :
-                                                        'bg-gray-50 text-gray-600'
+                                                        'bg-muted text-muted-foreground'
                                                 }`}>
                                                 {l.content_type}
                                             </span>
@@ -680,10 +680,10 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                         <td className="px-6 py-4 text-right whitespace-nowrap">
                                             <div className="flex items-center justify-end gap-2">
                                                 {(user?.role === 'course_provider' || user?.role === 'super_admin') && (
-                                                    <button onClick={() => handleEdit(l)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                                    <button onClick={() => handleEdit(l)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                                 )}
                                                 {(user?.role === 'super_admin' || user?.role === 'course_provider') && (
-                                                    <button onClick={() => handleDelete(l.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                                    <button onClick={() => handleDelete(l.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors">Delete</button>
                                                 )}
                                             </div>
                                         </td>
@@ -696,8 +696,8 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                     {/* Pagination */}
                     {totalCount > pageSize && !selectedModules.length && !selectedTypes.length && !selectedLanguages.length && !searchTerm && (
-                        <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                            <span className="text-sm text-gray-500">Showing {lessons.length} of {totalCount} lessons</span>
+                        <div className="mt-6 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                            <span className="text-sm text-muted-foreground">Showing {lessons.length} of {totalCount} lessons</span>
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"
@@ -724,7 +724,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Lesson" maxWidth="2xl">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-xs border border-red-100 mb-4">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-xs border border-red-100 mb-4">{actionError}</div>}
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-2">
@@ -740,7 +740,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                         {!lockedModuleId && (
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Module</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Module</label>
                                 <select
                                     className={SELECT_CLS}
                                     value={form.module}
@@ -756,7 +756,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                         )}
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
                             <select
                                 className={SELECT_CLS}
                                 value={form.language}
@@ -772,7 +772,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Content Type</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Content Type</label>
                             <select
                                 className={SELECT_CLS}
                                 value={form.content_type}
@@ -797,10 +797,10 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                         </div>
                     </div>
 
-                    <div className="border-t border-gray-100 pt-4">
+                    <div className="border-t border-border pt-4">
                         {form.content_type === 'video' && (
                             <div className="space-y-4">
-                                <label className="block text-sm font-semibold text-gray-700">Video Content</label>
+                                <label className="block text-sm font-semibold text-foreground">Video Content</label>
                                 <CloudinaryUpload
                                     onUploadSuccess={(url) => setForm({ ...form, media_url: url })}
                                     folder="lessons/videos"
@@ -817,9 +817,9 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                         {form.content_type === 'article' && (
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Article Content</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Article Content</label>
                                 <textarea
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary outline-none min-h-[200px]"
+                                    className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary outline-none min-h-[200px]"
                                     placeholder="Write your article content here..."
                                     value={form.content}
                                     onChange={(e) => setForm({ ...form, content: e.target.value })}
@@ -830,7 +830,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
 
                         {form.content_type === 'image' && (
                             <div className="space-y-4">
-                                <label className="block text-sm font-semibold text-gray-700">Image</label>
+                                <label className="block text-sm font-semibold text-foreground">Image</label>
                                 <CloudinaryUpload
                                     onUploadSuccess={(url) => setForm({ ...form, image_url: url })}
                                     folder="lessons/images"
@@ -847,7 +847,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                         {form.content_type === 'assessment' && (
                             <div className="grid grid-cols-1 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Assessment Type</label>
+                                    <label className="block text-sm font-semibold text-foreground mb-1">Assessment Type</label>
                                     <select
                                         className={SELECT_CLS}
                                         value={form.assessment_type}
@@ -860,33 +860,33 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Passing Score (%)</label>
+                                    <label className="block text-sm font-semibold text-foreground mb-1">Passing Score (%)</label>
                                     <input
                                         type="number"
                                         min={0} max={100}
-                                        className="block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                                        className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
                                         value={form.passing_score}
                                         onChange={(e) => setForm({ ...form, passing_score: parseInt(e.target.value) || 0 })}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Assessment JSON Payload</label>
+                                    <label className="block text-sm font-semibold text-foreground mb-1">Assessment JSON Payload</label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[180px] resize-y"
+                                        className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary outline-none min-h-[180px] resize-y"
                                         placeholder='{"questions": [{"id":"q1","type":"multiple_choice","question":"...","options":[{"id":"a","text":"..."},{"id":"b","text":"..."}],"correct_answer":"a"}]}'
                                         value={form.assessment_payload}
                                         onChange={(e) => setForm({ ...form, assessment_payload: e.target.value })}
                                         required
                                     />
-                                    <p className="text-[10px] text-gray-400 mt-1">Use types: <code>multiple_choice</code>, <code>true_false</code>, <code>matching</code>. correct_answer must match an option id for multiple_choice, or be boolean for true_false.</p>
+                                    <p className="text-[10px] text-muted-foreground mt-1">Use types: <code>multiple_choice</code>, <code>true_false</code>, <code>matching</code>. correct_answer must match an option id for multiple_choice, or be boolean for true_false.</p>
                                 </div>
                             </div>
                         )}
 
                     </div>
 
-                    <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
+                    <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-border">
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
                         <Button type="submit" variant="primary" disabled={isActionLoading}>
                             {isActionLoading ? 'Updating...' : 'Update Lesson'}

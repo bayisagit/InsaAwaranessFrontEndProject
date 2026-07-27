@@ -31,17 +31,17 @@ export default function AssessmentQuestionsPage() {
     if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-24">
-            <div className="bg-white border-b border-gray-200">
+        <div className="min-h-screen bg-muted pb-24">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8">
-                    <button onClick={() => router.back()} className="flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-widest mb-3">
+                    <button onClick={() => router.back()} className="flex items-center gap-1 text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest mb-3">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         Back to Assessments
                     </button>
                     <div className="flex justify-between items-start">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">{assessment?.title || 'Assessment Questions'}</h1>
-                            <p className="text-gray-500 mt-1">
+                            <h1 className="text-3xl font-bold text-foreground">{assessment?.title || 'Assessment Questions'}</h1>
+                            <p className="text-muted-foreground mt-1">
                                 {assessment?.passing_score}% pass score · {(assessment?.time_limit_minutes ?? 0) > 0 ? `${assessment?.time_limit_minutes} min` : 'No time limit'} · <span className="capitalize">{assessment?.parent_type?.replace('_', ' ')}</span>
                             </p>
                         </div>

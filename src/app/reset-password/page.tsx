@@ -37,7 +37,7 @@ function ResetPasswordForm() {
 
     if (!uid || !token) {
         return (
-            <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-100 mb-6 font-medium text-left flex items-start gap-2">
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-100 mb-6 font-medium text-left flex items-start gap-2">
                 <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -87,10 +87,10 @@ function ResetPasswordForm() {
                         </svg>
                     </div>
                 </div>
-                <div className="bg-green-50 text-green-700 p-4 rounded-lg text-sm border border-green-100 font-medium">
+                <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm border border-green-100 font-medium">
                     Your password has been reset successfully.
                 </div>
-                <Button variant="secondary" type="button" fullWidth className="py-3 rounded-lg" onClick={() => router.push('/login')}>
+                <Button variant="secondary" type="button" fullWidth className="py-3 rounded-xl" onClick={() => router.push('/login')}>
                     Sign in with your new password
                 </Button>
             </div>
@@ -100,7 +100,7 @@ function ResetPasswordForm() {
     return (
         <form className="space-y-5 text-left" onSubmit={handleSubmit}>
             {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-start gap-2">
+                <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-start gap-2">
                     <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -122,7 +122,7 @@ function ResetPasswordForm() {
                 />
                 {password && (
                     <div className="flex items-center gap-2 mt-1 px-1">
-                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-muted/50 rounded-full overflow-hidden">
                             <div className={`h-full ${passStrength.color} ${passStrength.w} transition-all duration-300`}></div>
                         </div>
                         <span className={`text-[10px] font-bold ${passStrength.color.replace('bg-', 'text-')}`}>{passStrength.label}</span>
@@ -143,8 +143,8 @@ function ResetPasswordForm() {
             />
 
             {/* Password requirements */}
-            <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl">
-                <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-500">
+            <div className="bg-muted border border-border p-4 rounded-xl">
+                <div className="grid grid-cols-2 gap-y-2 text-xs text-muted-foreground">
                     {[
                         { test: password.length >= 8, label: '8+ characters' },
                         { test: /[A-Z]/.test(password), label: '1 uppercase letter' },
@@ -159,7 +159,7 @@ function ResetPasswordForm() {
                 </div>
             </div>
 
-            <Button variant="secondary" type="submit" fullWidth className="py-3 rounded-lg" disabled={isLoading}>
+            <Button variant="secondary" type="submit" fullWidth className="py-3 rounded-xl" disabled={isLoading}>
                 {isLoading ? (
                     <span className="flex items-center gap-2">
                         <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -176,8 +176,8 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-gray-50">
-            <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100 text-center">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
+            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                 <div className="flex justify-center mb-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                         <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -186,8 +186,8 @@ export default function ResetPasswordPage() {
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Password</h1>
-                <p className="text-sm font-medium text-gray-600 mb-8 max-w-xs mx-auto">
+                <h1 className="text-3xl font-bold text-foreground mb-2">Create New Password</h1>
+                <p className="text-sm font-medium text-muted-foreground mb-8 max-w-xs mx-auto">
                     Choose a strong password you haven&apos;t used before.
                 </p>
 
@@ -202,7 +202,7 @@ export default function ResetPasswordPage() {
                     <ResetPasswordForm />
                 </Suspense>
 
-                <p className="mt-8 text-sm text-gray-600">
+                <p className="mt-8 text-sm text-muted-foreground">
                     Remembered your password?{' '}
                     <Link href="/login" className="font-semibold text-primary hover:underline">
                         Sign in

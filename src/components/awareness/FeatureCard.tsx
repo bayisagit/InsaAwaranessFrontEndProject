@@ -24,7 +24,7 @@ export function FeatureCard({ icon, title, description, bullets, accentColor }: 
 
     return (
         <div
-            className={`relative bg-white rounded-2xl shadow-sm border border-gray-100 border-b-4 ${colors.border} p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl group overflow-hidden`}
+            className={`relative bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border border-b-4 ${colors.border} p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl group overflow-hidden`}
         >
             {/* Decorative quarter-circle */}
             <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-bl-full ${colors.bg} opacity-50`} />
@@ -35,15 +35,15 @@ export function FeatureCard({ icon, title, description, bullets, accentColor }: 
             </div>
 
             {/* Title */}
-            <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+            <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
 
             {/* Description */}
-            <p className="text-sm text-gray-500 mb-4 leading-relaxed">{description}</p>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{description}</p>
 
             {/* Bullets */}
             <ul className="space-y-2">
                 {bullets.map((bullet, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                         <span className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${colors.border.replace('border-', 'bg-')}`} />
                         {bullet}
                     </li>

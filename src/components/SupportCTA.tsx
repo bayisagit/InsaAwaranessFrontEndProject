@@ -27,7 +27,7 @@ export function SupportCTA({
                     {description}
                 </p>
                 <Link href={buttonHref}>
-                    <Button variant="social" className="bg-white text-black hover:bg-gray-100 transition-colors">
+                    <Button variant="social" className="bg-card text-foreground hover:bg-muted/50 transition-colors">
                         {buttonText} &rarr;
                     </Button>
                 </Link>

@@ -149,12 +149,12 @@ export default function AdminAwarenessToolsPage() {
     if (isLoading || isFetching) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
+        <div className="min-h-screen bg-muted pb-20">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Awareness Tools</h1>
-                        <p className="text-gray-500">Manage interactive cybersecurity awareness tools and simulations.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-1">Awareness Tools</h1>
+                        <p className="text-muted-foreground">Manage interactive cybersecurity awareness tools and simulations.</p>
                     </div>
                     <div className="flex gap-3">
                         <Link href="/admin/awareness-tools/usage">
@@ -165,7 +165,7 @@ export default function AdminAwarenessToolsPage() {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="flex-1">
@@ -192,9 +192,9 @@ export default function AdminAwarenessToolsPage() {
                             autoFocus
                         />
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1.5">Description</label>
                             <textarea
-                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[100px]"
+                                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[100px]"
                                 placeholder="Briefly describe what this tool does..."
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -202,9 +202,9 @@ export default function AdminAwarenessToolsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Status</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1.5">Status</label>
                             <select
-                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
+                                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value as 'enabled' | 'disabled' })}
                             >
@@ -213,9 +213,9 @@ export default function AdminAwarenessToolsPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Configuration (JSON)</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1.5">Configuration (JSON)</label>
                             <textarea
-                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[150px]"
+                                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[150px]"
                                 placeholder='{ "key": "value" }'
                                 value={formData.config}
                                 onChange={(e) => setFormData({ ...formData, config: e.target.value })}
@@ -230,59 +230,59 @@ export default function AdminAwarenessToolsPage() {
                     </form>
                 </ExpandableCreateSection>
 
-                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm shadow-black/5 dark:shadow-none">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200">
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Tool Name</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Description</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">Usage</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                            <tr className="bg-muted border-b border-border">
+                                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">Tool Name</th>
+                                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">Description</th>
+                                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-widest text-center">Usage</th>
+                                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-widest text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-border">
                             {tools.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-20 text-center text-gray-500">
+                                    <td colSpan={5} className="px-6 py-20 text-center text-muted-foreground">
                                         No awareness tools found. Start by adding one.
                                     </td>
                                 </tr>
                             ) : tools.map((tool) => (
-                                <tr key={tool.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={tool.id} className="hover:bg-muted transition-colors">
                                     <td className="px-6 py-4">
-                                        <p className="font-bold text-gray-900">{tool.name}</p>
+                                        <p className="font-bold text-foreground">{tool.name}</p>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <p className="text-sm text-gray-600 line-clamp-1">{tool.description}</p>
+                                        <p className="text-sm text-muted-foreground line-clamp-1">{tool.description}</p>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${tool.status === 'enabled' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${tool.status === 'enabled' ? 'bg-green-100 text-green-800' : 'bg-muted/50 text-foreground'
                                             }`}>
                                             {tool.status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
-                                        <p className="text-sm font-semibold text-gray-900">{tool.usage_count || 0}</p>
+                                        <p className="text-sm font-semibold text-foreground">{tool.usage_count || 0}</p>
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <button
                                                 onClick={() => handleToggleStatus(tool)}
-                                                className="p-2 text-gray-400 hover:text-primary transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-primary transition-colors"
                                                 title={tool.status === 'enabled' ? 'Disable' : 'Enable'}
                                             >
                                                 {tool.status === 'enabled' ? '🚫' : '✅'}
                                             </button>
                                             <button
                                                 onClick={() => handleOpenModal(tool)}
-                                                className="p-2 text-gray-400 hover:text-primary transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-primary transition-colors"
                                             >
                                                 ✏️
                                             </button>
                                             <button
                                                 onClick={() => { setSelectedTool(tool); setIsDeleteModalOpen(true); }}
-                                                className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-red-600 transition-colors"
                                             >
                                                 🗑️
                                             </button>
@@ -295,8 +295,8 @@ export default function AdminAwarenessToolsPage() {
                 </div>
 
                 {totalCount > pageSize && (
-                    <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                        <span className="text-sm text-gray-500">Showing {tools.length} of {totalCount} tools</span>
+                    <div className="mt-6 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                        <span className="text-sm text-muted-foreground">Showing {tools.length} of {totalCount} tools</span>
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"
@@ -334,9 +334,9 @@ export default function AdminAwarenessToolsPage() {
                         autoFocus
                     />
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1.5">Description</label>
                         <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[100px]"
+                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[100px]"
                             placeholder="Briefly describe what this tool does..."
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -344,9 +344,9 @@ export default function AdminAwarenessToolsPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Status</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1.5">Status</label>
                         <select
-                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
+                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
                             value={formData.status}
                             onChange={(e) => setFormData({ ...formData, status: e.target.value as 'enabled' | 'disabled' })}
                         >
@@ -355,9 +355,9 @@ export default function AdminAwarenessToolsPage() {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Configuration (JSON)</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1.5">Configuration (JSON)</label>
                         <textarea
-                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 font-mono text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[150px]"
+                            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[150px]"
                             placeholder='{ "key": "value" }'
                             value={formData.config}
                             onChange={(e) => setFormData({ ...formData, config: e.target.value })}

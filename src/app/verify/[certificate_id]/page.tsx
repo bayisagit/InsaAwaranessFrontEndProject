@@ -43,15 +43,15 @@ export default function VerifyCertificatePage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
                     </div>
-                    <h1 className="text-3xl font-extrabold text-gray-900">Certificate Verification</h1>
-                    <p className="text-gray-500 mt-2">INSA Cyber Awareness Platform</p>
+                    <h1 className="text-3xl font-extrabold text-foreground">Certificate Verification</h1>
+                    <p className="text-muted-foreground mt-2">INSA Cyber Awareness Platform</p>
                 </div>
 
-                <div className="bg-white rounded-3xl border border-gray-100 shadow-xl p-8">
+                <div className="bg-card rounded-3xl border border-border shadow-xl p-8">
                     {isLoading ? (
                         <div className="text-center py-12">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-                            <p className="text-gray-500">Verifying certificate…</p>
+                            <p className="text-muted-foreground">Verifying certificate…</p>
                         </div>
                     ) : result?.valid ? (
                         <div>
@@ -68,26 +68,26 @@ export default function VerifyCertificatePage() {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-                                    <span className="text-sm text-gray-500 font-medium">Certificate ID</span>
-                                    <span className="text-sm font-mono text-gray-900 text-right max-w-[220px] break-all">{result.certificate_id}</span>
+                                <div className="flex justify-between items-start border-b border-border pb-4">
+                                    <span className="text-sm text-muted-foreground font-medium">Certificate ID</span>
+                                    <span className="text-sm font-mono text-foreground text-right max-w-[220px] break-all">{result.certificate_id}</span>
                                 </div>
-                                <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-                                    <span className="text-sm text-gray-500 font-medium">Issue Date</span>
-                                    <span className="text-sm font-semibold text-gray-900">{formatDate(result.issued_at)}</span>
+                                <div className="flex justify-between items-center border-b border-border pb-4">
+                                    <span className="text-sm text-muted-foreground font-medium">Issue Date</span>
+                                    <span className="text-sm font-semibold text-foreground">{formatDate(result.issued_at)}</span>
                                 </div>
-                                <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-                                    <span className="text-sm text-gray-500 font-medium">Recipient</span>
-                                    <span className="text-sm font-semibold text-gray-900">{result.user}</span>
+                                <div className="flex justify-between items-center border-b border-border pb-4">
+                                    <span className="text-sm text-muted-foreground font-medium">Recipient</span>
+                                    <span className="text-sm font-semibold text-foreground">{result.user}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-500 font-medium">Course</span>
-                                    <span className="text-sm font-semibold text-gray-900 text-right max-w-[250px]">{result.course}</span>
+                                    <span className="text-sm text-muted-foreground font-medium">Course</span>
+                                    <span className="text-sm font-semibold text-foreground text-right max-w-[250px]">{result.course}</span>
                                 </div>
                             </div>
 
-                            <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-                                <p className="text-xs text-gray-400">This certificate was verified on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.</p>
+                            <div className="mt-8 pt-6 border-t border-border text-center">
+                                <p className="text-xs text-muted-foreground">This certificate was verified on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.</p>
                             </div>
                         </div>
                     ) : (
@@ -97,11 +97,11 @@ export default function VerifyCertificatePage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">Invalid Certificate</h2>
-                            <p className="text-gray-500 max-w-sm mx-auto text-sm leading-relaxed">
+                            <h2 className="text-xl font-bold text-foreground mb-2">Invalid Certificate</h2>
+                            <p className="text-muted-foreground max-w-sm mx-auto text-sm leading-relaxed">
                                 {result?.detail || 'This certificate could not be verified. Please check the ID and try again.'}
                             </p>
-                            <div className="mt-4 text-xs text-gray-400">
+                            <div className="mt-4 text-xs text-muted-foreground">
                                 Searched for: <code className="font-mono">{certificate_id}</code>
                             </div>
                         </div>
@@ -109,7 +109,7 @@ export default function VerifyCertificatePage() {
                 </div>
 
                 <div className="text-center mt-8">
-                    <Link href="/" className="text-sm text-gray-400 hover:text-primary transition-colors">
+                    <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                         ← Return to INSA Platform
                     </Link>
                 </div>

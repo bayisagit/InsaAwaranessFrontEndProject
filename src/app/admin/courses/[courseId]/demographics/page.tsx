@@ -21,10 +21,10 @@ function ChartCard({ title, description, icon, children, color }: {
     title: string; description: string; icon: React.ReactNode; children: React.ReactNode; color: string;
 }) {
     return (
-        <Card className="shadow-sm">
+        <Card className="shadow-sm shadow-black/5 dark:shadow-none">
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <div className={`p-2 bg-${color}-100 text-${color}-600 rounded-md`}>{icon}</div>
+                    <div className={`p-2 bg-${color}-100 text-${color}-600 rounded-lg`}>{icon}</div>
                     <div>
                         <CardTitle className="text-base">{title}</CardTitle>
                         <CardDescription>{description}</CardDescription>
@@ -118,17 +118,17 @@ export default function CourseDemographics() {
     return (
         <div className="space-y-8 pb-20 max-w-7xl mx-auto">
             {/* Course Header */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 border-t-4 border-t-primary">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{course.title}</h1>
-                <p className="text-gray-500 text-sm">Learner demographic distribution for this course</p>
-                <div className="mt-4 pt-4 border-t border-gray-100 flex gap-6 flex-wrap items-center">
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 border-t-4 border-t-primary">
+                <h1 className="text-2xl font-bold text-foreground mb-2">{course.title}</h1>
+                <p className="text-muted-foreground text-sm">Learner demographic distribution for this course</p>
+                <div className="mt-4 pt-4 border-t border-border flex gap-6 flex-wrap items-center">
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Level:</span>
-                        <span className="ml-2 capitalize font-bold text-gray-700">{course.level}</span>
+                        <span className="text-muted-foreground font-medium">Level:</span>
+                        <span className="ml-2 capitalize font-bold text-foreground">{course.level}</span>
                     </div>
                     <div className="text-sm">
-                        <span className="text-gray-400 font-medium">Language:</span>
-                        <span className="ml-2 uppercase font-bold text-gray-700">{course.language}</span>
+                        <span className="text-muted-foreground font-medium">Language:</span>
+                        <span className="ml-2 uppercase font-bold text-foreground">{course.language}</span>
                     </div>
                     <div className="text-sm bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-semibold flex items-center gap-1.5">
                         <Users className="size-3.5" />

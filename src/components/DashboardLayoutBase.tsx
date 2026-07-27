@@ -38,11 +38,11 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
     return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarInset className="flex flex-col flex-1 overflow-hidden h-screen bg-gray-50">
-                <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-white px-4 shadow-sm z-10 sticky top-0">
+            <SidebarInset className="flex flex-col flex-1 overflow-hidden h-screen bg-muted">
+                <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-card px-4 shadow-sm shadow-black/5 dark:shadow-none z-10 sticky top-0">
                     <SidebarTrigger className="-ml-1" />
                     
-                    <Link href="/" className="hidden sm:flex items-center gap-2 text-gray-600 hover:text-gray-900 ml-2">
+                    <Link href="/" className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground ml-2">
                         <Button variant="ghost" size="sm" className="flex items-center gap-2">
                             <Globe className="h-4 w-4" />
                             <span>Back to Home</span>
@@ -63,7 +63,7 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
                         {/* Actions */}
                         <div className="flex items-center gap-3 ml-auto">
                             <Link href="/notifications">
-                                <Button variant="ghost" size="icon" className="relative text-gray-500 hover:text-gray-900">
+                                <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
                                     <Bell className="h-5 w-5" />
                                     <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
                                 </Button>
@@ -71,7 +71,7 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
                             
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="relative h-9 w-9 rounded-full ml-1 hover:bg-accent hover:text-accent-foreground cursor-pointer outline-none">
-                                    <Avatar className="h-9 w-9 border border-gray-200">
+                                    <Avatar className="h-9 w-9 border border-border">
                                         {user?.profile_photo ? (
                                             <AvatarImage src={user.profile_photo} alt="Profile" className="h-full w-full object-cover rounded-full" />
                                         ) : null}
@@ -108,7 +108,7 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={handleLogout} className="flex flex-row items-center w-full text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer">
+                                    <DropdownMenuItem onClick={handleLogout} className="flex flex-row items-center w-full text-red-500 focus:text-red-500 dark:focus:text-red-400 focus:bg-red-500/10 cursor-pointer">
                                         <LogOut className="mr-2 h-4 w-4" />
                                         <span>Log out</span>
                                     </DropdownMenuItem>

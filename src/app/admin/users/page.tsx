@@ -10,7 +10,7 @@ import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white disabled:opacity-75 disabled:bg-gray-100 disabled:cursor-not-allowed";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card disabled:opacity-75 disabled:bg-muted/50 disabled:cursor-not-allowed";
 
 interface UserData {
     id: string;
@@ -226,20 +226,20 @@ export default function AdminUsersPage() {
     if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin')) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {/* Header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
-                        <p className="text-gray-500">Manage all registered users, permissions, and roles.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">User Management</h1>
+                        <p className="text-muted-foreground">Manage all registered users, permissions, and roles.</p>
                     </div>
                 </div>
             </div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
                 {error && (
-                    <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">
+                    <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">
                         {error}
                     </div>
                 )}
@@ -251,7 +251,7 @@ export default function AdminUsersPage() {
                 >
                     <form onSubmit={handleFormSubmit} className="space-y-4">
                         {actionError && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
+                            <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">
                                 {actionError}
                             </div>
                         )}
@@ -289,16 +289,16 @@ export default function AdminUsersPage() {
                         <div className="grid grid-cols-2 gap-4">
                             {user?.role === 'org_admin' ? (
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    <label className="block text-sm font-semibold text-foreground mb-1">
                                         Organization
                                     </label>
-                                    <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium text-sm">
+                                    <div className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-muted-foreground font-medium text-sm">
                                         {user.organization_name || 'Your Organization'}
                                     </div>
                                 </div>
                             ) : (
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    <label className="block text-sm font-semibold text-foreground mb-1">
                                         Organization
                                     </label>
                                     <select
@@ -316,7 +316,7 @@ export default function AdminUsersPage() {
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                <label className="block text-sm font-semibold text-foreground mb-1">
                                     Language
                                 </label>
                                 <select
@@ -332,11 +332,11 @@ export default function AdminUsersPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            <label className="block text-sm font-semibold text-foreground mb-1">
                                 User Role
                             </label>
                             {user?.role === 'org_admin' ? (
-                                <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium">
+                                <div className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-muted-foreground font-medium">
                                     Member
                                 </div>
                             ) : (
@@ -382,9 +382,9 @@ export default function AdminUsersPage() {
                 {/* Filter Bar */}
                 <div className="flex flex-wrap items-center gap-4 mb-6">
                     <div className="flex items-center gap-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Role</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Role</label>
                         <select
-                            className="rounded-md border border-gray-300 py-1.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white"
+                            className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
                             value={roleFilter}
                             onChange={e => setRoleFilter(e.target.value)}
                         >
@@ -407,9 +407,9 @@ export default function AdminUsersPage() {
                 </div>
 
                 {/* User Table */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table className="w-full text-left text-sm text-gray-500">
-                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                    <table className="w-full text-left text-sm text-muted-foreground">
+                        <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                             <tr>
                                 <th className="px-4 py-3">Name</th>
                                 <th className="px-4 py-3">Email</th>
@@ -418,17 +418,17 @@ export default function AdminUsersPage() {
                                 <th className="px-4 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-border">
                             {users.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                                    <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                                         No users found.
                                     </td>
                                 </tr>
                             ) : (
                                 users.filter(u => u.id !== user?.id && (!roleFilter || u.role === roleFilter)).map((u) => (
-                                    <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                    <tr key={u.id} className="hover:bg-muted transition-colors">
+                                        <td className="px-4 py-3 font-medium text-foreground">
                                             {u.first_name} {u.last_name}
                                         </td>
                                         <td className="px-4 py-3">{u.email}</td>
@@ -444,8 +444,8 @@ export default function AdminUsersPage() {
                                         </td>
                                         <td className="px-4 py-3 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                            <button onClick={() => openModal(u)} className="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
-                                            <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md text-xs font-bold transition-colors">Delete</button>
+                                            <button onClick={() => openModal(u)} className="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
+                                            <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors">Delete</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -463,7 +463,7 @@ export default function AdminUsersPage() {
             >
                 <form onSubmit={handleFormSubmit} className="space-y-4">
                     {actionError && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
+                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">
                             {actionError}
                         </div>
                     )}
@@ -499,11 +499,11 @@ export default function AdminUsersPage() {
                     />
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-foreground mb-1">
                             User Role
                         </label>
                         {user?.role === 'org_admin' ? (
-                            <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 font-medium">
+                            <div className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-muted-foreground font-medium">
                                 Member
                             </div>
                         ) : (

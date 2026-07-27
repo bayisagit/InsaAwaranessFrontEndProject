@@ -9,7 +9,7 @@ import { Input } from '@/components/Input';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { toast } from 'react-hot-toast';
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white disabled:opacity-75 disabled:bg-gray-100 disabled:cursor-not-allowed";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card disabled:opacity-75 disabled:bg-muted/50 disabled:cursor-not-allowed";
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; role: string; }
 interface OrgOption { id: string; name: string; }
@@ -104,30 +104,30 @@ export default function CourseSettingsPage() {
     return (
         <div className="max-w-3xl mx-auto space-y-8 pb-20">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Course Settings</h1>
-                <p className="text-gray-500 mt-1">Configure course metadata, provider, and organization assignments.</p>
+                <h1 className="text-2xl font-bold text-foreground">Course Settings</h1>
+                <p className="text-muted-foreground mt-1">Configure course metadata, provider, and organization assignments.</p>
             </div>
 
             {isReadOnly && (
-                <div className="bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-lg text-sm flex items-center gap-2">
+                <div className="bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-xl text-sm flex items-center gap-2">
                     <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H10m9.364-7.364A9 9 0 1112 3a9 9 0 017.364 4.636z" /></svg>
                     You are viewing this course in read-only mode. Settings cannot be modified.
                 </div>
             )}
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-                <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Basic Information</h2>
+            <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 space-y-6">
+                <h2 className="text-lg font-bold text-foreground border-b border-border pb-3">Basic Information</h2>
 
                 <Input label="Course Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isReadOnly} />
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                    <textarea className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-primary/20 outline-none min-h-[120px] resize-y disabled:opacity-75 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    <label className="block text-sm font-semibold text-foreground mb-1">Description</label>
+                    <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none min-h-[120px] resize-y disabled:opacity-75 disabled:bg-muted/50 disabled:cursor-not-allowed"
                         placeholder="Course description..." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} disabled={isReadOnly} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Language</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
                         <select className={SELECT_CLS} value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} disabled={isReadOnly}>
                             <option value="en">English</option>
                             <option value="fr">French</option>
@@ -136,7 +136,7 @@ export default function CourseSettingsPage() {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Level</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Level</label>
                         <select className={SELECT_CLS} value={form.level} onChange={e => setForm({ ...form, level: e.target.value })} disabled={isReadOnly}>
                             <option value="Beginner">Beginner</option>
                             <option value="Intermediate">Intermediate</option>
@@ -151,38 +151,38 @@ export default function CourseSettingsPage() {
             </div>
 
             {!isReadOnly && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Status & Visibility</h2>
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 space-y-6">
+                    <h2 className="text-lg font-bold text-foreground border-b border-border pb-3">Status & Visibility</h2>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
                             <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
                                 <option value="draft">Draft</option>
                                 <option value="published">Published</option>
                                 <option value="archived">Archived</option>
                             </select>
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 {originalStatus === 'published' && form.status !== 'published' ? 'Unpublishing will hide the course from learners.' : ''}
                             </p>
                         </div>
                         <div className="flex items-center gap-3 mt-6">
-                            <input type="checkbox" id="is_active" className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                            <input type="checkbox" id="is_active" className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
                                 checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} />
-                            <label htmlFor="is_active" className="text-sm font-semibold text-gray-700 cursor-pointer">Course is active</label>
+                            <label htmlFor="is_active" className="text-sm font-semibold text-foreground cursor-pointer">Course is active</label>
                         </div>
                     </div>
                 </div>
             )}
 
             {!isReadOnly && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Assignments</h2>
-                    <p className="text-sm text-gray-500">Assign a course provider and organization to this course.</p>
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-6 space-y-6">
+                    <h2 className="text-lg font-bold text-foreground border-b border-border pb-3">Assignments</h2>
+                    <p className="text-sm text-muted-foreground">Assign a course provider and organization to this course.</p>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Course Provider</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Course Provider</label>
                             <select className={SELECT_CLS} value={form.course_provider} onChange={e => setForm({ ...form, course_provider: e.target.value })}>
                                 <option value="">Not assigned</option>
                                 {providers.map(p => (
@@ -191,7 +191,7 @@ export default function CourseSettingsPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
                             <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })}>
                                 <option value="">Not assigned</option>
                                 {orgs.map(o => (

@@ -66,8 +66,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     )}
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-                <p className="text-gray-500 mb-8 px-4">{message}</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">{title}</h3>
+                <p className="text-muted-foreground mb-8 px-4">{message}</p>
 
                 <div className="flex w-full gap-3">
                     <Button variant="outline" onClick={onClose} className="flex-1" disabled={isLoading}>

@@ -195,7 +195,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
     );
 
     if (!assessment || !assessment.questions?.length) return (
-        <div className="p-8 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl text-center text-gray-500">
+        <div className="p-8 bg-muted border-2 border-dashed border-border rounded-2xl text-center text-muted-foreground">
             <div className="text-4xl mb-2 opacity-20">📝</div>
             No questions have been added to this assessment yet.
         </div>
@@ -210,7 +210,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
         const passed = result.passed && !isPendingReview;
 
         return (
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-card border border-border rounded-2xl shadow-sm shadow-black/5 dark:shadow-none overflow-hidden">
                 {/* Result header */}
                 <div className={`px-6 py-8 text-center ${passed ? 'bg-green-50' : isPendingReview ? 'bg-yellow-50' : 'bg-red-50'}`}>
                     <div className="text-5xl mb-3">{passed ? '🏆' : isPendingReview ? '⏳' : '📚'}</div>
@@ -227,7 +227,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
                 {/* Per-answer breakdown */}
                 <div className="p-6 space-y-4">
-                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Answer Review</h4>
+                    <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Answer Review</h4>
                     {result.answers.map(ans => {
                         const q = questions.find(q => q.id === ans.question);
                         if (!q) return null;
@@ -235,13 +235,13 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                         return (
                             <div key={ans.id} className={`p-4 rounded-xl border ${isPending ? 'border-yellow-200 bg-yellow-50' : ans.is_correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
                                 <div className="flex justify-between items-start gap-3">
-                                    <p className="text-sm font-semibold text-gray-900 flex-1"><LinkifyText text={q.prompt} /></p>
+                                    <p className="text-sm font-semibold text-foreground flex-1"><LinkifyText text={q.prompt} /></p>
                                     <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 text-yellow-800' : ans.is_correct ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
                                         {isPending ? '⏳ Pending' : ans.is_correct ? `✓ +${ans.score}pts` : '✗ 0pts'}
                                     </span>
                                 </div>
                                 {!isPending && !ans.is_correct && q.explanation && (
-                                    <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-lg"><LinkifyText text={q.explanation} /></p>
+                                    <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-xl"><LinkifyText text={q.explanation} /></p>
                                 )}
                             </div>
                         );
@@ -250,16 +250,16 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
                 {/* Attempt history */}
                 {history.length > 0 && (
-                    <div className="border-t border-gray-100 px-6 py-4">
-                        <button onClick={() => setShowHistory(h => !h)} className="text-xs font-bold text-gray-400 hover:text-primary uppercase tracking-wider transition-colors">
+                    <div className="border-t border-border px-6 py-4">
+                        <button onClick={() => setShowHistory(h => !h)} className="text-xs font-bold text-muted-foreground hover:text-primary uppercase tracking-wider transition-colors">
                             {showHistory ? '▼' : '▶'} Attempt History ({history.length})
                         </button>
                         {showHistory && (
                             <div className="mt-3 space-y-2">
                                 {history.map(h => (
-                                    <div key={h.id} className="flex items-center justify-between text-xs py-2 border-b border-gray-100 last:border-0">
-                                        <span className="text-gray-600">Attempt #{h.attempt_number}</span>
-                                        <span className="text-gray-500">{h.submitted_at ? new Date(h.submitted_at).toLocaleDateString() : '—'}</span>
+                                    <div key={h.id} className="flex items-center justify-between text-xs py-2 border-b border-border last:border-0">
+                                        <span className="text-muted-foreground">Attempt #{h.attempt_number}</span>
+                                        <span className="text-muted-foreground">{h.submitted_at ? new Date(h.submitted_at).toLocaleDateString() : '—'}</span>
                                         <span className={`font-bold ${h.passed ? 'text-green-600' : 'text-red-500'}`}>{h.score.toFixed(1)}%</span>
                                         <span className={`px-2 py-0.5 rounded-full font-bold ${h.status === 'graded' ? (h.passed ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700') : 'bg-yellow-50 text-yellow-700'}`}>{h.status}</span>
                                     </div>
@@ -280,16 +280,16 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
     const progress = Math.round(((currentIndex + 1) / questions.length) * 100);
 
     return (
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl shadow-sm shadow-black/5 dark:shadow-none overflow-hidden">
             {/* Progress bar */}
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-muted px-6 py-4 border-b border-border">
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-bold text-gray-700">
+                    <span className="text-sm font-bold text-foreground">
                         <LinkifyText text={assessment.title || 'Assessment'} /> · Question {currentIndex + 1} of {questions.length}
                     </span>
                     <div className="flex items-center gap-3">
-                        {isSaving && <span className="text-[10px] text-gray-400 animate-pulse">Saving…</span>}
-                        {assessment.time_limit_minutes > 0 && <span className="text-xs text-gray-500">⏱ {assessment.time_limit_minutes} min limit</span>}
+                        {isSaving && <span className="text-[10px] text-muted-foreground animate-pulse">Saving…</span>}
+                        {assessment.time_limit_minutes > 0 && <span className="text-xs text-muted-foreground">⏱ {assessment.time_limit_minutes} min limit</span>}
                         <span className="text-xs font-bold text-primary">{progress}%</span>
                     </div>
                 </div>
@@ -303,8 +303,8 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                 <div className="flex items-start gap-3 mb-6">
                     <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">{currentIndex + 1}</span>
                     <div>
-                        <h4 className="text-base font-semibold text-gray-900">{currentQ.prompt}</h4>
-                        {currentQ.points > 1 && <span className="text-[10px] text-gray-400">{currentQ.points} points</span>}
+                        <h4 className="text-base font-semibold text-foreground">{currentQ.prompt}</h4>
+                        {currentQ.points > 1 && <span className="text-[10px] text-muted-foreground">{currentQ.points} points</span>}
                     </div>
                 </div>
 
@@ -314,10 +314,10 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                         {currentQ.choices.sort((a, b) => a.order - b.order).map(c => {
                             const selected = (answers[currentQ.id] as string[] | undefined)?.includes(c.id);
                             return (
-                                <label key={c.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selected ? 'border-primary bg-primary/10' : 'border-gray-200 bg-white hover:border-primary/30 hover:bg-primary/5'}`}>
-                                    <input type="radio" name={`q_${currentQ.id}`} className="w-4 h-4 text-primary border-gray-300"
+                                <label key={c.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selected ? 'border-primary bg-primary/10' : 'border-border bg-card hover:border-primary/30 hover:bg-primary/5'}`}>
+                                    <input type="radio" name={`q_${currentQ.id}`} className="w-4 h-4 text-primary border-border"
                                         checked={!!selected} onChange={() => handleAnswer(currentQ.id, [c.id])} />
-                                    <span className="text-sm text-gray-800">{c.text}</span>
+                                    <span className="text-sm text-foreground">{c.text}</span>
                                 </label>
                             );
                         })}
@@ -327,14 +327,14 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                 {/* Multiple select */}
                 {currentQ.type === 'multiple_select' && currentQ.choices && (
                     <div className="space-y-2 ml-11">
-                        <p className="text-xs text-gray-400 mb-2">Select all that apply</p>
+                        <p className="text-xs text-muted-foreground mb-2">Select all that apply</p>
                         {currentQ.choices.sort((a, b) => a.order - b.order).map(c => {
                             const selected = (answers[currentQ.id] as string[] | undefined)?.includes(c.id);
                             return (
-                                <label key={c.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selected ? 'border-primary bg-primary/10' : 'border-gray-200 bg-white hover:border-primary/30 hover:bg-primary/5'}`}>
-                                    <input type="checkbox" className="w-4 h-4 text-primary rounded border-gray-300"
+                                <label key={c.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selected ? 'border-primary bg-primary/10' : 'border-border bg-card hover:border-primary/30 hover:bg-primary/5'}`}>
+                                    <input type="checkbox" className="w-4 h-4 text-primary rounded border-border"
                                         checked={!!selected} onChange={() => handleMultiSelectToggle(currentQ.id, c.id)} />
-                                    <span className="text-sm text-gray-800">{c.text}</span>
+                                    <span className="text-sm text-foreground">{c.text}</span>
                                 </label>
                             );
                         })}
@@ -348,7 +348,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                             const selected = (answers[currentQ.id] as string[] | undefined)?.includes(c.id);
                             return (
                                 <button key={c.id} type="button" onClick={() => handleAnswer(currentQ.id, [c.id])}
-                                    className={`flex-1 py-3 rounded-xl border font-semibold transition-colors text-sm ${selected ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-600 hover:border-primary/50'}`}>
+                                    className={`flex-1 py-3 rounded-xl border font-semibold transition-colors text-sm ${selected ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}>
                                     {c.text}
                                 </button>
                             );
@@ -359,7 +359,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                 {/* Fill blank */}
                 {currentQ.type === 'fill_blank' && (
                     <div className="ml-11">
-                        <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                        <input type="text" className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                             placeholder="Type your answer…" value={(answers[currentQ.id] as string) ?? ''}
                             onChange={e => handleAnswer(currentQ.id, e.target.value)} />
                     </div>
@@ -368,7 +368,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                 {/* Short answer */}
                 {currentQ.type === 'short_answer' && (
                     <div className="ml-11">
-                        <textarea className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[100px] resize-y"
+                        <textarea className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[100px] resize-y"
                             placeholder="Write your answer here…" value={(answers[currentQ.id] as string) ?? ''}
                             onChange={e => handleAnswer(currentQ.id, e.target.value)} />
                         <p className="text-[10px] text-yellow-600 mt-1">⚠ This will be graded manually by an instructor.</p>
@@ -378,7 +378,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                 {/* Essay */}
                 {currentQ.type === 'essay' && (
                     <div className="ml-11">
-                        <textarea className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[200px] resize-y"
+                        <textarea className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[200px] resize-y"
                             placeholder="Write your essay here…" value={(answers[currentQ.id] as string) ?? ''}
                             onChange={e => handleAnswer(currentQ.id, e.target.value)} />
                         <p className="text-[10px] text-yellow-600 mt-1">⚠ This will be graded manually by an instructor.</p>
@@ -388,14 +388,14 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                 {/* Matching */}
                 {currentQ.type === 'matching' && currentQ.matching_pairs && (
                     <div className="ml-11 space-y-3">
-                        <p className="text-xs text-gray-400">Match each term to its definition</p>
+                        <p className="text-xs text-muted-foreground">Match each term to its definition</p>
                         {currentQ.matching_pairs.map((pair, i) => {
                             const rightOptions = currentQ.matching_pairs!.map(p => p.right_text);
                             return (
                                 <div key={pair.id} className="flex items-center gap-3">
-                                    <div className="flex-1 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-700">{pair.left_text}</div>
-                                    <span className="text-gray-400">→</span>
-                                    <select className="flex-1 bg-white px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                    <div className="flex-1 bg-muted px-4 py-2 rounded-xl border border-border text-sm text-foreground">{pair.left_text}</div>
+                                    <span className="text-muted-foreground">→</span>
+                                    <select className="flex-1 bg-card px-3 py-2 rounded-xl border border-border text-sm focus:ring-2 focus:ring-primary outline-none"
                                         value={(answers[currentQ.id] as Record<string, string>)?.[pair.left_text] || ''}
                                         onChange={e => handleMatchingPair(currentQ.id, pair.left_text, e.target.value)}>
                                         <option value="">Select match…</option>
@@ -410,15 +410,15 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
                 {/* Ordering */}
                 {currentQ.type === 'ordering' && currentQ.ordering_items && (
                     <div className="ml-11 space-y-2">
-                        <p className="text-xs text-gray-400">Arrange the items in the correct order by selecting their position</p>
+                        <p className="text-xs text-muted-foreground">Arrange the items in the correct order by selecting their position</p>
                         {currentQ.ordering_items.slice().sort((a, b) => {
                             const ordArr = answers[currentQ.id] as string[] | undefined;
                             if (!ordArr) return 0;
                             return ordArr.indexOf(a.id) - ordArr.indexOf(b.id);
                         }).map((item, i) => (
-                            <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div key={item.id} className="flex items-center gap-3 p-3 bg-muted rounded-xl border border-border">
                                 <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                                <span className="text-sm text-gray-800 flex-1">{item.text}</span>
+                                <span className="text-sm text-foreground flex-1">{item.text}</span>
                             </div>
                         ))}
                     </div>

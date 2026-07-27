@@ -109,16 +109,16 @@ export default function AdminOrgApplicationsPage() {
     if (!user || user.role !== 'super_admin') return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {/* Header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-1">Organization Applications</h1>
-                    <p className="text-gray-500">Review and act on pending organizational join requests.</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-1">Organization Applications</h1>
+                    <p className="text-muted-foreground">Review and act on pending organizational join requests.</p>
                 </div>
 
                 {/* Tabs */}
-                <div className="max-w-7xl mx-auto px-6 lg:px-12 flex gap-0 border-t border-gray-100">
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 flex gap-0 border-t border-border">
                     {(['pending', 'approved', 'rejected'] as StatusTab[]).map(tab => (
                         <button
                             key={tab}
@@ -126,7 +126,7 @@ export default function AdminOrgApplicationsPage() {
                             className={`px-6 py-3 text-sm font-semibold capitalize border-b-2 transition-colors ${
                                 activeTab === tab
                                     ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground'
                             }`}
                         >
                             {tab}
@@ -141,11 +141,11 @@ export default function AdminOrgApplicationsPage() {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table className="w-full text-left text-sm text-gray-600">
-                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                    <table className="w-full text-left text-sm text-muted-foreground">
+                        <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                             <tr>
                                 <th className="px-6 py-4">Organization</th>
                                 <th className="px-6 py-4 hidden md:table-cell">Contact</th>
@@ -155,13 +155,13 @@ export default function AdminOrgApplicationsPage() {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-border">
                             {isFetching ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i}>
                                         {[1, 2, 3, 4, 5, 6].map(j => (
                                             <td key={j} className="px-6 py-4">
-                                                <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+                                                <div className="h-4 bg-muted/50 rounded animate-pulse w-3/4" />
                                             </td>
                                         ))}
                                     </tr>
@@ -172,16 +172,16 @@ export default function AdminOrgApplicationsPage() {
                                         <div className="text-4xl mb-3">
                                             {activeTab === 'pending' ? '📬' : activeTab === 'approved' ? '✅' : '🚫'}
                                         </div>
-                                        <p className="font-medium text-gray-700">No {activeTab} applications</p>
-                                        <p className="text-sm text-gray-400 mt-1">
+                                        <p className="font-medium text-foreground">No {activeTab} applications</p>
+                                        <p className="text-sm text-muted-foreground mt-1">
                                             {activeTab === 'pending' ? 'New applications will appear here.' : `No applications have been ${activeTab} yet.`}
                                         </p>
                                     </td>
                                 </tr>
                             ) : applications.map(app => (
-                                <tr key={app.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={app.id} className="hover:bg-muted transition-colors">
                                     <td className="px-6 py-4">
-                                        <p className="font-semibold text-gray-900">{app.name}</p>
+                                        <p className="font-semibold text-foreground">{app.name}</p>
                                         {app.website && (
                                             <a href={app.website} target="_blank" rel="noopener noreferrer"
                                                 className="text-xs text-primary hover:underline">
@@ -190,10 +190,10 @@ export default function AdminOrgApplicationsPage() {
                                         )}
                                     </td>
                                     <td className="px-6 py-4 hidden md:table-cell">
-                                        <p className="text-gray-700">{app.contact_email}</p>
-                                        <p className="text-xs text-gray-400">{app.contact_phone}</p>
+                                        <p className="text-foreground">{app.contact_email}</p>
+                                        <p className="text-xs text-muted-foreground">{app.contact_phone}</p>
                                     </td>
-                                    <td className="px-6 py-4 hidden lg:table-cell text-gray-500 max-w-[180px]">
+                                    <td className="px-6 py-4 hidden lg:table-cell text-muted-foreground max-w-[180px]">
                                         <span className="line-clamp-1">{app.address}</span>
                                     </td>
                                     <td className="px-6 py-4">
@@ -201,13 +201,13 @@ export default function AdminOrgApplicationsPage() {
                                             {app.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-xs text-gray-400 hidden lg:table-cell">
+                                    <td className="px-6 py-4 text-xs text-muted-foreground hidden lg:table-cell">
                                         {new Date(app.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="px-6 py-4 text-right whitespace-nowrap">
                                         <button
                                             onClick={() => { setSelectedApp(app); setIsDetailOpen(true); }}
-                                            className="text-gray-400 hover:text-gray-700 font-medium mr-3 transition-colors text-sm"
+                                            className="text-muted-foreground hover:text-foreground font-medium mr-3 transition-colors text-sm"
                                         >
                                             View
                                         </button>
@@ -238,8 +238,8 @@ export default function AdminOrgApplicationsPage() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="mt-5 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                        <span className="text-sm text-gray-500">Page {page} of {totalPages} · {totalCount} total</span>
+                    <div className="mt-5 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                        <span className="text-sm text-muted-foreground">Page {page} of {totalPages} · {totalCount} total</span>
                         <div className="flex gap-2">
                             <Button variant="outline" size="sm" disabled={page <= 1 || isFetching} onClick={() => setPage(p => p - 1)}>
                                 Previous
@@ -262,49 +262,49 @@ export default function AdminOrgApplicationsPage() {
                     <div className="space-y-4 text-sm">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Organization</p>
-                                <p className="font-medium text-gray-900">{selectedApp.name}</p>
+                                <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Organization</p>
+                                <p className="font-medium text-foreground">{selectedApp.name}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Status</p>
+                                <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Status</p>
                                 <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${STATUS_COLORS[selectedApp.status]}`}>
                                     {selectedApp.status}
                                 </span>
                             </div>
                         </div>
                         <div>
-                            <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Description</p>
-                            <p className="text-gray-700 leading-relaxed">{selectedApp.description}</p>
+                            <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Description</p>
+                            <p className="text-foreground leading-relaxed">{selectedApp.description}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Contact Email</p>
-                                <p className="text-gray-700">{selectedApp.contact_email}</p>
+                                <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Contact Email</p>
+                                <p className="text-foreground">{selectedApp.contact_email}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Contact Phone</p>
-                                <p className="text-gray-700">{selectedApp.contact_phone}</p>
+                                <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Contact Phone</p>
+                                <p className="text-foreground">{selectedApp.contact_phone}</p>
                             </div>
                         </div>
                         <div>
-                            <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Address</p>
-                            <p className="text-gray-700">{selectedApp.address}</p>
+                            <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Address</p>
+                            <p className="text-foreground">{selectedApp.address}</p>
                         </div>
                         {selectedApp.website && (
                             <div>
-                                <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Website</p>
+                                <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Website</p>
                                 <a href={selectedApp.website} target="_blank" rel="noopener noreferrer"
                                     className="text-primary hover:underline">{selectedApp.website}</a>
                             </div>
                         )}
                         {selectedApp.reviewed_at && (
                             <div>
-                                <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Reviewed At</p>
-                                <p className="text-gray-700">{new Date(selectedApp.reviewed_at).toLocaleString()}</p>
+                                <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Reviewed At</p>
+                                <p className="text-foreground">{new Date(selectedApp.reviewed_at).toLocaleString()}</p>
                             </div>
                         )}
                         {selectedApp.status === 'pending' && (
-                            <div className="pt-4 flex gap-3 justify-end border-t border-gray-100">
+                            <div className="pt-4 flex gap-3 justify-end border-t border-border">
                                 <Button
                                     variant="outline"
                                     className="text-red-500 border-red-200"

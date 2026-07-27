@@ -34,7 +34,7 @@ export function LanguageSwitcher() {
     <div ref={dropdownRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary transition-colors px-2 py-1.5 rounded-lg hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors px-2 py-1.5 rounded-xl hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Select language"
@@ -49,7 +49,7 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1.5 z-[60] max-h-72 overflow-y-auto">
+        <div className="absolute top-full right-0 mt-1 w-48 bg-card rounded-xl shadow-lg shadow-black/10 dark:shadow-none border border-border py-1.5 z-[60] max-h-72 overflow-y-auto">
           {availableLocales.map(locale => (
             <button
               key={locale.code}
@@ -57,7 +57,7 @@ export function LanguageSwitcher() {
               className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between ${
                 locale.code === currentLocale
                   ? 'bg-primary/5 text-primary font-semibold'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  : 'text-foreground hover:bg-muted hover:text-primary'
               }`}
             >
               <span className="flex items-center gap-2">

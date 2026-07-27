@@ -109,7 +109,7 @@ export default function CourseDetailPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-muted flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
@@ -117,7 +117,7 @@ export default function CourseDetailPage() {
 
     if (error || !course) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-muted flex items-center justify-center">
                 <div className="text-center">
                     <p className="text-red-600 font-medium">{error || 'Course not found.'}</p>
                     <Link href="/courses" className="mt-4 text-primary hover:underline block">← Back to Courses</Link>
@@ -130,11 +130,11 @@ export default function CourseDetailPage() {
     const diff = course.difficulty?.toLowerCase() || '';
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-muted pb-20">
             {/* Hero */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 py-10">
-                    <Link href="/courses" className="text-sm text-gray-500 hover:text-primary mb-6 inline-flex items-center gap-1 transition-colors">
+                    <Link href="/courses" className="text-sm text-muted-foreground hover:text-primary mb-6 inline-flex items-center gap-1 transition-colors">
                         ← Back to Training
                     </Link>
 
@@ -142,11 +142,11 @@ export default function CourseDetailPage() {
                         {/* Left: Thumbnail */}
                         <div className="lg:col-span-2">
                             {course.thumbnail_url ? (
-                                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50">
+                                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg shadow-black/10 dark:shadow-none border border-border bg-muted">
                                     <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
                                 </div>
                             ) : (
-                                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gradient-to-br from-primary/5 to-blue-500/5 flex items-center justify-center">
+                                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg shadow-black/10 dark:shadow-none border border-border bg-gradient-to-br from-primary/5 to-blue-500/5 flex items-center justify-center">
                                     <GraduationCap className="w-16 h-16 text-primary/30" />
                                 </div>
                             )}
@@ -157,19 +157,19 @@ export default function CourseDetailPage() {
                             <div>
                                 <div className="flex items-center gap-3 mb-4">
                                     {course.language && (
-                                        <span className="inline-flex items-center px-3 py-1 rounded-md bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+                                        <span className="inline-flex items-center px-3 py-1 rounded-lg bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
                                             {course.language}
                                         </span>
                                     )}
                                     {course.difficulty && (
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${difficultyColor[diff] || 'bg-gray-100 text-gray-600'}`}>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${difficultyColor[diff] || 'bg-muted/50 text-muted-foreground'}`}>
                                             {course.difficulty}
                                         </span>
                                     )}
                                 </div>
-                                <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight max-w-2xl">{course.title}</h1>
+                                <h1 className="text-3xl lg:text-4xl font-extrabold text-foreground leading-tight max-w-2xl">{course.title}</h1>
                                 {course.description && (
-                                    <p className="mt-4 text-gray-600 leading-relaxed max-w-xl">
+                                    <p className="mt-4 text-muted-foreground leading-relaxed max-w-xl">
                                         <LinkifyText text={course.description} />
                                     </p>
                                 )}
@@ -198,7 +198,7 @@ export default function CourseDetailPage() {
                                 ) : (
                                     <div className="max-w-md">
                                         {enrollError && <p className="text-xs text-red-600 mb-2">{enrollError}</p>}
-                                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="w-full py-4 text-lg rounded-xl shadow-lg shadow-primary/20">
+                                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="w-full py-4 text-lg rounded-xl shadow-lg shadow-black/10 dark:shadow-none shadow-primary/20">
                                             {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
                                             {!isEnrolling && <ArrowRight className="ml-2 size-5 inline" />}
                                         </Button>
@@ -215,9 +215,9 @@ export default function CourseDetailPage() {
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 mt-10 space-y-10">
                     {/* Course Overview */}
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Course Overview</h2>
-                        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                            <p className="text-gray-600 leading-relaxed">
+                        <h2 className="text-xl font-bold text-foreground mb-4">Course Overview</h2>
+                        <div className="bg-card rounded-2xl border border-border p-6 shadow-sm shadow-black/5 dark:shadow-none">
+                            <p className="text-muted-foreground leading-relaxed">
                                 {course.description || 'This course provides comprehensive training on the subject. Enroll to access the full curriculum, interactive lessons, and assessment materials.'}
                             </p>
                         </div>
@@ -225,7 +225,7 @@ export default function CourseDetailPage() {
 
                     {/* Learning Objectives */}
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Learning Objectives</h2>
+                        <h2 className="text-xl font-bold text-foreground mb-4">Learning Objectives</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {[
                                 'Understand fundamental concepts and best practices',
@@ -233,20 +233,20 @@ export default function CourseDetailPage() {
                                 'Apply knowledge to real-world scenarios',
                                 'Assess your understanding with quizzes and exams',
                             ].map((objective, i) => (
-                                <div key={i} className="flex items-start gap-3 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                                <div key={i} className="flex items-start gap-3 bg-card rounded-xl border border-border p-4 shadow-sm shadow-black/5 dark:shadow-none">
                                     <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
                                         {i + 1}
                                     </div>
-                                    <p className="text-sm text-gray-700 font-medium">{objective}</p>
+                                    <p className="text-sm text-foreground font-medium">{objective}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Enroll CTA */}
-                    <div className="bg-gradient-to-r from-primary/5 to-blue-500/5 rounded-3xl border border-primary/10 p-10 text-center shadow-sm">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">Ready to Get Started?</h3>
-                        <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+                    <div className="bg-gradient-to-r from-primary/5 to-blue-500/5 rounded-3xl border border-primary/10 p-10 text-center shadow-sm shadow-black/5 dark:shadow-none">
+                        <h3 className="text-2xl font-bold text-foreground mb-3">Ready to Get Started?</h3>
+                        <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
                             Enroll in this course to access all modules, lessons, and assessment materials.
                         </p>
                         <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="px-10 py-4 text-lg shadow-xl shadow-primary/20">
@@ -259,18 +259,18 @@ export default function CourseDetailPage() {
             {/* Enrolled modules */}
             {isEnrolled && (
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 mt-10">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">
+                    <h2 className="text-xl font-bold text-foreground mb-6">
                         Course Modules
-                        <span className="text-sm font-normal text-gray-500 ml-2">({modules.length})</span>
+                        <span className="text-sm font-normal text-muted-foreground ml-2">({modules.length})</span>
                     </h2>
 
                     {modules.length === 0 ? (
-                        <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center shadow-sm">
-                            <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-6 text-4xl grayscale filter">
-                                <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                        <div className="bg-card rounded-2xl border border-border p-16 text-center shadow-sm shadow-black/5 dark:shadow-none">
+                            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6 text-4xl grayscale filter">
+                                <svg className="w-10 h-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">No Modules Available</h3>
-                            <p className="text-gray-500 max-w-sm mx-auto leading-relaxed">
+                            <h3 className="text-xl font-bold text-foreground mb-2">No Modules Available</h3>
+                            <p className="text-muted-foreground max-w-sm mx-auto leading-relaxed">
                                 This course currently doesn&apos;t have any modules. Our training team is working on the content. Please check back soon!
                             </p>
                         </div>
@@ -282,14 +282,14 @@ export default function CourseDetailPage() {
                                     <Link
                                         key={module.id}
                                         href={`/courses/${id}/modules/${module.id}`}
-                                        className="block bg-white rounded-xl border border-gray-200 p-5 flex items-start gap-4 hover:border-primary/40 hover:shadow-md transition-all group"
+                                        className="block bg-card rounded-xl border border-border p-5 flex items-start gap-4 hover:border-primary/40 hover:shadow-md shadow-black/10 dark:shadow-none transition-all group"
                                     >
                                         <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
                                             {i + 1}
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">{module.title}</h3>
-                                            {module.description && <p className="text-sm text-gray-500 mt-1"><LinkifyText text={module.description} /></p>}
+                                            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{module.title}</h3>
+                                            {module.description && <p className="text-sm text-muted-foreground mt-1"><LinkifyText text={module.description} /></p>}
                                         </div>
                                         <div className="ml-auto flex items-center gap-2 shrink-0">
                                             <span className="text-xs font-bold text-gray-300 group-hover:text-primary uppercase tracking-widest hidden sm:block">Start Reading</span>
@@ -305,13 +305,13 @@ export default function CourseDetailPage() {
             {/* Profile Completion Modal */}
             <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title="Complete Your Profile">
                 <div className="text-center py-4">
-                    <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
                         <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">Profile Required</h3>
-                    <p className="text-sm text-gray-600 mb-6 max-w-xs mx-auto">
+                    <h3 className="text-lg font-bold text-foreground mb-2">Profile Required</h3>
+                    <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
                         Please complete your background profile before enrolling in this course.
                     </p>
                     <div className="flex flex-col gap-3">

@@ -23,19 +23,19 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
             : success
                 ? 'border-green-400 focus:border-green-500 focus:ring-green-500/20'
-                : 'border-gray-300 focus:border-primary focus:ring-primary/20';
+                : 'border-border focus:border-primary focus:ring-primary/20';
 
         return (
             <div className="w-full">
                 {label && (
-                    <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label htmlFor={inputId} className="block text-sm font-medium text-foreground mb-1.5">
                         {label}
                         {props.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                 )}
                 <div className="relative">
                     {icon && (
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
                             {icon}
                         </div>
                     )}
@@ -44,14 +44,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                         ref={ref}
                         type={inputType}
                         className={`
-                            block w-full rounded-lg border transition-all duration-150
+                            block w-full rounded-xl border transition-all duration-150
                             ${borderColor}
                             ${icon ? 'pl-10' : 'pl-3.5'}
                             ${isPassword && showPasswordToggle ? 'pr-11' : success && !icon && !showPasswordToggle ? 'pr-11' : 'pr-3.5'}
-                            py-2.5 text-sm shadow-sm
-                            bg-white text-gray-900 placeholder:text-gray-400
+                            py-2.5 text-sm shadow-sm shadow-black/5 dark:shadow-none
+                            bg-card text-foreground placeholder:text-muted-foreground
                             focus:outline-none focus:ring-2
-                            disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200
+                            disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:border-border
                             ${className}
                         `}
                         aria-invalid={error ? 'true' : undefined}
@@ -68,7 +68,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     {isPassword && showPasswordToggle && (
                         <button
                             type="button"
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:text-gray-800 transition-colors"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-muted-foreground focus-visible:outline-none focus-visible:text-foreground transition-colors"
                             onClick={() => setShowPassword(!showPassword)}
                             tabIndex={-1}
                             aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -95,7 +95,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     </p>
                 )}
                 {helperText && !error && (
-                    <p id={`${inputId}-helper`} className="mt-1.5 text-xs text-gray-500">{helperText}</p>
+                    <p id={`${inputId}-helper`} className="mt-1.5 text-xs text-muted-foreground">{helperText}</p>
                 )}
             </div>
         );

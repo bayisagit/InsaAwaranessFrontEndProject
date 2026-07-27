@@ -34,12 +34,12 @@ export default function CourseAssessmentQuestionsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <button onClick={() => router.back()} className="flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-widest mb-3">
+                <button onClick={() => router.back()} className="flex items-center gap-1 text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest mb-3">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                     Back to Assessments
                 </button>
-                <h1 className="text-2xl font-bold text-gray-900">{assessment?.title || 'Assessment Questions'}</h1>
-                <p className="text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold text-foreground">{assessment?.title || 'Assessment Questions'}</h1>
+                <p className="text-muted-foreground mt-1">
                     {assessment?.passing_score}% pass score · {(assessment?.time_limit_minutes ?? 0) > 0 ? `${assessment?.time_limit_minutes} min` : 'No time limit'}
                 </p>
             </div>

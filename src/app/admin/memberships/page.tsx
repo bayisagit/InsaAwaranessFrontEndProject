@@ -13,7 +13,7 @@ import { toast } from 'react-hot-toast';
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; }
 
-const SELECT_CLS = "block w-full rounded-md border border-gray-300 py-2.5 px-3 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-white font-medium";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card font-medium";
 const ALLOWED_ROLES = ['super_admin', 'org_admin', 'course_provider'];
 
 export default function AdminMembershipsPage() {
@@ -201,18 +201,18 @@ export default function AdminMembershipsPage() {
     if (!user || !ALLOWED_ROLES.includes(user.role)) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="bg-white border-b border-gray-200">
+        <div className="min-h-screen bg-muted pb-20">
+            <div className="bg-card border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Memberships</h1>
-                        <p className="text-gray-500">Manage user roles and departmental links within organizations.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-1">Memberships</h1>
+                        <p className="text-muted-foreground">Manage user roles and departmental links within organizations.</p>
                     </div>
                 </div>
             </div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-10">
-                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-100">{error}</div>}
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>}
 
                 {/* Filters */}
                 <div className="mb-6 flex flex-wrap gap-4 items-end">
@@ -250,10 +250,10 @@ export default function AdminMembershipsPage() {
                     onToggle={toggleCreate}
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                        {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">User</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">User</label>
                             <select
                                 className={SELECT_CLS}
                                 value={form.user}
@@ -270,7 +270,7 @@ export default function AdminMembershipsPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
                             <select
                                 className={SELECT_CLS}
                                 value={form.organization}
@@ -287,7 +287,7 @@ export default function AdminMembershipsPage() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Org Role</label>
+                                <label className="block text-sm font-semibold text-foreground mb-1">Org Role</label>
                                 <select
                                     className={SELECT_CLS}
                                     value={form.org_role}
@@ -303,12 +303,12 @@ export default function AdminMembershipsPage() {
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="checkbox"
-                                        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                        className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
                                         checked={form.is_primary}
                                         onChange={e => setForm({ ...form, is_primary: e.target.checked })}
                                         disabled={isActionLoading}
                                     />
-                                    <span className="text-sm font-semibold text-gray-700">Set as Primary</span>
+                                    <span className="text-sm font-semibold text-foreground">Set as Primary</span>
                                 </label>
                             </div>
                         </div>
@@ -339,9 +339,9 @@ export default function AdminMembershipsPage() {
                     </form>
                 </ExpandableCreateSection>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table className="w-full text-left text-sm text-gray-500">
-                        <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-200">
+                <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                    <table className="w-full text-left text-sm text-muted-foreground">
+                        <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
                             <tr>
                                 <th className="px-6 py-4">User</th>
                                 <th className="px-6 py-4">Organization</th>
@@ -351,21 +351,21 @@ export default function AdminMembershipsPage() {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-border">
                             {memberships.length === 0 ? (
-                                <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">No memberships yet.</td></tr>
+                                <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">No memberships yet.</td></tr>
                             ) : memberships.map(m => (
-                                <tr key={m.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{getUserLabel(m.user)}</td>
-                                    <td className="px-6 py-4 text-gray-600 font-medium">{getOrgName(m.organization)}</td>
+                                <tr key={m.id} className="hover:bg-muted transition-colors">
+                                    <td className="px-6 py-4 font-medium text-foreground">{getUserLabel(m.user)}</td>
+                                    <td className="px-6 py-4 text-muted-foreground font-medium">{getOrgName(m.organization)}</td>
                                     <td className="px-6 py-4 uppercase text-[10px] font-bold">
-                                        <span className={`px-2 py-0.5 rounded-full ${m.org_role === 'admin' ? 'bg-purple-50 text-purple-700 border border-purple-100' : 'bg-gray-50 text-gray-600 border border-gray-200'}`}>
+                                        <span className={`px-2 py-0.5 rounded-full ${m.org_role === 'admin' ? 'bg-purple-50 text-purple-700 border border-purple-100' : 'bg-muted text-muted-foreground border border-border'}`}>
                                             {m.org_role}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-xs font-mono">
                                         {m.employee_id || 'N/A'} <br />
-                                        <span className="text-gray-400 font-sans italic">{m.department || 'No dept'}</span>
+                                        <span className="text-muted-foreground font-sans italic">{m.department || 'No dept'}</span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         {m.is_primary ? (
@@ -375,7 +375,7 @@ export default function AdminMembershipsPage() {
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right whitespace-nowrap">
-                                        <button onClick={() => openModal(m)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-md text-xs font-bold transition-colors">Edit</button>
+                                        <button onClick={() => openModal(m)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors">Edit</button>
                                         <button onClick={() => handleDelete(m.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Delete</button>
                                     </td>
                                 </tr>
@@ -386,8 +386,8 @@ export default function AdminMembershipsPage() {
 
                 {/* Pagination */}
                 {totalCount > pageSize && (
-                    <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                        <span className="text-sm text-gray-500">Showing {memberships.length} of {totalCount} results</span>
+                    <div className="mt-6 flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+                        <span className="text-sm text-muted-foreground">Showing {memberships.length} of {totalCount} results</span>
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"
@@ -412,10 +412,10 @@ export default function AdminMembershipsPage() {
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Membership">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">{actionError}</div>}
+                    {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">User</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">User</label>
                         <select
                             className={SELECT_CLS}
                             value={form.user}
@@ -431,7 +431,7 @@ export default function AdminMembershipsPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Organization</label>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
                         <select
                             className={SELECT_CLS}
                             value={form.organization}
@@ -448,7 +448,7 @@ export default function AdminMembershipsPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Org Role</label>
+                            <label className="block text-sm font-semibold text-foreground mb-1">Org Role</label>
                             <select
                                 className={SELECT_CLS}
                                 value={form.org_role}
@@ -464,12 +464,12 @@ export default function AdminMembershipsPage() {
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                    className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
                                     checked={form.is_primary}
                                     onChange={e => setForm({ ...form, is_primary: e.target.checked })}
                                     disabled={isActionLoading}
                                 />
-                                <span className="text-sm font-semibold text-gray-700">Set as Primary</span>
+                                <span className="text-sm font-semibold text-foreground">Set as Primary</span>
                             </label>
                         </div>
                     </div>
