@@ -35,7 +35,7 @@ export function FeatureCard({ icon, title, description, bullets, accentColor }: 
             </div>
 
             {/* Title */}
-            <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
+            <h3 className="cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out text-lg font-bold text-foreground mb-2">{title}</h3>
 
             {/* Description */}
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{description}</p>

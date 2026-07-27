@@ -41,7 +41,7 @@ export function ExpandableCreateSection({
             <div className={`bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border overflow-hidden transition-all duration-300 ${isOpen ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border'}`}>
                 <button
                     onClick={onToggle}
-                    className="w-full flex items-center px-6 py-4 bg-muted hover:bg-muted/50 transition-colors text-left font-semibold text-foreground focus:outline-none"
+                    className="w-full flex items-center px-6 py-4 bg-muted hover:bg-muted/50 transition-colors text-left font-semibold text-foreground focus:outline-none cursor-pointer transition-colors duration-200"
                     type="button"
                 >
                     <span className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export function ExpandableCreateSection({
                                                         </Button>
                                                     </Link>
                                                 ) : (
-                                                    <Button key={idx} variant={step.variant || 'primary'} onClick={step.onClick} className="flex items-center gap-2">
+                                                    <Button key={idx} variant={step.variant || 'primary'} onClick={step.onClick} className="flex items-center gap-2 cursor-pointer transition-colors duration-200">
                                                         {step.icon && <span>{step.icon}</span>}
                                                         {step.label}
                                                     </Button>

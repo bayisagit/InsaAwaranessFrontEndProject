@@ -49,7 +49,7 @@ export default function CourseExamPage() {
             <div className="max-w-4xl mx-auto">
                 <header className="mb-10 flex items-center justify-between">
                     <div>
-                        <Link href={`/courses/${courseId}`} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-2 mb-2">
+                        <Link href={`/courses/${courseId}`} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors uppercase tracking-widest flex items-center gap-2 mb-2">
                             ← Exit Exam
                         </Link>
                         <h1 className="text-3xl font-extrabold text-foreground">{exam.title}</h1>

@@ -79,7 +79,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
                             <h2 className="text-lg font-semibold text-foreground">{title}</h2>
                             <button
                                 onClick={onClose}
-                                className="text-muted-foreground hover:text-muted-foreground transition-colors p-1.5 rounded-xl hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                className="text-muted-foreground hover:text-muted-foreground transition-colors p-1.5 rounded-xl hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer transition-colors duration-200"
                                 aria-label="Close dialog"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">

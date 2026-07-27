@@ -88,7 +88,7 @@ export default function DashboardCoursesPage() {
                         const resumeUrl = `/courses/${courseId}`;
 
                         return (
-                            <div key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col">
+                            <div key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                 <div className="relative h-40 bg-muted/50">
                                     {course.thumbnail_url ? (
                                         <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />

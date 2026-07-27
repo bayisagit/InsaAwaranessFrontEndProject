@@ -26,7 +26,7 @@ export const StatCard: React.FC<StatCardProps> = ({ icon, label, value, trend, c
 
     return (
         <div className={`bg-card p-5 rounded-xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all duration-200 hover:shadow-md shadow-black/10 dark:shadow-none hover:border-border ${className}`}>
-            <div className="flex items-start justify-between gap-3">
+            <div className="cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
                     <p className="text-2xl font-bold text-foreground truncate">{value}</p>

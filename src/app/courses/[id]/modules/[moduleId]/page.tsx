@@ -83,7 +83,7 @@ export default function ModuleContentPage() {
             {/* Top Reader Bar */}
             <div className="sticky top-16 z-30 bg-card border-b border-border">
                 <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href={`/courses/${courseId}`} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-2">
+                    <Link href={`/courses/${courseId}`} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors uppercase tracking-widest flex items-center gap-2">
                         ← Exit Module
                     </Link>
                     <div className="text-center flex-1 mx-4">

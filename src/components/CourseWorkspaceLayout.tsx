@@ -156,7 +156,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
             {/* Course Specific Sidebar */}
             <Sidebar collapsible="icon" className="border-r border-border bg-card">
                 <SidebarHeader className="py-4 px-2">
-                    <Link href="/admin" className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest mb-4 px-2">
+                    <Link href="/admin" className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors uppercase tracking-widest mb-4 px-2">
                         <ArrowLeft className="w-4 h-4" />
                         Back to Admin
                     </Link>
@@ -220,7 +220,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                                 <span className="mx-2 text-gray-300">/</span>
                                 <Link
                                     href={courseId && moduleId ? `/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}` : `/admin/lessons/${lessonId}`}
-                                    className="text-foreground hover:text-primary transition-colors"
+                                    className="text-foreground hover:text-primary transition-colors duration-200 transition-colors"
                                 >
                                     {lessonName}
                                 </Link>

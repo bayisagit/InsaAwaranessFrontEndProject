@@ -68,7 +68,7 @@ export default function Home() {
 
           <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Pillar 1 */}
-            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
+            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="w-12 h-12 rounded-xl bg-red-50 text-primary flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -84,7 +84,7 @@ export default function Home() {
             </div>
 
             {/* Pillar 2 */}
-            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
+            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="w-12 h-12 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -100,7 +100,7 @@ export default function Home() {
             </div>
 
             {/* Pillar 3 */}
-            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
+            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -166,7 +166,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-card p-6 border-t-4 border-red-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group">
+            <div className="bg-card p-6 border-t-4 border-red-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-red-500 uppercase tracking-wider bg-red-50 px-2 py-1 rounded">Critical</span>
                 <span className="text-xs text-muted-foreground">1 hour ago</span>
@@ -178,7 +178,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="bg-card p-6 border-t-4 border-yellow-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group">
+            <div className="bg-card p-6 border-t-4 border-yellow-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-yellow-600 uppercase tracking-wider bg-yellow-50 px-2 py-1 rounded">High</span>
                 <span className="text-xs text-muted-foreground">5 hours ago</span>

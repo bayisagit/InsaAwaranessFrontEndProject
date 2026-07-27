@@ -40,7 +40,7 @@ export function ThemeToggle() {
   };
 
   return (
-    <Button variant="outline" size="icon" onClick={cycleTheme} className="w-9 h-9" title={`Current theme: ${theme}`}>
+    <Button variant="outline" size="icon" onClick={cycleTheme} className="w-9 h-9 cursor-pointer transition-colors duration-200" title={`Current theme: ${theme}`}>
       {getIcon()}
       <span className="sr-only">Toggle theme</span>
     </Button>

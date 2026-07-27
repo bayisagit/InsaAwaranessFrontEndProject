@@ -70,10 +70,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 <p className="text-muted-foreground mb-8 px-4">{message}</p>
 
                 <div className="flex w-full gap-3">
-                    <Button variant="outline" onClick={onClose} className="flex-1" disabled={isLoading}>
+                    <Button variant="outline" onClick={onClose} className="flex-1 cursor-pointer transition-colors duration-200" disabled={isLoading}>
                         {cancelText}
                     </Button>
-                    <Button variant={styles.confirmVariant} onClick={onConfirm} className="flex-1" loading={isLoading}>
+                    <Button variant={styles.confirmVariant} onClick={onConfirm} className="flex-1 cursor-pointer transition-colors duration-200" loading={isLoading}>
                         {isLoading ? 'Processing...' : confirmText}
                     </Button>
                 </div>

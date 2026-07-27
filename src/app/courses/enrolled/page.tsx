@@ -58,7 +58,7 @@ export default function EnrolledCoursesPage() {
             <div className="bg-card border-b border-border sticky top-16 z-20">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <Link href="/dashboard" className="text-xs font-bold text-muted-foreground hover:text-primary mb-2 inline-flex items-center gap-1 transition-colors uppercase tracking-widest">
+                        <Link href="/dashboard" className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 mb-2 inline-flex items-center gap-1 transition-colors uppercase tracking-widest">
                             ← Back to Dashboard
                         </Link>
                         <h1 className="text-3xl font-extrabold text-foreground">My Enrolled Courses</h1>
@@ -96,7 +96,7 @@ export default function EnrolledCoursesPage() {
                             const resumeUrl = `/courses/${courseId}`;
 
                             return (
-                                <div key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col">
+                                <div key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                     <div className="relative h-40 bg-muted/50">
                                         {course.thumbnail_url ? (
                                             <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />

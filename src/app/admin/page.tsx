@@ -19,6 +19,7 @@ import {
     TrendingUp, Megaphone, ShieldCheck, Download,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { AnimatedSection } from '@/components/AnimatedSection';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -222,17 +223,17 @@ export default function AdminDashboard() {
             {user.role === 'super_admin' && (
                 <>
                     {/* Summary Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                    <AnimatedSection delay={0.1}><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                         <SummaryCard icon={<Users className="size-4" />} label="Total Users" value={(overview?.total_users ?? analytics?.users.total ?? 0).toLocaleString()} sub="Active across platform" color="blue" />
                         <SummaryCard icon={<Building2 className="size-4" />} label="Organizations" value={(overview?.total_organizations ?? parseInt(orgsCount) ?? 0).toLocaleString()} sub="Registered partners" color="green" />
                         <SummaryCard icon={<GraduationCap className="size-4" />} label="Total Courses" value={(overview?.total_courses ?? parseInt(coursesCount) ?? 0).toLocaleString()} sub="Available for enrollment" color="purple" />
                         <SummaryCard icon={<FileText className="size-4" />} label="Total Enrollments" value={(overview?.total_enrollments ?? 0).toLocaleString()} sub="Across all courses" color="amber" />
                         <SummaryCard icon={<Award className="size-4" />} label="Completions" value={(overview?.total_completions ?? 0).toLocaleString()} sub="Course completions" color="emerald" />
                         <SummaryCard icon={<FileCheck className="size-4" />} label="Certificates" value={(overview?.total_certificates ?? analytics?.certificates.total ?? 0).toLocaleString()} sub="Certificates issued" color="rose" />
-                    </div>
+                    </div></AnimatedSection>
 
                     {/* Growth Charts */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <AnimatedSection delay={0.2}><div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
@@ -286,10 +287,10 @@ export default function AdminDashboard() {
                                 )}
                             </CardContent>
                         </Card>
-                    </div>
+                    </div></AnimatedSection>
 
                     {/* Course Performance & Top Courses */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <AnimatedSection delay={0.3}><div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
@@ -371,7 +372,7 @@ export default function AdminDashboard() {
                                 )}
                             </CardContent>
                         </Card>
-                    </div>
+                    </div></AnimatedSection>
 
                     {/* Filters & Course Comparison */}
                     <Card className="shadow-sm shadow-black/5 dark:shadow-none">
@@ -593,40 +594,40 @@ export default function AdminDashboard() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                         <Link href="/admin/memberships">
-                            <Button variant="outline" className="h-16 justify-start px-4 hover:border-primary w-full">
-                                <Users className="size-5 text-blue-500 mr-3" />
+                            <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
+                                <Users className="size-5 text-blue-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm">Members</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Members</span>
                                     <span className="text-[10px] text-muted-foreground">Manage organization users</span>
                                 </div>
-                            </Button>
+                            </div>
                         </Link>
                         <Link href="/admin/training-requests">
-                            <Button variant="outline" className="h-16 justify-start px-4 hover:border-primary w-full">
-                                <FileText className="size-5 text-amber-500 mr-3" />
+                            <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
+                                <FileText className="size-5 text-amber-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm">Requests</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Requests</span>
                                     <span className="text-[10px] text-muted-foreground">Request custom training</span>
                                 </div>
-                            </Button>
+                            </div>
                         </Link>
                         <Link href="/admin/reports">
-                            <Button variant="outline" className="h-16 justify-start px-4 hover:border-primary w-full">
-                                <TrendingUp className="size-5 text-purple-500 mr-3" />
+                            <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
+                                <TrendingUp className="size-5 text-purple-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm">Reports</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Reports</span>
                                     <span className="text-[10px] text-muted-foreground">Compliance & progress</span>
                                 </div>
-                            </Button>
+                            </div>
                         </Link>
                         <Link href="/admin/campaigns">
-                            <Button variant="outline" className="h-16 justify-start px-4 hover:border-primary w-full">
-                                <Megaphone className="size-5 text-orange-500 mr-3" />
+                            <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
+                                <Megaphone className="size-5 text-orange-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm">Campaigns</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Campaigns</span>
                                     <span className="text-[10px] text-muted-foreground">Awareness communications</span>
                                 </div>
-                            </Button>
+                            </div>
                         </Link>
                     </div>
                 </>

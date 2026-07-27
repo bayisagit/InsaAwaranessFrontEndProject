@@ -98,8 +98,8 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="flex items-start gap-4 p-6 rounded-2xl bg-red-50/50 border border-red-100">
-                        <div className="w-10 h-10 rounded-full bg-red-100 text-primary flex items-center justify-center shrink-0">
+                    <div className="flex items-start gap-4 p-6 rounded-2xl bg-red-500/5 dark:bg-red-500/10 border border-red-500/20">
+                        <div className="w-10 h-10 rounded-full bg-red-500/10 text-primary flex items-center justify-center shrink-0">
                             &#128737;
                         </div>
                         <div>
@@ -109,7 +109,7 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                     </div>
 
                     <div className="flex items-start gap-4 p-6 rounded-2xl bg-muted border border-border">
-                        <div className="w-10 h-10 rounded-full bg-gray-200 text-muted-foreground flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-muted-foreground/10 text-muted-foreground flex items-center justify-center shrink-0">
                             &#128218;
                         </div>
                         <div>
@@ -118,8 +118,8 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-6 rounded-2xl bg-red-50/50 border border-red-100">
-                        <div className="w-10 h-10 rounded-full bg-red-100 text-primary flex items-center justify-center shrink-0">
+                    <div className="flex items-start gap-4 p-6 rounded-2xl bg-red-500/5 dark:bg-red-500/10 border border-red-500/20">
+                        <div className="w-10 h-10 rounded-full bg-red-500/10 text-primary flex items-center justify-center shrink-0">
                             &#9888;
                         </div>
                         <div>

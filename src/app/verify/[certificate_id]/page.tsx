@@ -109,7 +109,7 @@ export default function VerifyCertificatePage() {
                 </div>
 
                 <div className="text-center mt-8">
-                    <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors">
                         ← Return to INSA Platform
                     </Link>
                 </div>

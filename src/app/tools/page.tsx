@@ -111,7 +111,7 @@ export default function ToolsLandingPage() {
                             const theme = getTheme(tool.name);
                             const href = getHref(tool.name);
                             return (
-                                <div key={tool.id} className="bg-card rounded-3xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col items-center text-center">
+                                <div key={tool.id} className="bg-card rounded-3xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col items-center text-center cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                     <div className={`w-20 h-20 rounded-2xl ${theme.color} flex items-center justify-center mb-6 shadow-sm shadow-black/5 dark:shadow-none group-hover:scale-110 transition-transform`}>
                                         {theme.icon}
                                     </div>

@@ -134,7 +134,7 @@ export default function CourseDetailPage() {
             {/* Hero */}
             <div className="bg-card border-b border-border">
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 py-10">
-                    <Link href="/courses" className="text-sm text-muted-foreground hover:text-primary mb-6 inline-flex items-center gap-1 transition-colors">
+                    <Link href="/courses" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 mb-6 inline-flex items-center gap-1 transition-colors">
                         ← Back to Training
                     </Link>
 
@@ -189,7 +189,7 @@ export default function CourseDetailPage() {
                                                 </Button>
                                             </Link>
                                             {enrollment?.status === 'completed' && (
-                                                <Button variant="outline" onClick={handleDownloadCertificate} className="flex-1 border-green-200 text-green-700 hover:bg-green-50">
+                                                <Button variant="outline" onClick={handleDownloadCertificate} className="flex-1 border-green-200 text-green-700 hover:bg-green-50 cursor-pointer transition-colors duration-200">
                                                     {certificate ? 'View Certificate' : 'Certificate Issued'}
                                                 </Button>
                                             )}
@@ -198,7 +198,7 @@ export default function CourseDetailPage() {
                                 ) : (
                                     <div className="max-w-md">
                                         {enrollError && <p className="text-xs text-red-600 mb-2">{enrollError}</p>}
-                                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="w-full py-4 text-lg rounded-xl shadow-lg shadow-black/10 dark:shadow-none shadow-primary/20">
+                                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="w-full py-4 text-lg rounded-xl shadow-lg shadow-black/10 dark:shadow-none shadow-primary/20 cursor-pointer transition-colors duration-200">
                                             {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
                                             {!isEnrolling && <ArrowRight className="ml-2 size-5 inline" />}
                                         </Button>
@@ -249,7 +249,7 @@ export default function CourseDetailPage() {
                         <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
                             Enroll in this course to access all modules, lessons, and assessment materials.
                         </p>
-                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="px-10 py-4 text-lg shadow-xl shadow-primary/20">
+                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="px-10 py-4 text-lg shadow-xl shadow-primary/20 cursor-pointer transition-colors duration-200">
                             {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
                         </Button>
                     </div>
@@ -282,7 +282,7 @@ export default function CourseDetailPage() {
                                     <Link
                                         key={module.id}
                                         href={`/courses/${id}/modules/${module.id}`}
-                                        className="block bg-card rounded-xl border border-border p-5 flex items-start gap-4 hover:border-primary/40 hover:shadow-md shadow-black/10 dark:shadow-none transition-all group"
+                                        className="block bg-card rounded-xl border border-border p-5 flex items-start gap-4 hover:border-primary/40 hover:shadow-md shadow-black/10 dark:shadow-none transition-all group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out"
                                     >
                                         <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
                                             {i + 1}

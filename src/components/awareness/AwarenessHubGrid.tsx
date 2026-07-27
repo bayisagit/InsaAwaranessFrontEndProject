@@ -35,7 +35,7 @@ export function AwarenessHubGrid() {
                                     {/* Decorative quarter-circle */}
                                     <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-bl-full ${colors.bg} opacity-50`} />
 
-                                    <div className="flex items-start gap-5 mb-5">
+                                    <div className="cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out flex items-start gap-5 mb-5">
                                         <div className={`w-14 h-14 rounded-xl ${colors.iconBg} flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                                             {topic.icon}
                                         </div>

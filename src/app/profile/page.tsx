@@ -277,19 +277,19 @@ export default function ProfilePage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">Email Address</label>
-                                    <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default">
+                                    <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                         {user?.email}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">Preferred Language</label>
-                                    <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default capitalize">
+                                    <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default capitalize cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                         {user?.preferred_language || 'English'}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">Organization</label>
-                                    <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default">
+                                    <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                         {user?.organization_name || (user?.role === 'public_user' ? 'INSA' : 'Not assigned')}
                                     </div>
                                 </div>
@@ -432,7 +432,7 @@ export default function ProfilePage() {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center gap-4 transition-all hover:shadow-md shadow-black/10 dark:shadow-none hover:border-border">
+                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center gap-4 transition-all hover:shadow-md shadow-black/10 dark:shadow-none hover:border-border cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                             <div className="h-10 w-10 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-100">
                                                 <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
@@ -443,7 +443,7 @@ export default function ProfilePage() {
                                                 <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Gold Tier</span>
                                             </div>
                                         </div>
-                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center gap-4 transition-all hover:shadow-md shadow-black/10 dark:shadow-none hover:border-border">
+                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center gap-4 transition-all hover:shadow-md shadow-black/10 dark:shadow-none hover:border-border cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                             <div className="h-10 w-10 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
                                                 <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -464,7 +464,7 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
 
-                                    <button className="w-full mt-8 py-4 bg-card hover:bg-muted border border-border rounded-2xl text-[10px] font-black text-foreground uppercase tracking-[0.2em] transition-all hover:shadow-sm shadow-black/5 dark:shadow-none active:scale-95">
+                                    <button className="w-full mt-8 py-4 bg-card hover:bg-muted border border-border rounded-2xl text-[10px] font-black text-foreground uppercase tracking-[0.2em] transition-all hover:shadow-sm shadow-black/5 dark:shadow-none active:scale-95 cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                         View Full Progress
                                     </button>
                                 </div>
