@@ -194,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  <header className="w-full h-16 bg-background border-b border-border flex items-center justify-between px-4 sm:px-6 lg:px-12 sticky top-0 z-50 transition-colors duration-200">
  <div className="flex items-center gap-2">
  <Link href="/" className="flex items-center gap-2">
- <Image src="/logo.png" alt="INSA" width={32} height={32} className="object-contain" />
+ <Image src="/logo.png" alt="INSA" width={32} height={32} className="object-contain" style={{ width: 'auto', height: 'auto' }} />
  <span className="font-bold text-lg text-foreground tracking-tight hidden sm:inline">INSA Cyber Awareness</span>
  <span className="font-bold text-lg text-foreground tracking-tight sm:hidden">INSA</span>
  </Link>

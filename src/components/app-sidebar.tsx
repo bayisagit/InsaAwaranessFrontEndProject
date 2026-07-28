@@ -277,6 +277,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('sidebar');
   const tCommon = useTranslations('common');
   const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
+  const [openState, setOpenState] = React.useState<Record<string, boolean>>({});
   
   const handleLogout = () => setIsLogoutModalOpen(true);
   const confirmLogout = () => {
@@ -338,7 +339,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     return (
                       <Collapsible
                         key={item.title}
-                        defaultOpen={isMenuExpanded(item.url, item.subItems)}
+                        open={openState[item.title] ?? isMenuExpanded(item.url, item.subItems)}
+                        onOpenChange={(open) => setOpenState(prev => ({ ...prev, [item.title]: open }))}
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>

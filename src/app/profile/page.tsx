@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 
 
-const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
+const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 pl-3 pr-10 truncate text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
 function SelectField({ label, name, value, onChange, options, required }: {
     label: string;
