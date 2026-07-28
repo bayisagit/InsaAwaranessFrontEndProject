@@ -5,6 +5,24 @@ import { mergeMessages } from '@/lib/i18n-utils';
 
 import { cookies } from 'next/headers';
 
+const getMessages = async (locale: string) => {
+  switch (locale) {
+    case 'am':
+      return (await import('../messages/am.json')).default;
+    case 'ar':
+      return (await import('../messages/ar.json')).default;
+    case 'om':
+      return (await import('../messages/om.json')).default;
+    case 'sw':
+      return (await import('../messages/sw.json')).default;
+    case 'ti':
+      return (await import('../messages/ti.json')).default;
+    case 'en':
+    default:
+      return (await import('../messages/en.json')).default;
+  }
+};
+
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
   let locale = cookieStore.get('NEXT_LOCALE')?.value;
@@ -14,8 +32,8 @@ export default getRequestConfig(async () => {
   }
 
   try {
-    const messages = (await import(`../messages/${locale}.json`)).default;
-    const fallbackMessages = (await import(`../messages/${defaultLocale}.json`)).default;
+    const messages = await getMessages(locale);
+    const fallbackMessages = await getMessages(defaultLocale);
 
     if (locale === defaultLocale) {
       return { locale, messages };
@@ -24,7 +42,7 @@ export default getRequestConfig(async () => {
     const merged = mergeMessages(messages, fallbackMessages);
     return { locale, messages: merged };
   } catch {
-    const messages = (await import(`../messages/${defaultLocale}.json`)).default;
+    const messages = await getMessages(defaultLocale);
     return { locale: defaultLocale, messages };
   }
 });
