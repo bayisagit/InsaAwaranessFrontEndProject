@@ -8,6 +8,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
 import { NavigationWrapper } from "@/components/NavigationWrapper";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
@@ -23,15 +25,18 @@ export const metadata: Metadata = {
   description: "National Cyber Security Awareness Creation Portal",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
+    <html lang={locale} className={cn("font-sans", geist.variable)} suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen bg-background text-foreground flex flex-col antialiased transition-colors duration-200`}>
-        <ThemeProvider
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
@@ -78,6 +83,7 @@ export default function RootLayout({
             </AuthProvider>
           </GoogleOAuthProvider>
         </ThemeProvider>
+      </NextIntlClientProvider>
       </body>
     </html>
   );

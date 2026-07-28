@@ -1,12 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
+import { useTranslations } from 'next-intl';
 
 interface AboutSectionProps {
     variant?: 'full' | 'home';
 }
 
 export function AboutSection({ variant = 'full' }: AboutSectionProps) {
+    const t = useTranslations('landing');
+    const tCommon = useTranslations('common');
 
     if (variant === 'home') {
         return (
@@ -14,37 +17,34 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
                         <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 inline-block">
-                            NATIONAL INITIATIVE
+                            {t('nationalInitiative')}
                         </span>
                         <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">
-                            About INSA Cyber Awareness
+                            {t('aboutTitle')}
                         </h2>
                         <p className="text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                            The National Cyber Security Awareness Portal is the central authority dedicated to building
-                            a resilient, secure, and informed digital society for all citizens. Through proactive education,
-                            threat intelligence sharing, and public-private partnerships, we empower every citizen to
-                            defend against cyber threats.
+                            {t('aboutDesc')}
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
                         <div className="bg-card rounded-2xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none text-center">
                             <span className="text-4xl font-bold text-primary mb-2 block">24/7</span>
-                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Threat Monitoring</span>
+                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('threatMonitoring')}</span>
                         </div>
                         <div className="bg-card rounded-2xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none text-center">
                             <span className="text-4xl font-bold text-primary mb-2 block">12M+</span>
-                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Citizens Empowered</span>
+                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('citizensEmpowered')}</span>
                         </div>
                         <div className="bg-card rounded-2xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none text-center">
                             <span className="text-4xl font-bold text-primary mb-2 block">98%</span>
-                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Uptime Guarantee</span>
+                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('uptimeGuarantee')}</span>
                         </div>
                     </div>
 
                     <div className="text-center">
                         <Link href="/about">
-                            <Button variant="outline">Learn More About Us &rarr;</Button>
+                            <Button variant="outline">{t('learnMoreAboutUs')} &rarr;</Button>
                         </Link>
                     </div>
                 </div>
@@ -59,28 +59,31 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                 <div className="absolute top-0 right-1/4 -z-10 w-[500px] h-[500px] bg-red-50 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
 
                 <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 inline-block">
-                    NATIONAL INITIATIVE
+                    {t('nationalInitiative')}
                 </span>
                 <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl max-w-3xl mx-auto">
-                    Defending <span className="text-primary">Our</span><br />Digital Sovereignty
+                    {t.rich('digitalSovereignty', {
+                        span: (chunks) => <span className="text-primary">{chunks}</span>,
+                        br: () => <br />
+                    })}
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-                    The National Cyber Security Awareness Portal is the central authority dedicated to building a resilient, secure, and informed digital society for all citizens.
+                    {t('aboutDesc')}
                 </p>
 
                 {/* Stats Grid */}
                 <div className="mt-16 bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border py-8">
                     <div className="px-6 flex flex-col items-center">
                         <span className="text-4xl font-bold text-primary mb-1">24/7</span>
-                        <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Threat Monitoring</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('threatMonitoring')}</span>
                     </div>
                     <div className="px-6 flex flex-col items-center py-6 sm:py-0">
                         <span className="text-4xl font-bold text-primary mb-1">12M+</span>
-                        <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Citizens Empowered</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('citizensEmpowered')}</span>
                     </div>
                     <div className="px-6 flex flex-col items-center">
                         <span className="text-4xl font-bold text-primary mb-1">98%</span>
-                        <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Uptime Guarantee</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('uptimeGuarantee')}</span>
                     </div>
                 </div>
             </section>
@@ -88,12 +91,12 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
             {/* Core Mission */}
             <section className="py-24 px-6 lg:px-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight text-foreground border-l-4 border-primary pl-4 mb-6">Our Core Mission</h2>
+                    <h2 className="text-3xl font-bold tracking-tight text-foreground border-l-4 border-primary pl-4 mb-6">{t('coreMission')}</h2>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                        Cyber threats don&apos;t stop when you log off. Neither do we. Our single goal is to ensure that the internet remains a secure environment where innovation can flourish, data is protected, and everyday communication remains safe from bad actors.
+                        {t('coreMissionDesc1')}
                     </p>
                     <p className="text-muted-foreground leading-relaxed">
-                        Through proactive education, open-source threat intelligence sharing, and public-private partnerships, we&apos;re building a digital shield for every citizen.
+                        {t('coreMissionDesc2')}
                     </p>
                 </div>
 
@@ -103,8 +106,8 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                             &#128737;
                         </div>
                         <div>
-                            <h4 className="font-semibold text-foreground mb-1">Proactive Defense</h4>
-                            <p className="text-sm text-muted-foreground">Developing capabilities to detect and neutralize threats before they impact users.</p>
+                            <h4 className="font-semibold text-foreground mb-1">{t('proactiveDefense')}</h4>
+                            <p className="text-sm text-muted-foreground">{t('proactiveDefenseDesc')}</p>
                         </div>
                     </div>
 
@@ -113,8 +116,8 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                             &#128218;
                         </div>
                         <div>
-                            <h4 className="font-semibold text-foreground mb-1">National Education</h4>
-                            <p className="text-sm text-muted-foreground">Standardizing cybersecurity curriculum for schools, businesses, and government.</p>
+                            <h4 className="font-semibold text-foreground mb-1">{t('nationalEducation')}</h4>
+                            <p className="text-sm text-muted-foreground">{t('nationalEducationDesc')}</p>
                         </div>
                     </div>
 
@@ -123,8 +126,8 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                             &#9888;
                         </div>
                         <div>
-                            <h4 className="font-semibold text-foreground mb-1">Unified Response</h4>
-                            <p className="text-sm text-muted-foreground">Coordinating rapid incident response models across public and private sectors.</p>
+                            <h4 className="font-semibold text-foreground mb-1">{t('unifiedResponse')}</h4>
+                            <p className="text-sm text-muted-foreground">{t('unifiedResponseDesc')}</p>
                         </div>
                     </div>
                 </div>
@@ -134,9 +137,9 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
             <section className="py-24 bg-muted px-6 lg:px-8 border-t border-border">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-4">Who We Serve</h2>
+                        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-4">{t('whoWeServe')}</h2>
                         <p className="text-muted-foreground max-w-2xl mx-auto">
-                            Cybersecurity is everyone&apos;s responsibility. Our portal provides tailored resources for distinct sectors of our digital society.
+                            {t('whoWeServeDesc')}
                         </p>
                     </div>
 
@@ -145,28 +148,28 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                             <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-6">
                                 &#128106;
                             </div>
-                            <h3 className="text-xl font-semibold text-foreground mb-3">Citizens &amp; Families</h3>
+                            <h3 className="text-xl font-semibold text-foreground mb-3">{t('citizensFamilies')}</h3>
                             <p className="text-muted-foreground text-sm flex-1 mb-8">
-                                Clear guidance on securing devices, protecting children online, and avoiding phishing scams that target personal accounts.
+                                {t('citizensFamiliesDesc')}
                             </p>
                             <Link href="/courses" className="text-primary font-semibold text-sm hover:underline mt-auto">
-                                View Citizen Portal &rarr;
+                                {t('viewCitizenPortal')} &rarr;
                             </Link>
                         </div>
 
                         <div className="bg-card rounded-2xl p-8 border-2 border-primary shadow-md shadow-black/10 dark:shadow-none text-center flex flex-col h-full relative">
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                                Primary Focus
+                                {t('primaryFocus')}
                             </div>
                             <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-primary flex items-center justify-center mb-6 mt-2">
                                 &#128188;
                             </div>
-                            <h3 className="text-xl font-semibold text-foreground mb-3">Small Businesses</h3>
+                            <h3 className="text-xl font-semibold text-foreground mb-3">{t('smallBusinesses')}</h3>
                             <p className="text-muted-foreground text-sm flex-1 mb-8">
-                                Scalable frameworks to protect IP, secure customer data, and recover from ransomware without large IT budgets.
+                                {t('smallBusinessesDesc')}
                             </p>
                             <Link href="/resources" className="text-primary font-semibold text-sm hover:underline mt-auto">
-                                Explore Toolkits &rarr;
+                                {t('exploreToolkits')} &rarr;
                             </Link>
                         </div>
 
@@ -174,12 +177,12 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                             <div className="w-16 h-16 mx-auto rounded-2xl bg-green-50 text-green-500 flex items-center justify-center mb-6">
                                 &#127963;
                             </div>
-                            <h3 className="text-xl font-semibold text-foreground mb-3">Government Agencies</h3>
+                            <h3 className="text-xl font-semibold text-foreground mb-3">{t('governmentAgencies')}</h3>
                             <p className="text-muted-foreground text-sm flex-1 mb-8">
-                                Compliance frameworks, classified handling protocols, and multi-layered defense strategies for national infrastructure.
+                                {t('governmentAgenciesDesc')}
                             </p>
                             <Link href="/resources" className="text-primary font-semibold text-sm hover:underline mt-auto">
-                                Agency Login &rarr;
+                                {t('agencyLogin')} &rarr;
                             </Link>
                         </div>
                     </div>
@@ -193,20 +196,20 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                 
                 <div className="relative z-10 max-w-3xl mx-auto">
                 <h2 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl drop-shadow-md">
-                    Ready to secure your digital life?
+                    {t('readyToSecure')}
                 </h2>
                 <p className="mt-6 text-xl text-gray-100 max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
-                    Join millions of other citizens who have taken the pledge to practice safe online behavior.
+                    {t('joinMillions')}
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href="/signup" aria-label="Create a free account">
                     <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                        Create Free Account
+                        {tCommon('createFreeAccount')}
                     </Button>
                     </Link>
                     <Link href="/courses" aria-label="Explore cybersecurity resources">
                     <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
-                        Explore Courses
+                        {tCommon('exploreCourses')}
                     </Button>
                     </Link>
                 </div>

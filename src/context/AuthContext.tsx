@@ -32,6 +32,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data, status } = await apiFetch<User>('/api/auth/me/');
         if (status === 200 && data) {
             setUser(data);
+            
+            // Sync backend preferred language to cookie if cookie doesn't exist
+            if (data.preferred_language && typeof document !== 'undefined') {
+                const hasCookie = document.cookie.includes('NEXT_LOCALE=');
+                if (!hasCookie) {
+                    document.cookie = `NEXT_LOCALE=${data.preferred_language}; path=/; maxAge=${60 * 60 * 24 * 365}; SameSite=Lax`;
+                    window.location.reload();
+                }
+            }
+            
             setIsLoading(false);
             return data;
         } else {

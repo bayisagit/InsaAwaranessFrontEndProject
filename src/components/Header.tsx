@@ -7,6 +7,8 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConfirmModal } from './ConfirmModal';
 import { ThemeToggle } from './theme/ThemeToggle';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { useTranslations } from 'next-intl';
 
 interface HeaderProps {
  rightAction?: React.ReactNode;
@@ -165,6 +167,8 @@ const MobileSection: React.FC<{ label: string; links: { label: string; href: str
 
 export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  const { user, isAuthenticated, logout } = useAuth();
+ const t = useTranslations('nav');
+ const tCommon = useTranslations('common');
  const pathname = usePathname();
  const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -196,45 +200,46 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  </div>
 
  <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
- <NavLink href="/" exact>Home</NavLink>
- <NavLink href="/about">About</NavLink>
- <NavLink href="/contact">Contact</NavLink>
- <NavLink href="/courses">Courses</NavLink>
- <NavLink href="/resources">Resources</NavLink>
- <NavDropdown label="Awareness" links={[
- { label: 'All Topics', href: '/awareness' },
- { label: 'Phishing Protection', href: '/awareness/phishing-protection' },
- { label: 'Password Hygiene', href: '/awareness/password-hygiene' },
- { label: 'Secure Browsing', href: '/awareness/secure-browsing' },
- { label: 'Data Privacy', href: '/awareness/data-privacy' },
- { label: 'Incident Response', href: '/awareness/incident-response' },
- { label: 'Cyber Hygiene Basics', href: '/awareness/cyber-hygiene-basics' },
+ <NavLink href="/" exact>{t('home')}</NavLink>
+ <NavLink href="/about">{t('about')}</NavLink>
+ <NavLink href="/contact">{t('contact')}</NavLink>
+ <NavLink href="/courses">{t('courses')}</NavLink>
+ <NavLink href="/resources">{t('resources')}</NavLink>
+ <NavDropdown label={t('awareness')} links={[
+ { label: t('allTopics'), href: '/awareness' },
+ { label: t('phishingProtection'), href: '/awareness/phishing-protection' },
+ { label: t('passwordHygiene'), href: '/awareness/password-hygiene' },
+ { label: t('secureBrowsing'), href: '/awareness/secure-browsing' },
+ { label: t('dataPrivacy'), href: '/awareness/data-privacy' },
+ { label: t('incidentResponse'), href: '/awareness/incident-response' },
+ { label: t('cyberHygieneBasics'), href: '/awareness/cyber-hygiene-basics' },
  ]} active={['/awareness'].some(href => pathname?.startsWith(href))} />
- <NavDropdown label="Tools" links={[
- { label: 'Tools Hub', href: '/tools' },
- { label: 'Alerts', href: '/alerts' },
- { label: 'Campaigns', href: '/campaigns' },
+ <NavDropdown label={t('tools')} links={[
+ { label: t('toolsHub'), href: '/tools' },
+ { label: t('alerts'), href: '/alerts' },
+ { label: t('campaigns'), href: '/campaigns' },
  ]} active={['/tools', '/alerts', '/campaigns'].some(href => pathname?.startsWith(href))} />
  </nav>
 
  <div className="flex items-center gap-3">
+ <LanguageSwitcher />
  <ThemeToggle />
  <div className="hidden md:flex items-center gap-4">
  {rightAction || (
  isAuthenticated ? (
  <div className="flex items-center gap-4">
- <Link href={isAnyAdmin ? "/admin" : "/dashboard"} className="text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors px-4 py-1.5 rounded-full">Dashboard</Link>
+ <Link href={isAnyAdmin ? "/admin" : "/dashboard"} className="text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors px-4 py-1.5 rounded-full">{t('dashboard')}</Link>
  <button onClick={handleLogout} className="text-sm font-medium text-primary hover:transition-colors border border-primary px-4 py-1.5 rounded-full cursor-pointer hover:bg-primary/10 transition-colors">
- Logout
+ {t('logout')}
  </button>
  </div>
  ) : (
  <>
  <Link href="/apply" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors px-4 py-1.5 border border-border hover:border-primary rounded-full">
- Apply
+ {t('apply')}
  </Link>
  <Link href="/login" className="text-sm font-medium bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full transition-colors shadow-sm shadow-black/5 dark:shadow-none">
- Sign In
+ {t('signIn')}
  </Link>
  </>
  )
@@ -279,33 +284,33 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  >
  <div className="py-4">
  <div className="space-y-1">
- <MobileNavItem href="/" onClick={closeMobile}>Home</MobileNavItem>
- <MobileNavItem href="/about" onClick={closeMobile}>About</MobileNavItem>
- <MobileNavItem href="/contact" onClick={closeMobile}>Contact</MobileNavItem>
- <MobileNavItem href="/courses" onClick={closeMobile}>Courses</MobileNavItem>
- <MobileNavItem href="/resources" onClick={closeMobile}>Resources</MobileNavItem>
- <MobileNavItem href="/awareness" onClick={closeMobile}>Awareness</MobileNavItem>
- <MobileNavItem href="/tools" onClick={closeMobile}>Tools</MobileNavItem>
- <MobileNavItem href="/alerts" onClick={closeMobile}>Alerts</MobileNavItem>
- <MobileNavItem href="/campaigns" onClick={closeMobile}>Campaigns</MobileNavItem>
+ <MobileNavItem href="/" onClick={closeMobile}>{t('home')}</MobileNavItem>
+ <MobileNavItem href="/about" onClick={closeMobile}>{t('about')}</MobileNavItem>
+ <MobileNavItem href="/contact" onClick={closeMobile}>{t('contact')}</MobileNavItem>
+ <MobileNavItem href="/courses" onClick={closeMobile}>{t('courses')}</MobileNavItem>
+ <MobileNavItem href="/resources" onClick={closeMobile}>{t('resources')}</MobileNavItem>
+ <MobileNavItem href="/awareness" onClick={closeMobile}>{t('awareness')}</MobileNavItem>
+ <MobileNavItem href="/tools" onClick={closeMobile}>{t('tools')}</MobileNavItem>
+ <MobileNavItem href="/alerts" onClick={closeMobile}>{t('alerts')}</MobileNavItem>
+ <MobileNavItem href="/campaigns" onClick={closeMobile}>{t('campaigns')}</MobileNavItem>
  </div>
  </div>
 
  <div className="border-t border-border mt-4 pt-4 px-6 space-y-3">
  {isAuthenticated ? (
  <>
- <Link href={isAnyAdmin ? "/admin" : "/dashboard"} onClick={closeMobile} className="block text-center text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors px-5 py-2.5 rounded-full mb-3 cursor-pointer">Dashboard</Link>
+ <Link href={isAnyAdmin ? "/admin" : "/dashboard"} onClick={closeMobile} className="block text-center text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors px-5 py-2.5 rounded-full mb-3 cursor-pointer">{t('dashboard')}</Link>
  <button onClick={() => { closeMobile(); handleLogout(); }} className="w-full text-sm font-medium text-primary border border-primary px-4 py-2 rounded-full hover:bg-primary/10 transition-colors cursor-pointer">
- Logout
+ {t('logout')}
  </button>
  </>
  ) : (
  <>
  <Link href="/apply" onClick={closeMobile} className="block text-center text-sm font-medium text-foreground hover:text-primary transition-colors duration-200 transition-colors px-5 py-2.5 border border-border hover:border-primary rounded-full mb-3 cursor-pointer">
- Apply
+ {t('apply')}
  </Link>
  <Link href="/login" onClick={closeMobile} className="block text-center text-sm font-medium bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full transition-colors shadow-sm shadow-black/5 dark:shadow-none cursor-pointer">
- Sign In
+ {t('signIn')}
  </Link>
  </>
  )}
@@ -319,9 +324,9 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  isOpen={isLogoutModalOpen}
  onClose={() => setIsLogoutModalOpen(false)}
  onConfirm={confirmLogout}
- title="Log Out"
- message="Are you sure you want to log out of your account?"
- confirmText="Log Out"
+ title={t('logout')}
+ message={tCommon('logoutConfirm')}
+ confirmText={t('logout')}
  variant="danger"
  />
  </header>

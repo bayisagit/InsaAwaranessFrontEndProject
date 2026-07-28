@@ -9,6 +9,7 @@ import { registerUser, loginWithGoogle, setTokens, resendVerificationEmail } fro
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useTranslations } from 'next-intl';
 
 const LANGUAGE_OPTIONS = [
     { value: 'en', label: 'English' },
@@ -62,6 +63,7 @@ export default function SignupPage() {
     const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
     const { checkAuth } = useAuth();
+    const t = useTranslations('auth');
 
     const handleSocialLogin = (data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }) => {
         setTokens({ access: data.access, refresh: data.refresh });
@@ -150,7 +152,7 @@ export default function SignupPage() {
         }
 
         setRegisteredEmail(email.trim());
-        toast.success('Account created! Check your email to verify.');
+        toast.success(t('emailRegistered'));
     };
 
     const handleResend = async () => {
@@ -172,9 +174,9 @@ export default function SignupPage() {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="text-2xl font-bold text-foreground mb-3">Verify Your Email</h1>
+                    <h1 className="text-2xl font-bold text-foreground mb-3">{t('verifyEmail')}</h1>
                     <p className="text-sm text-muted-foreground mb-2">
-                        We&apos;ve sent a verification email to:
+                        {t('verifyEmailSent')}
                     </p>
                     <p className="text-sm font-bold text-foreground bg-muted px-4 py-2 rounded-xl mb-6 border border-border">
                         {registeredEmail}
@@ -187,13 +189,13 @@ export default function SignupPage() {
                         disabled={isResending}
                         className="text-sm font-semibold text-primary hover:underline disabled:opacity-50 cursor-pointer transition-colors duration-200"
                     >
-                        {isResending ? 'Resending...' : 'Resend verification email'}
+                        {isResending ? t('resending') : t('resendVerification')}
                     </button>
                     <div className="mt-8 pt-6 border-t border-border">
                         <p className="text-sm text-muted-foreground">
-                            Already verified?{' '}
+                            {t('alreadyVerified')}{' '}
                             <Link href="/login" className="font-semibold text-primary hover:underline">
-                                Sign in
+                                {t('signIn')}
                             </Link>
                         </p>
                     </div>
@@ -247,8 +249,8 @@ export default function SignupPage() {
             </div>
             <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-card py-12 overflow-y-auto">
                 <div className="max-w-md w-full mx-auto">
-                    <h2 className="text-3xl font-bold text-foreground mb-2">Create your account</h2>
-                    <p className="text-muted-foreground text-sm mb-8">Enter your details to access the secure portal.</p>
+                    <h2 className="text-3xl font-bold text-foreground mb-2">{t('createYourAccount')}</h2>
+                    <p className="text-muted-foreground text-sm mb-8">{t('enterDetails')}</p>
 
                     {/* Social Signup Buttons */}
                     <div className="space-y-3 mb-6">
@@ -267,7 +269,7 @@ export default function SignupPage() {
                                 </svg>
                             }
                         >
-                            Sign up with Google
+                            {t('signUpWithGoogle')}
                         </Button>
                         <Button
                             variant="social"
@@ -281,7 +283,7 @@ export default function SignupPage() {
                                 </svg>
                             }
                         >
-                            Sign up with GitHub
+                            {t('signUpWithGitHub')}
                         </Button>
                     </div>
 
@@ -291,7 +293,7 @@ export default function SignupPage() {
                             <div className="w-full border-t border-border" />
                         </div>
                         <div className="relative flex justify-center">
-                            <span className="bg-card px-3 text-xs text-muted-foreground font-medium">OR</span>
+                            <span className="bg-card px-3 text-xs text-muted-foreground font-medium">{t('or')}</span>
                         </div>
                     </div>
 
@@ -305,12 +307,12 @@ export default function SignupPage() {
                             </div>
                         )}
                         <div className="grid grid-cols-2 gap-4">
-                            <Input label="First Name" placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={isLoading} autoComplete="given-name" />
-                            <Input label="Last Name" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={isLoading} autoComplete="family-name" />
+                            <Input label={t('firstName')} placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={isLoading} autoComplete="given-name" />
+                            <Input label={t('lastName')} placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={isLoading} autoComplete="family-name" />
                         </div>
-                        <Input label="Email Address" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isLoading} error={fieldErrors.email} autoComplete="email" />
+                        <Input label={t('emailAddress')} type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isLoading} error={fieldErrors.email} autoComplete="email" />
                         <div className="w-full">
-                            <label className="block text-sm font-medium text-foreground mb-1">Preferred Language</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">{t('preferredLanguage')}</label>
                             <select value={preferredLanguage} onChange={(e) => setPreferredLanguage(e.target.value)} disabled={isLoading} className="block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card disabled:bg-muted disabled:text-muted-foreground">
                                 {LANGUAGE_OPTIONS.map(o => (
                                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -319,17 +321,17 @@ export default function SignupPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <Input label="Password" name="password" type="password" placeholder="Create a strong password" value={password} onChange={(e) => setPassword(e.target.value)} required showPasswordToggle error={fieldErrors.password} autoComplete="new-password" />
+                                <Input label={t('password')} name="password" type="password" placeholder="Create a strong password" value={password} onChange={(e) => setPassword(e.target.value)} required showPasswordToggle error={fieldErrors.password} autoComplete="new-password" />
                                 {password && (
                                     <div className="flex items-center gap-2 mt-1">
                                         <div className="flex-1 h-1.5 bg-muted/50 rounded-full overflow-hidden">
                                             <div className={`h-full ${passStrength.color} ${passStrength.w} transition-all duration-300`}></div>
                                         </div>
-                                        <span className={`text-[10px] font-bold ${passStrength.color.replace('bg-', 'text-')}`}>{passStrength.label}</span>
+                                        <span className={`text-[10px] font-bold ${passStrength.color.replace('bg-', 'text-')}`}>{t(`passwordStrength.${passStrength.label.toLowerCase()}`)}</span>
                                     </div>
                                 )}
                             </div>
-                            <Input label="Confirm Password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required showPasswordToggle disabled={isLoading} autoComplete="new-password" />
+                            <Input label={t('confirmPassword')} type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required showPasswordToggle disabled={isLoading} autoComplete="new-password" />
                         </div>
                         <div className="bg-muted border border-border p-4 rounded-xl">
                             <h5 className="text-xs font-semibold text-foreground mb-3 flex items-center gap-1">
@@ -363,17 +365,18 @@ export default function SignupPage() {
                                 <input id="terms" type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} required disabled={isLoading} className="w-4 h-4 text-primary bg-card border-border rounded focus:ring-primary focus:ring-2" />
                             </div>
                             <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed">
-                                I affirm that the information is accurate and agree to the{' '}
-                                <Link href="/about" className="font-semibold text-primary hover:underline">Terms of Service</Link>.
+                                {t.rich('termsAndService', {
+                                    terms: (chunks) => <Link href="/about" className="font-semibold text-primary hover:underline">{chunks}</Link>
+                                })}
                             </label>
                         </div>
                         <Button type="submit" fullWidth className="mt-6" loading={isLoading}>
-                            Create Account
+                            {t('createAccount')}
                         </Button>
                     </form>
                     <p className="mt-8 text-center text-sm text-muted-foreground">
-                        Already have a CyberSafe ID?{' '}
-                        <Link href="/login" className="font-semibold text-primary hover:underline">Sign in securely</Link>
+                        {t('alreadyHaveAccount')}{' '}
+                        <Link href="/login" className="font-semibold text-primary hover:underline">{t('signInSecure')}</Link>
                     </p>
                 </div>
             </div>

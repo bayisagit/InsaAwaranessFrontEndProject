@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { useTranslations } from 'next-intl';
 
 import {
   Sidebar,
@@ -273,6 +274,8 @@ const sidebarConfig: SidebarConfig = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const t = useTranslations('sidebar');
+  const tCommon = useTranslations('common');
   const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
   
   const handleLogout = () => setIsLogoutModalOpen(true);
@@ -281,6 +284,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setIsLogoutModalOpen(false);
   };
   
+  const toCamel = (str: string) => str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+    return index === 0 ? word.toLowerCase() : word.toUpperCase();
+  }).replace(/\s+/g, '');
+
   // Default to empty array if role is not recognized or user is loading
   const userRole = user?.role || "";
   const navGroups = sidebarConfig[userRole] || [];
@@ -320,7 +327,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {navGroups.map((group) => (
           <SidebarGroup key={group.title}>
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:opacity-0">{group.title}</SidebarGroupLabel>
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:opacity-0">{(t as any)(toCamel(group.title)) || group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
@@ -335,9 +342,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
-                          <CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} isActive={isActive} />}>
+                          <CollapsibleTrigger render={<SidebarMenuButton tooltip={(t as any)(toCamel(item.title)) || item.title} isActive={isActive} />}>
                             <item.icon className="size-4 shrink-0" />
-                            <span>{item.title}</span>
+                            <span>{(t as any)(toCamel(item.title)) || item.title}</span>
                             <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="group-data-[collapsible=icon]:hidden">
@@ -345,7 +352,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               {item.subItems!.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
                                   <SidebarMenuSubButton isActive={pathname === subItem.url} render={<Link href={subItem.url} />}>
-                                    <span>{subItem.title}</span>
+                                    <span>{(t as any)(toCamel(subItem.title)) || subItem.title}</span>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}
@@ -359,9 +366,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   // No sub-items
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton isActive={isActive} tooltip={item.title} render={<Link href={item.url} />}>
+                      <SidebarMenuButton isActive={isActive} tooltip={(t as any)(toCamel(item.title)) || item.title} render={<Link href={item.url} />}>
                         <item.icon className="size-4 shrink-0" />
-                        <span>{item.title}</span>
+                        <span>{(t as any)(toCamel(item.title)) || item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
@@ -377,21 +384,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Settings" render={<Link href="/profile" />}>
+            <SidebarMenuButton tooltip={t('settings')} render={<Link href="/profile" />}>
               <Settings className="size-4 shrink-0" />
-              <span>Settings</span>
+              <span>{t('settings')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Notifications" render={<Link href="/notifications" />}>
+            <SidebarMenuButton tooltip={t('notifications')} render={<Link href="/notifications" />}>
               <Bell className="size-4 shrink-0" />
-              <span>Notifications</span>
+              <span>{t('notifications')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} tooltip="Log out" className="flex items-center gap-3 w-full text-red-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors duration-200">
+            <SidebarMenuButton onClick={handleLogout} tooltip={t('logout')} className="flex items-center gap-3 w-full text-red-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors duration-200">
               <LogOut className="size-4 shrink-0" />
-              <span>Log out</span>
+              <span>{t('logout')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -402,9 +409,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
         onConfirm={confirmLogout}
-        title="Log Out"
-        message="Are you sure you want to log out of your account?"
-        confirmText="Log Out"
+        title={t('logout')}
+        message={tCommon('logoutConfirm')}
+        confirmText={t('logout')}
         variant="danger"
       />
     </Sidebar>

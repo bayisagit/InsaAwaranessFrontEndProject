@@ -3,8 +3,11 @@ import { hasLocale } from 'next-intl';
 import { localeCodes, defaultLocale } from '@/config/locales';
 import { mergeMessages } from '@/lib/i18n-utils';
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  let locale = await requestLocale;
+import { cookies } from 'next/headers';
+
+export default getRequestConfig(async () => {
+  const cookieStore = await cookies();
+  let locale = cookieStore.get('NEXT_LOCALE')?.value;
 
   if (!locale || !hasLocale(localeCodes, locale)) {
     locale = defaultLocale;

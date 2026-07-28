@@ -9,6 +9,7 @@ import { loginUser, loginWithGoogle, setTokens } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useTranslations } from 'next-intl';
 
 function handlePostLogin(data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }, router: ReturnType<typeof useRouter>, checkAuth: () => Promise<any>) {
     setTokens({ access: data.access, refresh: data.refresh });
@@ -41,6 +42,7 @@ export default function LoginPage() {
     const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
     const { checkAuth } = useAuth();
+    const t = useTranslations('auth');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -105,9 +107,9 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
+                <h1 className="text-3xl font-bold text-foreground mb-2">{t('welcomeBack')}</h1>
                 <p className="text-sm font-medium text-muted-foreground mb-8 max-w-xs mx-auto">
-                    Secure Access To The National Cyber Resilience Portal
+                    {t('securePortal')}
                 </p>
 
                 {/* Social Login Buttons */}
@@ -127,7 +129,7 @@ export default function LoginPage() {
                             </svg>
                         }
                     >
-                        Continue with Google
+                        {t('continueWithGoogle')}
                     </Button>
                     <Button
                         variant="social"
@@ -141,7 +143,7 @@ export default function LoginPage() {
                             </svg>
                         }
                     >
-                        Continue with GitHub
+                        {t('continueWithGitHub')}
                     </Button>
                 </div>
 
@@ -151,7 +153,7 @@ export default function LoginPage() {
                         <div className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center">
-                        <span className="bg-card px-3 text-xs text-muted-foreground font-medium">OR</span>
+                        <span className="bg-card px-3 text-xs text-muted-foreground font-medium">{t('or')}</span>
                     </div>
                 </div>
 
@@ -166,7 +168,7 @@ export default function LoginPage() {
                     )}
 
                     <Input
-                        label="Email Address"
+                        label={t('emailAddress')}
                         type="email"
                         placeholder="example@email.com"
                         value={email}
@@ -177,7 +179,7 @@ export default function LoginPage() {
                     />
 
                     <Input
-                        label="Password"
+                        label={t('password')}
                         type="password"
                         placeholder="••••••••"
                         value={password}
@@ -195,19 +197,19 @@ export default function LoginPage() {
 
                     <div className="flex justify-end">
                         <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline">
-                            Forgot Password?
+                            {t('forgotPassword')}
                         </Link>
                     </div>
 
                     <Button variant="primary" type="submit" fullWidth className="py-3 rounded-xl" loading={isLoading}>
-                        Sign in
+                        {t('signIn')}
                     </Button>
                 </form>
 
                 <p className="mt-8 text-sm text-muted-foreground">
-                    Don&apos;t have an account?{' '}
+                    {t('dontHaveAccount')}{' '}
                     <Link href="/signup" className="font-semibold text-primary hover:underline">
-                        Sign up
+                        {t('signUp')}
                     </Link>
                 </p>
             </div>

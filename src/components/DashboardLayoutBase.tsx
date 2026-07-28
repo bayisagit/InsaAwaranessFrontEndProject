@@ -19,14 +19,17 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { useTranslations } from 'next-intl';
 
 interface DashboardLayoutBaseProps {
     children: React.ReactNode;
     searchPlaceholder?: string;
 }
 
-export function DashboardLayoutBase({ children, searchPlaceholder = "Search across platform..." }: DashboardLayoutBaseProps) {
+export function DashboardLayoutBase({ children }: DashboardLayoutBaseProps) {
     const { user, logout } = useAuth();
+    const t = useTranslations('dashboard');
+    const tCommon = useTranslations('common');
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
     const handleLogout = () => setIsLogoutModalOpen(true);
@@ -41,11 +44,10 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
             <SidebarInset className="flex flex-col flex-1 overflow-hidden h-screen bg-muted">
                 <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-card px-4 shadow-sm shadow-black/5 dark:shadow-none z-10 sticky top-0">
                     <SidebarTrigger className="-ml-1" />
-                    
                     <Link href="/" className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground ml-2">
                         <Button variant="ghost" size="sm" className="flex items-center gap-2">
                             <Globe className="h-4 w-4" />
-                            <span>Back to Home</span>
+                            <span>{t('backToHome')}</span>
                         </Button>
                     </Link>
                     
@@ -55,7 +57,7 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 type="search"
-                                placeholder={searchPlaceholder}
+                                placeholder={t('searchDashboard')}
                                 className="w-full bg-gray-50/50 pl-9 md:w-[300px] lg:w-[400px] focus-visible:ring-1 focus-visible:ring-primary"
                             />
                         </div>
@@ -97,20 +99,20 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
                                         <DropdownMenuItem>
                                             <Link href="/profile" className="flex flex-row items-center w-full cursor-pointer">
                                                 <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                                                <span>Profile</span>
+                                                <span>{t('profile')}</span>
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             <Link href="/profile" className="flex flex-row items-center w-full cursor-pointer">
                                                 <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
-                                                <span>Settings</span>
+                                                <span>{t('settings')}</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={handleLogout} className="flex flex-row items-center w-full text-red-500 focus:text-red-500 dark:focus:text-red-400 focus:bg-red-500/10 cursor-pointer">
                                         <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Log out</span>
+                                        <span>{t('logOut')}</span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -127,9 +129,9 @@ export function DashboardLayoutBase({ children, searchPlaceholder = "Search acro
                 isOpen={isLogoutModalOpen}
                 onClose={() => setIsLogoutModalOpen(false)}
                 onConfirm={confirmLogout}
-                title="Log Out"
-                message="Are you sure you want to log out of your account?"
-                confirmText="Log Out"
+                title={t('logOut')}
+                message={tCommon('logoutConfirm')}
+                confirmText={t('logOut')}
                 variant="danger"
             />
         </SidebarProvider>

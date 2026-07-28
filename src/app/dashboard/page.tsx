@@ -181,6 +181,7 @@ export default function DashboardPage() {
  };
 
  return (
+ <>
  <div className="w-full pb-10">
  <div className="max-w-7xl mx-auto">
  <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
@@ -236,7 +237,8 @@ export default function DashboardPage() {
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
  {/* Left Column (Main Content) */}
  <div className="lg:col-span-2 space-y-8">
- <AnimatedSection delay={0.1}><div className="grid grid-cols-3 gap-4">
+ <AnimatedSection delay={0.1}>
+ <div className="grid grid-cols-3 gap-4">
  <StatCard
  icon={
  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -268,9 +270,11 @@ export default function DashboardPage() {
  color="purple"
  />
  </div>
+ </AnimatedSection>
 
  {/* Stats Row */}
- <AnimatedSection delay={0.2}><div className="flex justify-between items-center mb-4">
+ <AnimatedSection delay={0.2}>
+ <div className="flex justify-between items-center mb-4">
  <h2 className="text-lg font-bold text-foreground">Resuming Courses</h2>
  <Link href="/courses/enrolled" className="text-xs font-bold text-primary hover:underline">See all enrolled &rarr;</Link>
  </div>
@@ -317,10 +321,12 @@ export default function DashboardPage() {
  />
  </div>
  )}
- </div></AnimatedSection>
+ </div>
+ </AnimatedSection>
 
  {/* Recommended Courses */}
- <AnimatedSection delay={0.3}><div>
+ <AnimatedSection delay={0.3}>
+ <div>
  <div className="flex justify-between items-center mb-4">
  <div className="flex items-center gap-2">
  <h2 className="text-lg font-bold text-foreground border-l-4 border-orange-500 pl-3">Top Recommendations</h2>
@@ -380,12 +386,13 @@ export default function DashboardPage() {
  )}
  </div>
  </div>
- </div></AnimatedSection>
+ </AnimatedSection>
+</div>
 
  {/* Right Column (Sidebar) */}
  <div className="lg:col-span-1 space-y-8">
  {/* Quick Actions */}
- <AnimatedSection delay={0.4}><div>
+ <AnimatedSection delay={0.4}>
  <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">Quick Actions</h2>
  <div className="space-y-3">
  <Link href="/tools/phishing" className="bg-card border text-left border-border p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm shadow-black/5 dark:shadow-none cursor-pointer transition-all group w-full cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
@@ -433,7 +440,7 @@ export default function DashboardPage() {
  </svg>
  </div>
  </div>
- </div></AnimatedSection>
+ </AnimatedSection>
 
  {/* Recent Requests Status */}
  {myRequests.length > 0 && (
@@ -503,6 +510,7 @@ export default function DashboardPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
  </svg>
  </Link>
+ </div>
  </div>
  </div>
  </div>
@@ -589,6 +597,6 @@ export default function DashboardPage() {
  </div>
  </div>
  </Modal>
- </div>
+ </>
  );
 }

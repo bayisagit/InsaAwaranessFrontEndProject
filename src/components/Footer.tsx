@@ -1,7 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export const Footer: React.FC = () => {
+    const t = useTranslations('footer');
     return (
         <footer className="w-full bg-card border-t border-border">
             <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -11,7 +13,7 @@ export const Footer: React.FC = () => {
                         <span className="font-bold text-foreground">INSA Cyber Awareness</span>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                        A government initiative dedicated to empowering citizens with the knowledge and tools to stay safe online. Together, we build a resilient digital nation.
+                        {t('description')}
                     </p>
                     <div className="flex gap-4 mt-6">
                         <a href="#" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors duration-200 transition-all duration-200">
@@ -33,40 +35,40 @@ export const Footer: React.FC = () => {
                 </div>
 
                 <div>
-                    <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Platform</h4>
+                    <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">{t('platform')}</h4>
                     <ul className="space-y-3 text-sm text-muted-foreground">
-                        <li><Link href="/" className="hover:text-primary">Home</Link></li>
-                        <li><Link href="/resources" className="hover:text-primary">Training Resources</Link></li>
-                        <li><Link href="/resources" className="hover:text-primary">Resources</Link></li>
-                        <li><Link href="/alerts" className="hover:text-primary">News & Alerts</Link></li>
+                        <li><Link href="/" className="hover:text-primary">{t('home')}</Link></li>
+                        <li><Link href="/resources" className="hover:text-primary">{t('trainingResources')}</Link></li>
+                        <li><Link href="/resources" className="hover:text-primary">{t('resources')}</Link></li>
+                        <li><Link href="/alerts" className="hover:text-primary">{t('newsAndAlerts')}</Link></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Support</h4>
+                    <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">{t('support')}</h4>
                     <ul className="space-y-3 text-sm text-muted-foreground">
-                        <li><Link href="/tools" className="hover:text-primary">Tools</Link></li>
-                        <li><Link href="/contact" className="hover:text-primary">Contact Us</Link></li>
-                        <li><Link href="/contact" className="hover:text-primary">Report an Incident</Link></li>
+                        <li><Link href="/tools" className="hover:text-primary">{t('tools')}</Link></li>
+                        <li><Link href="/contact" className="hover:text-primary">{t('contactUs')}</Link></li>
+                        <li><Link href="/contact" className="hover:text-primary">{t('reportIncident')}</Link></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Legal</h4>
+                    <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">{t('legal')}</h4>
                     <ul className="space-y-3 text-sm text-muted-foreground">
-                        <li><Link href="/about" className="hover:text-primary">Privacy Policy</Link></li>
-                        <li><Link href="/about" className="hover:text-primary">Terms of Service</Link></li>
-                        <li><Link href="/about" className="hover:text-primary">Accessibility</Link></li>
+                        <li><Link href="/about" className="hover:text-primary">{t('privacyPolicy')}</Link></li>
+                        <li><Link href="/about" className="hover:text-primary">{t('termsOfService')}</Link></li>
+                        <li><Link href="/about" className="hover:text-primary">{t('accessibility')}</Link></li>
                     </ul>
                 </div>
             </div>
 
             <div className="border-t border-border mx-6 lg:mx-12 py-6 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
-                <p>© 2025 INSA Cyber Awareness. All rights reserved. Official Government Website.</p>
+                <p>{t('copyright')}</p>
                 <div className="mt-4 md:mt-0">
                     <span className="text-green-500 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block"></span>
-                        System Operational
+                        {t('systemOperational')}
                     </span>
                 </div>
             </div>
