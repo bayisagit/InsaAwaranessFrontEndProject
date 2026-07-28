@@ -196,10 +196,10 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                 
                 <div className="relative z-10 max-w-3xl mx-auto">
                 <h2 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl drop-shadow-md">
-                    {t('readyToSecure')}
+                    {t('ctaReadyTitle')}
                 </h2>
                 <p className="mt-6 text-xl text-gray-100 max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
-                    {t('joinMillions')}
+                    {t('ctaReadyDesc')}
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href="/signup" aria-label="Create a free account">

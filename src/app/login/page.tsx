@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
@@ -100,11 +101,7 @@ export default function LoginPage() {
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
             <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                 <div className="flex justify-center mb-6">
-                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center">
-                            <div className="w-2 h-2 bg-primary rounded-full" />
-                        </div>
-                    </div>
+                    <Image src="/loginlogo.png" alt="Login Logo" width={80} height={80} className="object-contain" />
                 </div>
 
                 <h1 className="text-3xl font-bold text-foreground mb-2">{t('welcomeBack')}</h1>
