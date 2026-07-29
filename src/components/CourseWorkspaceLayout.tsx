@@ -230,18 +230,16 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     
                     <div className="flex items-center gap-3 ml-auto">
                         <DropdownMenu>
-                            <DropdownMenuTrigger>
-                                <Button variant="ghost" className="relative h-9 w-9 rounded-full ml-1">
-                                    <Avatar className="h-9 w-9 border border-border">
-                                        {user?.profile_photo ? (
-                                            <AvatarImage src={user.profile_photo} alt="Profile" className="h-full w-full object-cover rounded-full" />
-                                        ) : null}
-                                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
-                                            {user?.first_name?.[0] || 'U'}
-                                            {user?.last_name?.[0] || ''}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </Button>
+                            <DropdownMenuTrigger className="relative h-9 w-9 rounded-full ml-1 outline-none hover:opacity-80 transition-opacity">
+                                <Avatar className="h-9 w-9 border border-border">
+                                    {user?.profile_photo ? (
+                                        <AvatarImage src={user.profile_photo} alt="Profile" className="h-full w-full object-cover rounded-full" />
+                                    ) : null}
+                                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+                                        {user?.first_name?.[0] || 'U'}
+                                        {user?.last_name?.[0] || ''}
+                                    </AvatarFallback>
+                                </Avatar>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end">
                                 <DropdownMenuGroup>

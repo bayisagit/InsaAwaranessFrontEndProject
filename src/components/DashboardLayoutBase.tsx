@@ -102,12 +102,6 @@ export function DashboardLayoutBase({ children }: DashboardLayoutBaseProps) {
                                                 <span>{t('profile')}</span>
                                             </Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <Link href="/profile" className="flex flex-row items-center w-full cursor-pointer">
-                                                <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
-                                                <span>{t('settings')}</span>
-                                            </Link>
-                                        </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={handleLogout} className="flex flex-row items-center w-full text-red-500 focus:text-red-500 dark:focus:text-red-400 focus:bg-red-500/10 cursor-pointer">

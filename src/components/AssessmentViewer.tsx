@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
- Assessment, AssessmentQuestion, AssessmentAttempt, AssessmentAnswer,
- getAssessment, getAssessments,
- startAssessment, resumeAssessment, saveAssessmentProgress, submitAssessment, getAssessmentAttempts,
+  Assessment, AssessmentQuestion, AssessmentAttempt, AssessmentAnswer,
+  getAssessment, getAssessments,
+  startAssessment, resumeAssessment, saveAssessmentProgress, submitAssessment, getAssessmentAttempts, apiFetch,
 } from '@/lib/api';
 import { Button } from '@/components/Button';
 import { LinkifyText } from '@/components/LinkifyText';
+import Link from 'next/link';
 
 // ─── Props ──────────────────────────────────────────────────────────────────────
 // Accepts either a direct assessmentId or a lessonId / certificateExamId to look up
@@ -58,49 +59,69 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  const [submitError, setSubmitError] = useState('');
  const [result, setResult] = useState<AssessmentAttempt | null>(null);
  const [history, setHistory] = useState<AssessmentAttempt[]>([]);
- const [showHistory, setShowHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(false);
 
  const assessmentIdRef = useRef<string | null>(null);
  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
- // ── 1. Load assessment ────────────────────────────────────────────────────────
- const loadAssessment = useCallback(async () => {
- setIsLoading(true); setLoadError('');
- let id = propAssessmentId;
+  // ── 1. Load assessment ────────────────────────────────────────────────────────
+  const loadAssessment = useCallback(async () => {
+  setIsLoading(true); setLoadError('');
+  let id = propAssessmentId;
 
- if (!id && lessonId) {
- const { data } = await getAssessments({ lesson: lessonId, page_size: 1 });
- id = data?.results?.[0]?.id;
- } else if (!id && certificateExamId) {
- id = certificateExamId;
- }
+  if (!id && lessonId) {
+  const { data } = await getAssessments({ lesson: lessonId, page_size: 1 });
+  id = data?.results?.[0]?.id;
+  } else if (!id && certificateExamId) {
+  id = certificateExamId;
+  }
 
- if (!id) { setLoadError('No assessment found for this lesson.'); setIsLoading(false); return; }
- assessmentIdRef.current = id;
+  if (!id) { setLoadError('No assessment found for this lesson.'); setIsLoading(false); return; }
+  assessmentIdRef.current = id;
 
- const { data: aData, error: aErr } = await getAssessment(id);
- if (aErr || !aData) { setLoadError(aErr || 'Failed to load assessment.'); setIsLoading(false); return; }
- setAssessment(aData);
+  const { data: aData, error: aErr } = await getAssessment(id);
+  if (aErr || !aData) { setLoadError(aErr || 'Failed to load assessment.'); setIsLoading(false); return; }
+  setAssessment(aData);
 
- // 2. Resume or Start
- const { data: resumeData, status: resumeStatus } = await resumeAssessment(id);
- if (resumeStatus === 200 && resumeData) {
- setAttempt(resumeData);
- const hydrated = hydrateAnswers(resumeData, aData.questions);
- setAnswers(hydrated);
- setCurrentIndex(resumeData.current_question_index ?? 0);
- } else {
- const { data: startData, error: startErr } = await startAssessment(id);
- if (startErr || !startData) { setLoadError(startErr || 'Failed to start assessment.'); setIsLoading(false); return; }
- setAttempt(startData);
- }
+  // 2. Load history first to check for completed attempts
+  const { data: hist } = await getAssessmentAttempts(id);
+  const attempts = Array.isArray(hist) ? hist : [];
+  setHistory(attempts);
 
- // 3. Load history
- const { data: hist } = await getAssessmentAttempts(id);
- setHistory(Array.isArray(hist) ? hist : []);
+  const lastGraded = attempts.find(h => h.status === 'graded' || h.status === 'needs_review');
 
- setIsLoading(false);
- }, [propAssessmentId, lessonId, certificateExamId]);
+  if (lastGraded) {
+  // Show saved result instead of starting a new attempt
+  setResult(lastGraded);
+  if (!lastGraded.answers?.length) {
+  // Fetch the full attempt detail with answers if not included
+  const { data: fullAttempt } = await apiFetch(`/api/v1/assessments/${id}/attempts/`);
+  if (fullAttempt) {
+  const arr = Array.isArray(fullAttempt) ? fullAttempt : [];
+  const found = arr.find((h: any) => h.id === lastGraded.id);
+  if (found) { setResult(found); setAttempt(found); }
+  }
+  }
+  setIsLoading(false);
+  return;
+  }
+
+  // 3. Resume or Start
+  const { data: resumeData, status: resumeStatus } = await resumeAssessment(id);
+  if (resumeStatus === 200 && resumeData) {
+  setAttempt(resumeData);
+  const hydrated = hydrateAnswers(resumeData, aData.questions);
+  setAnswers(hydrated);
+  setCurrentIndex(resumeData.current_question_index ?? 0);
+  } else {
+  const { data: startData, error: startErr } = await startAssessment(id);
+  if (startErr || !startData) { setLoadError(startErr || 'Failed to start assessment.'); setIsLoading(false); return; }
+  setAttempt(startData);
+  }
+
+  setIsLoading(false);
+  }, [propAssessmentId, lessonId, certificateExamId]);
 
  useEffect(() => { loadAssessment(); }, [loadAssessment]);
 
@@ -225,28 +246,37 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  )}
  </div>
 
- {/* Per-answer breakdown */}
- <div className="p-6 space-y-4">
- <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Answer Review</h4>
- {result.answers.map(ans => {
- const q = questions.find(q => q.id === ans.question);
- if (!q) return null;
- const isPending = ans.requires_manual_grading;
- return (
- <div key={ans.id} className={`p-4 rounded-xl border ${isPending ? 'border-yellow-200 bg-yellow-50' : ans.is_correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
- <div className="flex justify-between items-start gap-3">
- <p className="text-sm font-semibold text-foreground flex-1"><LinkifyText text={q.prompt} /></p>
- <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 text-yellow-800' : ans.is_correct ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
- {isPending ? '⏳ Pending' : ans.is_correct ? `✓ +${ans.score}pts` : '✗ 0pts'}
- </span>
- </div>
- {!isPending && !ans.is_correct && q.explanation && (
- <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-xl"><LinkifyText text={q.explanation} /></p>
- )}
- </div>
- );
- })}
- </div>
+  {/* View Answers toggle */}
+  <div className="border-t border-border px-6 pt-4">
+  <button onClick={() => setShowAnswers(s => !s)} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-wider cursor-pointer">
+  {showAnswers ? '▼' : '▶'} {showAnswers ? 'Hide Answers' : 'View Answers'}
+  </button>
+  </div>
+
+  {/* Per-answer breakdown */}
+  {showAnswers && (
+  <div className="p-6 space-y-4">
+  <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Answer Review</h4>
+  {result.answers.map(ans => {
+  const q = questions.find(q => q.id === ans.question);
+  if (!q) return null;
+  const isPending = ans.requires_manual_grading;
+  return (
+  <div key={ans.id} className={`p-4 rounded-xl border ${isPending ? 'border-yellow-200 bg-yellow-50' : ans.is_correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+  <div className="flex justify-between items-start gap-3">
+  <p className="text-sm font-semibold text-foreground flex-1"><LinkifyText text={q.prompt} /></p>
+  <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 text-yellow-800' : ans.is_correct ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+  {isPending ? '⏳ Pending' : ans.is_correct ? `✓ +${ans.score}pts` : '✗ 0pts'}
+  </span>
+  </div>
+  {!isPending && !ans.is_correct && q.explanation && (
+  <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-xl"><LinkifyText text={q.explanation} /></p>
+  )}
+  </div>
+  );
+  })}
+  </div>
+  )}
 
  {/* Attempt history */}
  {history.length > 0 && (
@@ -269,9 +299,14 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  </div>
  )}
 
- <div className="px-6 pb-6 flex justify-end">
- <Button variant="outline" onClick={handleRetake}>Try Again</Button>
- </div>
+  <div className="px-6 pb-6 flex justify-end gap-3">
+  {!passed && <Button variant="outline" onClick={handleRetake}>Try Again</Button>}
+  {passed && (
+  <Link href="/dashboard/certificates">
+  <Button variant="primary">🎓 Get Certificate</Button>
+  </Link>
+  )}
+  </div>
  </div>
  );
  }

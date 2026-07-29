@@ -1339,8 +1339,44 @@ export const deleteAssessmentChoice = (id: string) =>
 export const verifyCertificate = (certificateId: string) =>
     apiFetch<VerifyCertificateResponse>(`/api/v1/certificates/verify/${certificateId}/`);
 
-export const downloadCertificate = (id: string) =>
-    apiFetch<Blob>(`/api/v1/certificates/${id}/download/`, { method: 'GET' });
+export const downloadCertificate = async (id: string) => {
+    const tokens = getTokens();
+    const headers: Record<string, string> = {};
+    if (tokens?.access) {
+        headers['Authorization'] = `Bearer ${tokens.access}`;
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/certificates/${id}/download/`, { headers });
+        if (!response.ok) {
+            if (response.status === 401 && tokens?.refresh) {
+                const refreshRes = await fetch(`${API_BASE_URL}/api/auth/refresh/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: tokens.refresh }),
+                });
+                if (refreshRes.ok) {
+                    const refreshData = await refreshRes.json();
+                    setTokens({ access: refreshData.access, refresh: tokens.refresh });
+                    headers['Authorization'] = `Bearer ${refreshData.access}`;
+                    const retry = await fetch(`${API_BASE_URL}/api/v1/certificates/${id}/download/`, { headers });
+                    if (!retry.ok) return { data: null as unknown as Blob, error: `Download failed (status ${retry.status})`, status: retry.status };
+                    const blob = await retry.blob();
+                    return { data: blob, status: retry.status };
+                }
+                clearTokens();
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new Event('auth:unauthorized'));
+                }
+                return { data: null as unknown as Blob, error: 'Session expired. Please log in again.', status: 401 };
+            }
+            return { data: null as unknown as Blob, error: `Download failed (status ${response.status})`, status: response.status };
+        }
+        const blob = await response.blob();
+        return { data: blob, status: response.status };
+    } catch (err) {
+        return { data: null as unknown as Blob, error: err instanceof Error ? err.message : 'Download failed', status: 0 };
+    }
+};
 
 export const generateCertificatePdf = (id: string) =>
     apiFetch<Certificate>(`/api/v1/certificates/${id}/generate-pdf/`, { method: 'POST', body: JSON.stringify({}) });

@@ -36,7 +36,8 @@ function ChartCard({ title, description, icon, children, color }: {
     );
 }
 
-function renderBarChart(data: Record<string, number>) {
+function renderBarChart(data?: Record<string, number> | null) {
+    if (!data) return <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">No data</div>;
     const chartData = Object.entries(data).map(([name, value]) => ({ name, value }));
     if (chartData.length === 0) return <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">No data</div>;
     return (
@@ -52,7 +53,8 @@ function renderBarChart(data: Record<string, number>) {
     );
 }
 
-function renderPieChart(data: Record<string, number>) {
+function renderPieChart(data?: Record<string, number> | null) {
+    if (!data) return <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">No data</div>;
     const chartData = Object.entries(data).map(([name, value]) => ({ name, value }));
     if (chartData.length === 0) return <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">No data</div>;
     return (

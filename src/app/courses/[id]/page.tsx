@@ -32,8 +32,16 @@ export default function CourseDetailPage() {
 
 
     useEffect(() => {
-        if (id) fetchCourseData();
-    }, [id]);
+        if (id) {
+            // If the user is authenticated, redirect them directly to the learner workspace
+            // so they never study or view courses on the public page.
+            if (isAuthenticated) {
+                router.replace(`/dashboard/courses/${id}`);
+            } else {
+                fetchCourseData();
+            }
+        }
+    }, [id, isAuthenticated, router]);
 
     const fetchCourseData = async () => {
         setIsLoading(true);
@@ -80,6 +88,13 @@ export default function CourseDetailPage() {
             router.push(`/login?next=${encodeURIComponent(`/courses/${id}`)}`);
             return;
         }
+
+        // Enforce demographic profile completion before enrollment (crucial for analytics)
+        if (!user?.nationality || !user?.employment_status || !user?.gender || !user?.age_range) {
+            setShowProfileModal(true);
+            return;
+        }
+
         setIsEnrolling(true); setEnrollError('');
 
         const { data, error: e, status } = await apiFetch('/api/v1/enrollments/', {

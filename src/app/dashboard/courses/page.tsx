@@ -19,8 +19,8 @@ export default function DashboardCoursesPage() {
     const fetchEnrollments = async () => {
         setIsLoading(true);
         const [enrollRes, coursesRes] = await Promise.all([
-            apiFetch('/api/v1/enrollments/'),
-            apiFetch('/api/v1/courses/')
+            apiFetch('/api/v1/enrollments/?page_size=100'),
+            apiFetch('/api/v1/courses/?page_size=100')
         ]);
 
         let allCourses: any[] = [];
@@ -33,8 +33,8 @@ export default function DashboardCoursesPage() {
             enrollmentData = enrollmentData.map((e: any) => {
                 const cId = typeof e.course === 'object' ? e.course.id : e.course;
                 const fullCourse = allCourses.find(c => c.id === cId);
-                return fullCourse ? { ...e, course: fullCourse } : e;
-            });
+                return fullCourse ? { ...e, course: fullCourse } : null;
+            }).filter(Boolean); // Drop enrollments for deleted/inaccessible courses
         }
 
         setEnrollments(enrollmentData);
@@ -85,10 +85,10 @@ export default function DashboardCoursesPage() {
                     {enrollments.map((enrollment) => {
                         const course = enrollment.course || {};
                         const courseId = typeof course === 'object' ? course.id : course;
-                        const resumeUrl = `/courses/${courseId}`;
+                        const resumeUrl = `/dashboard/courses/${courseId}`;
 
                         return (
-                            <div key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+                            <Link href={resumeUrl} key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col cursor-pointer hover:-translate-y-1 ease-in-out block">
                                 <div className="relative h-40 bg-muted/50">
                                     {course.thumbnail_url ? (
                                         <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
@@ -120,14 +120,12 @@ export default function DashboardCoursesPage() {
                                         <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
                                             ID: {courseId?.substring(0, 8)}...
                                         </div>
-                                        <Link href={resumeUrl}>
-                                            <Button variant="outline" className="text-xs px-5 rounded-full hover:bg-primary hover:text-white border-primary/30 text-primary font-bold transition-all">
-                                                Resume &rarr;
-                                            </Button>
-                                        </Link>
+                                        <div className="text-xs px-5 py-2 rounded-full border border-primary/30 text-primary font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                                            Resume &rarr;
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>
