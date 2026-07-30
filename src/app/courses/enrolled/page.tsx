@@ -19,8 +19,8 @@ export default function EnrolledCoursesPage() {
     const fetchEnrollments = async () => {
         setIsLoading(true);
         const [enrollRes, coursesRes] = await Promise.all([
-            apiFetch('/api/v1/enrollments/'),
-            apiFetch('/api/v1/courses/')
+            apiFetch('/api/v1/enrollments/?page_size=100'),
+            apiFetch('/api/v1/courses/?page_size=100')
         ]);
 
         let allCourses: any[] = [];
@@ -29,16 +29,20 @@ export default function EnrolledCoursesPage() {
 
         let enrollmentData = enrollRes.data?.results || (Array.isArray(enrollRes.data) ? enrollRes.data : []);
 
-        // Hydrate with full course data
+        // Hydrate with full course data and filter out deleted/ghost courses
+        let validEnrollments: any[] = [];
         if (allCourses.length > 0) {
-            enrollmentData = enrollmentData.map((e: any) => {
+            validEnrollments = enrollmentData.reduce((acc: any[], e: any) => {
                 const cId = typeof e.course === 'object' ? e.course.id : e.course;
                 const fullCourse = allCourses.find(c => c.id === cId);
-                return fullCourse ? { ...e, course: fullCourse } : e;
-            });
+                if (fullCourse) {
+                    acc.push({ ...e, course: fullCourse });
+                }
+                return acc;
+            }, []);
         }
 
-        setEnrollments(enrollmentData);
+        setEnrollments(validEnrollments);
         if (enrollRes.error) setError(enrollRes.error);
 
         setIsLoading(false);

@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
 import { LinkifyText } from '@/components/LinkifyText';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import DOMPurify from 'isomorphic-dompurify';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -404,8 +405,8 @@ export default function LearnerWorkspacePage() {
                                                 {/* Text Content rendered with DangerouslySetInnerHTML */}
                                                 {lesson.content && (
                                                     <div 
-                                                        className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none text-muted-foreground"
-                                                        dangerouslySetInnerHTML={{ __html: lesson.content }}
+                                                        className="tiptap prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none text-muted-foreground"
+                                                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(lesson.content, { ADD_ATTR: ['target', 'rel'] }) }}
                                                     />
                                                 )}
                                             </div>

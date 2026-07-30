@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useParams, useRouter } from 'next/navigation';
 import { apiFetch, getLesson, getModule } from '@/lib/api';
+import DOMPurify from 'isomorphic-dompurify';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
@@ -333,8 +334,8 @@ export default function CourseLessonDetailPage() {
                                         </pre>
                                     </div>
                                 ) : (
-                                    <div className="prose prose-sm max-w-none bg-muted p-6 rounded-xl border border-border min-h-[200px]"
-                                         dangerouslySetInnerHTML={{ __html: lessonData.content || '<p class="text-muted-foreground italic">No content available.</p>' }} />
+                                    <div className="tiptap prose prose-sm max-w-none bg-muted p-6 rounded-xl border border-border min-h-[200px]"
+                                         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(lessonData.content || '<p class="text-muted-foreground italic">No content available.</p>', { ADD_ATTR: ['target', 'rel'] }) }} />
                                 )}
                             </div>
                         )}

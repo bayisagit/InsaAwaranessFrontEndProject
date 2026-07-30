@@ -80,9 +80,9 @@ export default function DashboardPage() {
  const fetchDashboardData = async () => {
  setIsFetching(true);
  const [enrollRes, alertsRes, coursesRes] = await Promise.all([
- apiFetch('/api/v1/enrollments/'),
+ apiFetch('/api/v1/enrollments/?page_size=100'),
  apiFetch('/api/v1/alerts/?page_size=5'),
- apiFetch('/api/v1/courses/')
+ apiFetch('/api/v1/courses/?page_size=100')
  ]);
 
  if (enrollRes.data?.results) setEnrollments(enrollRes.data.results);
@@ -97,11 +97,14 @@ export default function DashboardPage() {
 
  // Hydrate enrollments with full course data for real-time title/thumbnail
  if (availableCourses.length > 0) {
- setEnrollments(prev => prev.map(e => {
+ setEnrollments(prev => prev.reduce((acc: any[], e: any) => {
  const cId = typeof e.course === 'object' ? e.course.id : e.course;
  const fullCourse = availableCourses.find(c => c.id === cId);
- return fullCourse ? { ...e, course: fullCourse } : e;
- }));
+ if (fullCourse) {
+ acc.push({ ...e, course: fullCourse });
+ }
+ return acc;
+ }, []));
 
  const enrolledCourseIds = new Set(
  (enrollRes.data?.results || (Array.isArray(enrollRes.data) ? enrollRes.data : []))
@@ -199,14 +202,14 @@ export default function DashboardPage() {
  </div>
 
  {/* Global Alert Banner */}
- <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 mb-8 flex items-start gap-4 shadow-sm shadow-black/5 dark:shadow-none relative overflow-hidden">
- <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-orange-100 to-transparent pointer-events-none"></div>
+ <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 rounded-2xl p-5 mb-8 flex items-start gap-4 shadow-sm shadow-black/5 dark:shadow-none relative overflow-hidden">
+ <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-orange-100 dark:from-orange-500/20 to-transparent pointer-events-none"></div>
  <div className="w-10 h-10 rounded-full bg-card text-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-black/5 dark:shadow-none mt-0.5">
  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
  </svg>
  </div>
- <div className="flex-1">
+ <div className="flex-1 relative z-10">
  <div className="flex items-center gap-3 mb-1">
  <h3 className="font-bold text-foreground">{alerts[0]?.title || 'National Threat Advisory'}</h3>
  <span className="bg-orange-600 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded">Action Required</span>
@@ -215,8 +218,8 @@ export default function DashboardPage() {
  {alerts[0]?.message || 'Phishing campaigns targeting public sector employees increased by 42%. Verify all communications immediately through the official portal.'}
  </p>
  </div>
- <Link href="/dashboard/alerts">
- <button className="bg-card border border-orange-200 text-orange-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-orange-50 shrink-0 mt-2 sm:mt-0 cursor-pointer">
+ <Link href="/dashboard/alerts" className="relative z-10">
+ <button className="bg-card border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-orange-50 dark:hover:bg-orange-500/10 shrink-0 mt-2 sm:mt-0 cursor-pointer">
  View Briefing
  </button>
  </Link>

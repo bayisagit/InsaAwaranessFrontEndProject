@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
-import { getBackgroundProfile, updateBackgroundProfile, changePassword, clearTokens, BackgroundProfile } from '@/lib/api';
+import { getBackgroundProfile, updateBackgroundProfile, changePassword, clearTokens, BackgroundProfile, apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
@@ -39,9 +39,9 @@ const Card = ({ children, title, subtitle, icon }: { children: React.ReactNode, 
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-card shadow-xl shadow-gray-100/50 rounded-3xl overflow-hidden border border-border mb-8"
+        className="bg-card shadow-xl shadow-gray-100/50 dark:shadow-none rounded-3xl overflow-hidden border border-border mb-8"
     >
-        <div className="px-8 py-6 border-b border-gray-50 bg-gradient-to-r from-gray-50/80 to-white flex items-center justify-between">
+        <div className="px-8 py-6 border-b border-gray-50 dark:border-border bg-gradient-to-r from-gray-50/80 to-white dark:from-card dark:to-card flex items-center justify-between">
             <div>
                 <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                     {icon && <span className="text-primary">{icon}</span>}
@@ -81,6 +81,8 @@ export default function ProfilePage() {
     const [passwordSuccess, setPasswordSuccess] = useState('');
     const [passwordError, setPasswordError] = useState('');
 
+    const [learningStats, setLearningStats] = useState({ enrolled: 0, completed: 0, averageProgress: 0 });
+
     const fetchProfile = useCallback(async () => {
         setIsLoadingProfile(true);
         const { data, status } = await getBackgroundProfile();
@@ -104,10 +106,21 @@ export default function ProfilePage() {
         if (!authLoading && !isAuthenticated) {
             router.push('/login');
         } else if (isAuthenticated) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchProfile();
+            
+            // Fetch real learning stats for learners
+            const isAdmin = user && (user.role === 'super_admin' || user.role === 'org_admin' || user.role === 'course_provider');
+            if (user && !isAdmin) {
+                apiFetch('/api/v1/enrollments/?page_size=100').then(res => {
+                    const data = res.data?.results || (Array.isArray(res.data) ? res.data : []);
+                    const enrolled = data.length;
+                    const completed = data.filter((e: any) => e.progress === 100).length;
+                    const averageProgress = enrolled > 0 ? Math.round(data.reduce((acc: number, curr: any) => acc + curr.progress, 0) / enrolled) : 0;
+                    setLearningStats({ enrolled, completed, averageProgress });
+                });
+            }
         }
-    }, [isAuthenticated, authLoading, router, fetchProfile]);
+    }, [isAuthenticated, authLoading, router, fetchProfile, user]);
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -193,7 +206,7 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 pb-20 mt-10">
+        <div className="min-h-screen bg-gray-50/50 dark:bg-background pb-20 mt-10">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Modern Hero Section */}
@@ -382,11 +395,11 @@ export default function ProfilePage() {
 
                                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-2">
                                                 <label className="block text-sm font-bold text-foreground mb-2 ml-1">Unemployment Description</label>
-                                                <textarea name="unemployment_description" value={profileData.unemployment_description || ''} onChange={(e) => setProfileData((prev) => ({ ...prev, unemployment_description: e.target.value }))} className="block w-full rounded-2xl border border-border py-4 px-5 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:ring-4 focus:ring-primary/5 focus:border-primary focus:outline-none bg-gray-50/30 transition-all resize-none min-h-[120px]" placeholder="Could you briefly tell us more about your current status? This helps us provide relevant certifications." />
+                                                <textarea name="unemployment_description" value={profileData.unemployment_description || ''} onChange={(e) => setProfileData((prev) => ({ ...prev, unemployment_description: e.target.value }))} className="block w-full rounded-2xl border border-border py-4 px-5 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:ring-4 focus:ring-primary/5 focus:border-primary focus:outline-none bg-gray-50/30 dark:bg-card transition-all resize-none min-h-[120px]" placeholder="Could you briefly tell us more about your current status? This helps us provide relevant certifications." />
                                             </motion.div>
                                         )}
 
-                                        <div className="flex items-start gap-4 p-6 bg-gradient-to-br from-gray-50 to-white rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none">
+                                        <div className="flex items-start gap-4 p-6 bg-gradient-to-br from-gray-50 to-white dark:from-muted/20 dark:to-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none">
                                             <div className="flex h-6 items-center">
                                                 <input type="checkbox" id="is_info" name="is_information_confirmed" checked={profileData.is_information_confirmed || false} onChange={handleProfileChange} className="w-5 h-5 text-primary border-border rounded-xl focus:ring-primary cursor-pointer transition-all hover:scale-110" />
                                             </div>
@@ -397,7 +410,7 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-end gap-3 pt-6 border-t border-gray-50">
+                                    <div className="flex justify-end gap-3 pt-6 border-t border-gray-50 dark:border-border">
                                         <Button variant="secondary" type="submit" disabled={isSavingProfile} className="px-10 py-4 rounded-2xl shadow-xl shadow-secondary/20 font-bold tracking-tight hover:scale-[1.02] active:scale-[0.98] transition-all">
                                             {isSavingProfile ? 'Processing...' : 'Sync Profile Changes'}
                                         </Button>
@@ -422,50 +435,42 @@ export default function ProfilePage() {
 
                                 <div className="relative z-10">
                                     <div className="flex items-center justify-between mb-8">
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Leaderboard Stats</h3>
-                                        <div className="h-2 w-2 bg-primary rounded-full animate-ping"></div>
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Learning Overview</h3>
+                                        <div className="h-2 w-2 bg-green-500 rounded-full animate-ping"></div>
                                     </div>
 
                                     <div className="flex items-baseline gap-3 mb-10">
-                                        <span className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-600">1,250</span>
-                                        <span className="text-sm font-black text-primary tracking-widest uppercase">Points</span>
+                                        <span className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">{learningStats.averageProgress}%</span>
+                                        <span className="text-sm font-black text-primary tracking-widest uppercase">Avg Progress</span>
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center gap-4 transition-all hover:shadow-md shadow-black/10 dark:shadow-none hover:border-border cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                                            <div className="h-10 w-10 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-100">
-                                                <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-                                                </svg>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-black text-foreground tracking-tight">Phishing Hunter</span>
-                                                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Gold Tier</span>
-                                            </div>
-                                        </div>
-                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center gap-4 transition-all hover:shadow-md shadow-black/10 dark:shadow-none hover:border-border cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                                            <div className="h-10 w-10 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
-                                                <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                                                </svg>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-black text-foreground tracking-tight">Password Shield</span>
-                                                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Top 1% Learner</span>
+                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center justify-between transition-all hover:shadow-md shadow-black/10 dark:shadow-none cursor-pointer">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-10 w-10 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-100">
+                                                    <span className="text-blue-500 font-bold">{learningStats.enrolled}</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-black text-foreground tracking-tight">Enrolled Courses</span>
+                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Active & Completed</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="p-4 bg-muted rounded-3xl border border-border flex items-center gap-4 grayscale opacity-80">
-                                            <div className="h-10 w-10 bg-muted/50 rounded-2xl flex items-center justify-center">
-                                                <svg className="w-5 h-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                                </svg>
+                                        <div className="p-4 bg-card rounded-3xl border border-border flex items-center justify-between transition-all hover:shadow-md shadow-black/10 dark:shadow-none cursor-pointer">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-10 w-10 bg-green-500/10 rounded-2xl flex items-center justify-center border border-green-100">
+                                                    <span className="text-green-600 font-bold">{learningStats.completed}</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-black text-foreground tracking-tight">Completed</span>
+                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">100% Progress</span>
+                                                </div>
                                             </div>
-                                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">Secret Achievement</span>
                                         </div>
                                     </div>
 
-                                    <button className="w-full mt-8 py-4 bg-card hover:bg-muted border border-border rounded-2xl text-[10px] font-black text-foreground uppercase tracking-[0.2em] transition-all hover:shadow-sm shadow-black/5 dark:shadow-none active:scale-95 cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                                        View Full Progress
+                                    <button onClick={() => router.push('/dashboard')} className="w-full mt-8 py-4 bg-card hover:bg-muted border border-border rounded-2xl text-[10px] font-black text-foreground uppercase tracking-[0.2em] transition-all hover:shadow-sm shadow-black/5 dark:shadow-none active:scale-95 cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+                                        View Dashboard
                                     </button>
                                 </div>
                             </motion.div>

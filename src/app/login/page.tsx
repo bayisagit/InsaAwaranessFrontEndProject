@@ -101,7 +101,7 @@ export default function LoginPage() {
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
             <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                 <div className="flex justify-center mb-6">
-                    <Image src="/loginlogo.png" alt="Login Logo" width={80} height={80} className="object-contain" style={{ width: 'auto', height: 'auto' }} />
+                    <Image priority src="/loginlogo.png" alt="Login Logo" width={80} height={80} className="object-contain" style={{ width: 'auto', height: 'auto' }} />
                 </div>
 
                 <h1 className="text-3xl font-bold text-foreground mb-2">{t('welcomeBack')}</h1>

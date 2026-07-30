@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { AssessmentsManager } from '@/components/admin/AssessmentsManager';
+import DOMPurify from 'isomorphic-dompurify';
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
@@ -327,8 +328,8 @@ export default function LessonWorkspacePage() {
                                         </pre>
                                     </div>
                                 ) : (
-                                    <div className="prose prose-sm max-w-none bg-muted p-6 rounded-xl border border-border min-h-[200px]" 
-                                         dangerouslySetInnerHTML={{ __html: lessonData.content || '<p class="text-muted-foreground italic">No content available.</p>' }} />
+                                    <div className="tiptap prose prose-sm max-w-none bg-muted p-6 rounded-xl border border-border min-h-[200px]" 
+                                         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(lessonData.content || '<p class="text-muted-foreground italic">No content available.</p>', { ADD_ATTR: ['target', 'rel'] }) }} />
                                 )}
                             </div>
                         )}

@@ -10,6 +10,7 @@ import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
+import { RichTextEditor } from '@/components/RichTextEditor';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 
 interface Lesson {
@@ -455,12 +456,9 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  {form.content_type === 'article' && (
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Article Content</label>
- <textarea
- className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary outline-none min-h-[200px]"
- placeholder="Write your article content here..."
+ <RichTextEditor
  value={form.content}
- onChange={(e) => setForm({ ...form, content: e.target.value })}
- required
+ onChange={(value) => setForm({ ...form, content: value })}
  />
  </div>
  )}
@@ -818,12 +816,9 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  {form.content_type === 'article' && (
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Article Content</label>
- <textarea
- className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary outline-none min-h-[200px]"
- placeholder="Write your article content here..."
+ <RichTextEditor
  value={form.content}
- onChange={(e) => setForm({ ...form, content: e.target.value })}
- required
+ onChange={(value) => setForm({ ...form, content: value })}
  />
  </div>
  )}

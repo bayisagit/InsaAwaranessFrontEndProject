@@ -228,3 +228,17 @@
     @apply font-sans;
   }
 }
+
+.tiptap ul {
+  list-style-type: disc !important;
+  padding-left: 20px !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.tiptap ol {
+  list-style-type: decimal !important;
+  padding-left: 20px !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
