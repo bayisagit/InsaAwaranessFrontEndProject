@@ -46,7 +46,8 @@ export default function AdminCoursesPage() {
  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
  const [form, setForm] = useState({
  title: '', description: '', organization: '', course_provider: '',
- language: 'en', level: 'Beginner', status: 'draft', is_active: true, thumbnail_url: ''
+ language: 'en', level: 'Beginner', status: 'draft', is_active: true, thumbnail_url: '',
+ payment_type: 'free', course_price: ''
  });
 
  // Submit confirm
@@ -135,7 +136,9 @@ export default function AdminCoursesPage() {
  level: course.level || 'Beginner',
  status: course.status || 'draft',
  is_active: course.is_active !== false,
- thumbnail_url: course.thumbnail_url || ''
+ thumbnail_url: course.thumbnail_url || '',
+ payment_type: (course as any).payment_type || 'free',
+ course_price: (course as any).course_price || ''
  });
  setIsModalOpen(true);
  }
@@ -149,7 +152,8 @@ export default function AdminCoursesPage() {
  title: '', description: '',
  organization: '',
  course_provider: user?.role === 'course_provider' ? (user?.id || '') : '',
- language: 'en', level: 'Beginner', status: 'draft', is_active: true, thumbnail_url: ''
+ language: 'en', level: 'Beginner', status: 'draft', is_active: true, thumbnail_url: '',
+ payment_type: 'free', course_price: ''
  });
  setActionError('');
  }
@@ -168,6 +172,8 @@ export default function AdminCoursesPage() {
  language: form.language,
  status: form.status,
  is_active: form.is_active,
+ payment_type: form.payment_type,
+ course_price: form.payment_type === 'paid' && form.course_price ? parseFloat(form.course_price) : null,
  ...(form.thumbnail_url ? { thumbnail_url: form.thumbnail_url } : {}),
  };
 
@@ -426,6 +432,24 @@ export default function AdminCoursesPage() {
  </div>
  </div>
 
+ {isSuperAdmin && (
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+ <div>
+ <label className="block text-sm font-semibold text-foreground mb-1">Payment Type</label>
+ <select className={SELECT_CLS} value={form.payment_type} onChange={e => setForm({ ...form, payment_type: e.target.value })} disabled={isActionLoading}>
+ <option value="free">Free</option>
+ <option value="paid">Paid</option>
+ </select>
+ </div>
+ {form.payment_type === 'paid' && (
+ <div>
+ <label className="block text-sm font-semibold text-foreground mb-1">Course Price (ETB)</label>
+ <input type="number" step="0.01" className={SELECT_CLS} value={form.course_price} onChange={e => setForm({ ...form, course_price: e.target.value })} disabled={isActionLoading} required />
+ </div>
+ )}
+ </div>
+ )}
+
  <div className="pt-4 flex justify-end gap-3">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving…' : 'Create Course'}</Button>
@@ -520,9 +544,15 @@ export default function AdminCoursesPage() {
  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
  </div>
  )}
+ {user?.role === 'org_admin' && (c as any).payment_type === 'paid' && !(c as any).is_unlocked ? (
+ <Link href={`/dashboard/courses/${c.id}/payment`} className="hover:text-primary transition-colors hover:underline">
+ <span>{c.title}</span>
+ </Link>
+ ) : (
  <Link href={`/admin/courses/${c.id}`} className="hover:text-primary transition-colors hover:underline">
  <span>{c.title}</span>
  </Link>
+ )}
  </div>
  </td>
  <td className="px-4 py-3 capitalize">{c.level || '—'}</td>
@@ -531,12 +561,26 @@ export default function AdminCoursesPage() {
  {c.organization ? (orgs.find(o => o.id === c.organization)?.name || c.organization) : '—'}
  </td>
  <td className="px-4 py-3">
- <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[c.status] || 'bg-muted/50 text-muted-foreground'}`}>
+ <div className="flex flex-col gap-1 items-start">
+ <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider ${STATUS_COLORS[c.status] || 'bg-muted/50 text-muted-foreground'}`}>
  {c.status || 'draft'}
  </span>
+ {(c as any).payment_type === 'paid' && (
+ <span className="text-[10px] font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded flex items-center gap-1 border border-yellow-200 shadow-sm">
+ <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+ {(c as any).is_unlocked ? 'PAID' : `${(c as any).currency || 'ETB'} ${(c as any).course_price}`}
+ </span>
+ )}
+ </div>
  </td>
  <td className="px-4 py-3 text-right">
  <div className="flex items-center justify-end gap-2">
+ {user?.role === 'org_admin' && (c as any).payment_type === 'paid' && !(c as any).is_unlocked && (
+ <Link href={`/dashboard/courses/${c.id}/payment`} className="px-3 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 border border-yellow-200 rounded-lg text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1">
+ <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+ Unlock Course
+ </Link>
+ )}
  {canManage && (
  <button onClick={() => openModal(c)} className="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
  )}
@@ -639,6 +683,24 @@ export default function AdminCoursesPage() {
  </select>
  </div>
  </div>
+
+ {isSuperAdmin && (
+ <div className="grid grid-cols-2 gap-3 mt-3">
+ <div>
+ <label className="block text-sm font-semibold text-foreground mb-1">Payment Type</label>
+ <select className={SELECT_CLS} value={form.payment_type} onChange={e => setForm({ ...form, payment_type: e.target.value })} disabled={isActionLoading}>
+ <option value="free">Free</option>
+ <option value="paid">Paid</option>
+ </select>
+ </div>
+ {form.payment_type === 'paid' && (
+ <div>
+ <label className="block text-sm font-semibold text-foreground mb-1">Course Price (ETB)</label>
+ <input type="number" step="0.01" className={SELECT_CLS} value={form.course_price} onChange={e => setForm({ ...form, course_price: e.target.value })} disabled={isActionLoading} required />
+ </div>
+ )}
+ </div>
+ )}
 
  <div className="pt-4 flex justify-end gap-3">
  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>

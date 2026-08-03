@@ -18,6 +18,9 @@ interface Course {
  provider?: string;
  created_at?: string;
  thumbnail_url?: string;
+ payment_type?: string;
+ course_price?: string;
+ currency?: string;
 }
 
 export default function DashboardCatalogPage() {
@@ -237,16 +240,28 @@ export default function DashboardCatalogPage() {
  <p className="text-xs text-muted-foreground mb-4 flex-1 line-clamp-3">
  <LinkifyText text={course.description || 'Explore this cybersecurity course and build your skills.'} />
  </p>
- <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
- {course.language && (
+ <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
+ {course.payment_type === 'paid' ? (
+ <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-500 font-bold text-sm">
+ <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+ {course.currency || 'ETB'} {course.course_price}
+ </div>
+ ) : course.language ? (
  <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded font-medium uppercase">{course.language}</span>
- )}
+ ) : <span />}
+ 
+ {course.payment_type === 'paid' ? (
+ <Link href={`/dashboard/courses/${course.id}/payment`} className="text-xs font-semibold text-yellow-600 dark:text-yellow-500 hover:underline ml-auto inline-flex items-center gap-1">
+ Unlock Course
+ </Link>
+ ) : (
  <Link href={`/courses/${course.id}`} className="text-xs font-semibold text-primary hover:underline ml-auto inline-flex items-center gap-1">
  View Course
  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
  </svg>
  </Link>
+ )}
  </div>
  </div>
  );
