@@ -9,8 +9,11 @@ import { EmptyState } from '@/components/EmptyState';
 import { CardSkeleton } from '@/components/LoadingSkeleton';
 import { LinkifyText } from '@/components/LinkifyText';
 import { SupportCTA } from '@/components/SupportCTA';
+import { useTranslations } from 'next-intl';
 
 export default function ResourcesPage() {
+ const t = useTranslations('resources');
+ const tCommon = useTranslations('common');
  const [resources, setResources] = useState<Resource[]>([]);
  const [isLoading, setIsLoading] = useState(true);
  const [searchQuery, setSearchQuery] = useState('');
@@ -101,8 +104,8 @@ export default function ResourcesPage() {
  return (
  <div className="min-h-screen bg-muted flex flex-col items-center">
  <PageHeader
- title="Cybersecurity Knowledge Base"
- description="Equip yourself with the latest guides, tools, and policy frameworks."
+ title={t('pageTitle')}
+ description={t('pageDesc')}
  className="w-full text-center"
  />
  <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-12 -mt-0 mb-12">
@@ -114,13 +117,13 @@ export default function ResourcesPage() {
  </div>
  <input
  type="text"
- placeholder="Search resources..."
+ placeholder={t('searchPlaceholder')}
  className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
  <button type="submit" className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
- Search
+ {tCommon('search')}
  </button>
  </form>
  </div>
@@ -130,9 +133,9 @@ export default function ResourcesPage() {
 
  <div className="flex justify-between items-center mb-6">
  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
- Available Resources
+ {t('availableResources')}
  <span className="text-xs font-normal text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
- {totalCount} items
+ {t('itemsCount', { count: totalCount })}
  </span>
  </h3>
  </div>
@@ -150,8 +153,8 @@ export default function ResourcesPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
  </svg>
  }
- title={searchQuery ? 'No resources matched your search.' : 'No resources available yet.'}
- description={searchQuery ? 'Try a different search term.' : 'Check back soon for new resources.'}
+ title={searchQuery ? t('noResults') : t('noResources')}
+ description={searchQuery ? t('noResultsDesc') : t('noResourcesDesc')}
  />
  ) : (
  <>
@@ -185,7 +188,7 @@ export default function ResourcesPage() {
  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.25a1.444 1.444 0 000 1.5 2.045 2.045 0 003.497.826L12 7.25l6.467 7.326a2.044 2.044 0 003.497-.826 1.444 1.444 0 000-1.5l-6.467-7.326a2.044 2.044 0 00-3.06 0L4.536 12.25z" />
  </svg>
- Preview
+ {t('preview')}
  </a>
  <button
  onClick={() => downloadResource(resource)}
@@ -202,7 +205,7 @@ export default function ResourcesPage() {
  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
  </svg>
  )}
- {downloadingId === resource.id ? 'Downloading...' : 'Download'}
+ {downloadingId === resource.id ? t('downloading') : t('download')}
  </button>
  </div>
  )}
@@ -230,20 +233,20 @@ export default function ResourcesPage() {
  
  <div className="relative z-10 max-w-3xl mx-auto">
  <h2 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl drop-shadow-md">
- Can't find what you're looking for?
+ {t('cantFindTitle')}
  </h2>
  <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
- Our support team is available to help citizens and organizations find the right resources.
+ {t('cantFindDesc')}
  </p>
  <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
  <Link href="/contact" aria-label="Create a free account">
  <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all">
- Contact Support
+ {tCommon('contactSupport')}
  </Button>
  </Link>
  <Link href="/courses" aria-label="Explore cybersecurity resources">
  <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
- Explore Courses
+ {tCommon('exploreCourses')}
  </Button>
  </Link>
  </div>

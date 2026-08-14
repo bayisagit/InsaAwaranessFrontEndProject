@@ -233,7 +233,7 @@ export default function Home() {
             </Link>
             <Link href="/resources" aria-label="Explore cybersecurity resources">
               <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
-                Explore Resources
+                {tCommon('exploreTools')}
               </Button>
             </Link>
           </div>

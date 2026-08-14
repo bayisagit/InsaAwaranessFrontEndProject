@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { createOrgApplication } from '@/lib/api';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
+import { useTranslations } from 'next-intl';
 import { toast } from 'react-hot-toast';
 
 interface FieldErrors {
@@ -20,6 +21,7 @@ interface FieldErrors {
 type PageState = 'form' | 'submitted';
 
 export default function ApplyPage() {
+    const t = useTranslations('apply');
     const [pageState, setPageState] = useState<PageState>('form');
     const [submittedName, setSubmittedName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -81,9 +83,9 @@ export default function ApplyPage() {
             }
             setFieldErrors(errors);
         } else {
-            setFieldErrors({ non_field: apiError || 'Submission failed. Please try again.' });
+            setFieldErrors({ non_field: apiError || t('submissionFailed') });
         }
-        toast.error('Please fix the errors below.');
+        toast.error(t('fixErrors'));
     };
 
     // ── Submitted / confirmation state ──────────────────────────────────────
@@ -98,12 +100,12 @@ export default function ApplyPage() {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="text-2xl font-bold text-foreground mb-3">Application Submitted!</h1>
+                    <h1 className="text-2xl font-bold text-foreground mb-3">{t('submitted')}</h1>
                     <p className="text-muted-foreground text-sm mb-2">
-                        Thank you for applying on behalf of <strong>{submittedName}</strong>.
+                        <span dangerouslySetInnerHTML={{ __html: t.raw('submittedDesc').replace('{name}', submittedName) }} />
                     </p>
                     <p className="text-muted-foreground text-sm mb-8 leading-relaxed max-w-sm mx-auto">
-                        Your application is now <strong className="text-yellow-700">under review</strong>. Our team will contact you at the email you provided once a decision has been made.
+                        <span dangerouslySetInnerHTML={{ __html: t.raw('underReview') }} />
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Button
@@ -117,7 +119,7 @@ export default function ApplyPage() {
                             Submit Another
                         </Button>
                         <Link href="/">
-                            <Button variant="secondary" type="button">Return to Home</Button>
+                            <Button variant="secondary" type="button">{t('returnHome')}</Button>
                         </Link>
                     </div>
                 </div>
@@ -132,13 +134,13 @@ export default function ApplyPage() {
                 {/* Page header */}
                 <div className="text-center mb-10">
                     <span className="inline-block px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-semibold tracking-wider mb-4">
-                        OFFICIAL REGISTRATION
+                        {t('pageBadge')}
                     </span>
                     <h1 className="text-4xl font-extrabold text-foreground mb-3">
                         Apply for Organization Access
                     </h1>
                     <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
-                        Submit your organization&apos;s details to join the INSA Cyber Awareness Platform. Our team will review your application within 3–5 business days.
+                        {t('pageDesc')}
                     </p>
                 </div>
 
@@ -155,11 +157,11 @@ export default function ApplyPage() {
 
                         {/* Section: Organization Info */}
                         <div>
-                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Organization Information</h2>
+                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">{t('orgInfo')}</h2>
                             <div className="space-y-4">
                                 <Input
-                                    label="Organization Name"
-                                    placeholder="e.g., Ministry of Communications"
+                                    label={t('orgName')}
+                                    placeholder={t('orgNamePlaceholder')}
                                     value={form.name}
                                     onChange={handleChange('name')}
                                     required
@@ -168,11 +170,11 @@ export default function ApplyPage() {
                                 />
                                 <div>
                                     <label className="block text-sm font-medium text-foreground mb-1">
-                                        Description <span className="text-primary ml-1">*</span>
+                                        {t('description')} <span className="text-primary ml-1">*</span>
                                     </label>
                                     <textarea
                                         className={`block w-full rounded-lg border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-card resize-none min-h-[100px] ${fieldErrors.description ? 'border-primary' : 'border-border focus:border-primary'}`}
-                                        placeholder="Describe your organization's activities and why you need access to this platform…"
+                                        placeholder={t('descriptionPlaceholder')}
                                         value={form.description}
                                         onChange={handleChange('description')}
                                         required
@@ -181,8 +183,8 @@ export default function ApplyPage() {
                                     {fieldErrors.description && <p className="mt-1 text-sm text-primary">{fieldErrors.description}</p>}
                                 </div>
                                 <Input
-                                    label="Physical Address"
-                                    placeholder="e.g., Bole Sub-city, Addis Ababa, Ethiopia"
+                                    label={t('physicalAddress')}
+                                    placeholder={t('addressPlaceholder')}
                                     value={form.address}
                                     onChange={handleChange('address')}
                                     required
@@ -190,9 +192,9 @@ export default function ApplyPage() {
                                     error={fieldErrors.address}
                                 />
                                 <Input
-                                    label="Website"
+                                    label={t('website')}
                                     type="url"
-                                    placeholder="https://example.gov.et (optional)"
+                                    placeholder={t('websitePlaceholder')}
                                     value={form.website}
                                     onChange={handleChange('website')}
                                     disabled={isLoading}
@@ -202,12 +204,12 @@ export default function ApplyPage() {
                         </div>
 
                         <div className="border-t border-border pt-5">
-                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Contact Details</h2>
+                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">{t('contactDetails')}</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Input
-                                    label="Contact Email"
+                                    label={t('contactEmail')}
                                     type="email"
-                                    placeholder="contact@organization.et"
+                                    placeholder={t('emailPlaceholder')}
                                     value={form.contact_email}
                                     onChange={handleChange('contact_email')}
                                     required
@@ -215,9 +217,9 @@ export default function ApplyPage() {
                                     error={fieldErrors.contact_email}
                                 />
                                 <Input
-                                    label="Contact Phone"
+                                    label={t('contactPhone')}
                                     type="tel"
-                                    placeholder="+251 91 234 5678"
+                                    placeholder={t('phonePlaceholder')}
                                     value={form.contact_phone}
                                     onChange={handleChange('contact_phone')}
                                     required
@@ -233,8 +235,8 @@ export default function ApplyPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <div>
-                                <p className="font-semibold mb-1">What happens next?</p>
-                                <p>Your submission goes to <strong>Pending</strong> status. INSA administrators will review it and contact you at the email provided. Upon approval, an organization admin account will be created for you.</p>
+                                <p className="font-semibold mb-1">{t('whatHappensNext')}</p>
+                                <p dangerouslySetInnerHTML={{ __html: t.raw('whatHappensNextDesc') }}></p>
                             </div>
                         </div>
 
@@ -245,16 +247,16 @@ export default function ApplyPage() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                     </svg>
-                                    Submitting Application…
+                                    {t('submittingApp')}
                                 </span>
-                            ) : 'Submit Application'}
+                            ) : t('submitApplication')}
                         </Button>
                     </form>
                 </div>
 
                 <p className="mt-6 text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
-                    <Link href="/login" className="font-semibold text-primary hover:underline">Sign in</Link>
+                    {t('alreadyHaveAccount')} 
+                    <Link href="/login" className="font-semibold text-primary hover:underline">{t('signIn')}</Link>
                 </p>
             </div>
         </div>

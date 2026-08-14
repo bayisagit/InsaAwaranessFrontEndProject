@@ -9,17 +9,18 @@ import { getBackgroundProfile, updateBackgroundProfile, changePassword, clearTok
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-
+import { useTranslations } from 'next-intl';
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 pl-3 pr-10 truncate text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
-function SelectField({ label, name, value, onChange, options, required }: {
+function SelectField({ label, name, value, onChange, options, required, placeholder }: {
     label: string;
     name: string;
     value: string;
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     options: { value: string; label: string }[];
     required?: boolean;
+    placeholder?: string;
 }) {
     return (
         <div className="w-full">
@@ -28,7 +29,7 @@ function SelectField({ label, name, value, onChange, options, required }: {
                 {required && <span className="text-primary ml-1">*</span>}
             </label>
             <select name={name} value={value} onChange={onChange} className={SELECT_CLS} required={required}>
-                <option value="">Select {label}...</option>
+                <option value="">{placeholder || `Select ${label}...`}</option>
                 {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
         </div>
@@ -66,6 +67,8 @@ interface ProfileData extends Partial<BackgroundProfile> {}
 export default function ProfilePage() {
     const { user, setUser, isAuthenticated, isLoading: authLoading } = useAuth();
     const router = useRouter();
+    const t = useTranslations('profile');
+    const tCommon = useTranslations('common');
 
     const [profileData, setProfileData] = useState<ProfileData>({});
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -132,14 +135,13 @@ export default function ProfilePage() {
         e.preventDefault();
         setProfileError(''); setProfileSuccess(''); setIsSavingProfile(true);
         // Always use PATCH — the backend auto-creates the profile on first GET,
-        // so there is never a need for POST.
         const { error, status } = await updateBackgroundProfile(profileData as Partial<BackgroundProfile>);
         if (error || (status !== 200 && status !== 201)) {
-            setProfileError(error || 'Failed to update profile.');
-            toast.error(error || 'Failed to update profile.');
+            setProfileError(error || t('profileUpdateFailed'));
+            toast.error(error || t('profileUpdateFailed'));
         } else {
-            setProfileSuccess('Profile updated successfully.');
-            toast.success('Profile updated successfully.');
+            setProfileSuccess(t('profileUpdated'));
+            toast.success(t('profileUpdated'));
             setTimeout(() => setProfileSuccess(''), 5000);
             await fetchProfile();
         }
@@ -164,12 +166,12 @@ export default function ProfilePage() {
 
         const { error, status } = await changePassword(oldPassword, newPassword);
         if (error || status !== 200) {
-            const msg = error || 'Failed to change password. Make sure your current password is correct.';
+            const msg = error || t('passwordChangeFailed');
             setPasswordError(msg);
             toast.error(msg);
         } else {
-            toast.success('Password changed. Please sign in again.');
-            setPasswordSuccess('Password changed. Redirecting to login…');
+            toast.success(t('passwordChangedToast'));
+            setPasswordSuccess(t('passwordChanged'));
             // Per API docs: clear tokens after password change
             setTimeout(() => {
                 clearTokens();
@@ -198,11 +200,11 @@ export default function ProfilePage() {
     const isAdmin = user?.role === 'super_admin' || user?.role === 'org_admin' || user?.role === 'course_provider';
 
     const roleLabel: Record<string, string> = {
-        super_admin: 'System Administrator',
-        org_admin: 'Organization Administrator',
-        course_provider: 'Course Provider',
-        member: 'Learner',
-        public_user: 'Public User',
+        super_admin: t('roleSuperAdmin'),
+        org_admin: t('roleOrgAdmin'),
+        course_provider: t('roleCourseProvider'),
+        member: t('roleMember'),
+        public_user: t('rolePublicUser'),
     };
 
     return (
@@ -229,7 +231,7 @@ export default function ProfilePage() {
                                             setProfileData(prev => ({ ...prev, profile_photo: url }));
                                             await updateBackgroundProfile({ profile_photo: url });
                                             setUser(prev => prev ? { ...prev, profile_photo: url } : prev);
-                                            toast.success('Profile photo updated successfully.');
+                                            toast.success(t('photoUpdated'));
                                         }}
                                         folder="profile-photos"
                                     >
@@ -248,7 +250,7 @@ export default function ProfilePage() {
                                             setProfileData(prev => ({ ...prev, profile_photo: url }));
                                             await updateBackgroundProfile({ profile_photo: url });
                                             setUser(prev => prev ? { ...prev, profile_photo: url } : prev);
-                                            toast.success('Profile photo updated successfully.');
+                                            toast.success(t('photoUpdated'));
                                         }}
                                         folder="profile-photos"
                                     >
@@ -282,28 +284,28 @@ export default function ProfilePage() {
 
                         {/* Account Details Card */}
                         <Card
-                            title="Personal Information"
-                            subtitle="Manage your primary account settings and preferences"
+                            title={t('personalInfo')}
+                            subtitle={t('personalInfoDesc')}
                             icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
                         >
-                            <SectionHeader title="Basic Details" />
+                            <SectionHeader title={t('basicDetails')} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">Email Address</label>
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">{t('emailAddress')}</label>
                                     <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                         {user?.email}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">Preferred Language</label>
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">{t('preferredLanguage')}</label>
                                     <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default capitalize cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                                        {user?.preferred_language || 'English'}
+                                        {user?.preferred_language || t('english')}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">Organization</label>
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 block ml-1">{t('organization')}</label>
                                     <div className="text-foreground font-bold bg-muted px-5 py-4 rounded-2xl border border-border shadow-sm shadow-black/5 dark:shadow-none transition-all hover:bg-card hover:shadow-md shadow-black/10 dark:shadow-none cursor-default cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                                        {user?.organization_name || (user?.role === 'public_user' ? 'INSA' : 'Not assigned')}
+                                        {user?.organization_name || (user?.role === 'public_user' ? 'INSA' : t('notAssigned'))}
                                     </div>
                                 </div>
                             </div>
@@ -312,8 +314,8 @@ export default function ProfilePage() {
                         {/* Background Profile Form */}
                         {!isAdmin && (
                             <Card
-                                title="Background Profile"
-                                subtitle="Keep your professional and demographic data up to date"
+                                title={t('backgroundProfile')}
+                                subtitle={t('backgroundProfileDesc')}
                                 icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
                             >
                                 <form onSubmit={handleProfileSubmit} className="space-y-10">
@@ -338,10 +340,10 @@ export default function ProfilePage() {
 
                                     <div className="space-y-8">
                                         <div>
-                                            <SectionHeader title="Contact & Demographic" />
+                                            <SectionHeader title={t('contactDemographic')} />
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                                                <Input label="Phone Number" name="phone_number" value={profileData.phone_number || ''} onChange={handleProfileChange} required placeholder="+251 ..." />
-                                                <SelectField label="Nationality" name="nationality" value={profileData.nationality || ''} onChange={handleProfileChange} options={[
+                                                <Input label={t('phoneNumber')} name="phone_number" value={profileData.phone_number || ''} onChange={handleProfileChange} required placeholder={t('phonePlaceholder')} />
+                                                <SelectField label={t('nationality')} name="nationality" value={profileData.nationality || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('nationality') })} options={[
                                                     { value: 'ethiopia', label: 'Ethiopia' },
                                                     { value: 'kenya', label: 'Kenya' },
                                                     { value: 'rwanda', label: 'Rwanda' },
@@ -349,7 +351,7 @@ export default function ProfilePage() {
                                                     { value: 'other', label: 'Other' }
                                                 ]} />
                                                 {profileData.nationality === 'ethiopia' && (
-                                                <SelectField label="Region" name="region" value={profileData.region || ''} onChange={handleProfileChange} options={[
+                                                <SelectField label={t('region')} name="region" value={profileData.region || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('region') })} options={[
                                                     { value: 'addis_ababa', label: 'Addis Ababa' },
                                                     { value: 'afar', label: 'Afar' },
                                                     { value: 'amhara', label: 'Amhara' },
@@ -368,25 +370,25 @@ export default function ProfilePage() {
                                                 )}
 
                                                 <div className="grid grid-cols-2 gap-6">
-                                                    <SelectField label="Age Range" name="age_range" value={profileData.age_range || ''} onChange={handleProfileChange} options={[{ value: '13_17', label: '13–17' }, { value: '18_22', label: '18–22' }, { value: '23_25', label: '23–25' }, { value: '26_30', label: '26–30' }, { value: '31_35', label: '31–35' }, { value: '36_40', label: '36–40' }, { value: '41_plus', label: '41+' }]} />
+                                                    <SelectField label={t('ageRange')} name="age_range" value={profileData.age_range || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('ageRange') })} options={[{ value: '13_17', label: '13–17' }, { value: '18_22', label: '18–22' }, { value: '23_25', label: '23–25' }, { value: '26_30', label: '26–30' }, { value: '31_35', label: '31–35' }, { value: '36_40', label: '36–40' }, { value: '41_plus', label: '41+' }]} />
                                                     {/* API only allows male/female */}
-                                                    <SelectField label="Gender" name="gender" value={profileData.gender || ''} onChange={handleProfileChange} options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }]} />
+                                                    <SelectField label={t('gender')} name="gender" value={profileData.gender || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('gender') })} options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }]} />
                                                 </div>
 
                                             </div>
                                         </div>
 
                                         <div>
-                                            <SectionHeader title="Education & Professional" />
+                                            <SectionHeader title={t('educationProfessional')} />
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                                                <SelectField label="Education Level" name="education_level" value={profileData.education_level || ''} onChange={handleProfileChange} options={[{ value: 'high_school', label: 'High School' }, { value: 'bachelor', label: "Bachelor's" }, { value: 'master', label: "Master's" }, { value: 'phd', label: 'PhD' }, { value: 'other', label: 'Other' }]} />
-                                                <SelectField label="Field of Study" name="field_of_study" value={profileData.field_of_study || ''} onChange={handleProfileChange} options={[{ value: 'agriculture', label: 'Agriculture' }, { value: 'arts', label: 'Arts' }, { value: 'business', label: 'Business' }, { value: 'cs_it', label: 'CS & IT' }, { value: 'education', label: 'Education' }, { value: 'engineering', label: 'Engineering' }, { value: 'humanities', label: 'Humanities' }, { value: 'law', label: 'Law' }, { value: 'medicine', label: 'Medicine' }, { value: 'natural_science', label: 'Natural Science' }, { value: 'social_science', label: 'Social Science' }, { value: 'other', label: 'Other' }]} />
-                                                <Input label="Institution Name" name="institution_name" value={profileData.institution_name || ''} onChange={handleProfileChange} />
-                                                <SelectField label="Employment Status" name="employment_status" value={profileData.employment_status || ''} onChange={handleProfileChange} options={[{ value: 'full_time', label: 'Full-time' }, { value: 'part_time', label: 'Part-time' }, { value: 'freelancer', label: 'Freelancer' }, { value: 'entrepreneur', label: 'Entrepreneur' }, { value: 'student', label: 'Student' }, { value: 'unemployed', label: 'Unemployed' }, { value: 'other', label: 'Other' }]} />
-                                                <Input label="Employer Name" name="employer_name" value={profileData.employer_name || ''} onChange={handleProfileChange} />
-                                                <SelectField label="Experience" name="professional_experience" value={profileData.professional_experience || ''} onChange={handleProfileChange} options={[{ value: 'none', label: 'None' }, { value: 'lt_1', label: '< 1 Year' }, { value: '1_2', label: '1–2 Years' }, { value: '2_3', label: '2–3 Years' }, { value: '3_5', label: '3–5 Years' }, { value: '5_6', label: '5–6 Years' }, { value: '6_10', label: '6–10 Years' }, { value: '10_plus', label: '10+ Years' }]} />
-                                                <SelectField label="Motivation" name="enrollment_motivation" value={profileData.enrollment_motivation || ''} onChange={handleProfileChange} options={[{ value: 'new_job', label: 'New Job' }, { value: 'promotion', label: 'Promotion' }, { value: 'new_skill', label: 'New Skill' }, { value: 'advanced_degree', label: 'Advanced Degree' }, { value: 'start_business', label: 'Business' }, { value: 'interest', label: 'Interest' }, { value: 'internship', label: 'Internship' }, { value: 'other', label: 'Other' }]} />
-                                                <SelectField label="Referral Source" name="referral_source" value={profileData.referral_source || ''} onChange={handleProfileChange} options={[{ value: 'email', label: 'Email' }, { value: 'linkedin', label: 'LinkedIn' }, { value: 'facebook', label: 'Facebook' }, { value: 'instagram', label: 'Instagram' }, { value: 'twitter', label: 'Twitter' }, { value: 'telegram', label: 'Telegram' }, { value: 'search_engine', label: 'Search Engine' }, { value: 'sms', label: 'SMS' }, { value: 'website_search', label: 'Website Search' }, { value: 'program_website', label: 'Program Website' }, { value: 'friend_referral', label: 'Friend/Family' }, { value: 'other', label: 'Other' }]} />
+                                                <SelectField label={t('educationLevel')} name="education_level" value={profileData.education_level || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('educationLevel') })} options={[{ value: 'high_school', label: 'High School' }, { value: 'bachelor', label: "Bachelor's" }, { value: 'master', label: "Master's" }, { value: 'phd', label: 'PhD' }, { value: 'other', label: 'Other' }]} />
+                                                <SelectField label={t('fieldOfStudy')} name="field_of_study" value={profileData.field_of_study || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('fieldOfStudy') })} options={[{ value: 'agriculture', label: 'Agriculture' }, { value: 'arts', label: 'Arts' }, { value: 'business', label: 'Business' }, { value: 'cs_it', label: 'CS & IT' }, { value: 'education', label: 'Education' }, { value: 'engineering', label: 'Engineering' }, { value: 'humanities', label: 'Humanities' }, { value: 'law', label: 'Law' }, { value: 'medicine', label: 'Medicine' }, { value: 'natural_science', label: 'Natural Science' }, { value: 'social_science', label: 'Social Science' }, { value: 'other', label: 'Other' }]} />
+                                                <Input label={t('institutionName')} name="institution_name" value={profileData.institution_name || ''} onChange={handleProfileChange} />
+                                                <SelectField label={t('employmentStatus')} name="employment_status" value={profileData.employment_status || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('employmentStatus') })} options={[{ value: 'full_time', label: 'Full-time' }, { value: 'part_time', label: 'Part-time' }, { value: 'freelancer', label: 'Freelancer' }, { value: 'entrepreneur', label: 'Entrepreneur' }, { value: 'student', label: 'Student' }, { value: 'unemployed', label: 'Unemployed' }, { value: 'other', label: 'Other' }]} />
+                                                <Input label={t('employerName')} name="employer_name" value={profileData.employer_name || ''} onChange={handleProfileChange} />
+                                                <SelectField label={t('experience')} name="professional_experience" value={profileData.professional_experience || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('experience') })} options={[{ value: 'none', label: 'None' }, { value: 'lt_1', label: '< 1 Year' }, { value: '1_2', label: '1–2 Years' }, { value: '2_3', label: '2–3 Years' }, { value: '3_5', label: '3–5 Years' }, { value: '5_6', label: '5–6 Years' }, { value: '6_10', label: '6–10 Years' }, { value: '10_plus', label: '10+ Years' }]} />
+                                                <SelectField label={t('motivation')} name="enrollment_motivation" value={profileData.enrollment_motivation || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('motivation') })} options={[{ value: 'new_job', label: 'New Job' }, { value: 'promotion', label: 'Promotion' }, { value: 'new_skill', label: 'New Skill' }, { value: 'advanced_degree', label: 'Advanced Degree' }, { value: 'start_business', label: 'Business' }, { value: 'interest', label: 'Interest' }, { value: 'internship', label: 'Internship' }, { value: 'other', label: 'Other' }]} />
+                                                <SelectField label={t('referralSource')} name="referral_source" value={profileData.referral_source || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('referralSource') })} options={[{ value: 'email', label: 'Email' }, { value: 'linkedin', label: 'LinkedIn' }, { value: 'facebook', label: 'Facebook' }, { value: 'instagram', label: 'Instagram' }, { value: 'twitter', label: 'Twitter' }, { value: 'telegram', label: 'Telegram' }, { value: 'search_engine', label: 'Search Engine' }, { value: 'sms', label: 'SMS' }, { value: 'website_search', label: 'Website Search' }, { value: 'program_website', label: 'Program Website' }, { value: 'friend_referral', label: 'Friend/Family' }, { value: 'other', label: 'Other' }]} />
                                             </div>
                                         </div>
 
@@ -394,8 +396,8 @@ export default function ProfilePage() {
                                         {(profileData.employment_status === 'unemployed' || profileData.employment_status === 'other') && (
 
                                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-2">
-                                                <label className="block text-sm font-bold text-foreground mb-2 ml-1">Unemployment Description</label>
-                                                <textarea name="unemployment_description" value={profileData.unemployment_description || ''} onChange={(e) => setProfileData((prev) => ({ ...prev, unemployment_description: e.target.value }))} className="block w-full rounded-2xl border border-border py-4 px-5 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:ring-4 focus:ring-primary/5 focus:border-primary focus:outline-none bg-gray-50/30 dark:bg-card transition-all resize-none min-h-[120px]" placeholder="Could you briefly tell us more about your current status? This helps us provide relevant certifications." />
+                                                <label className="block text-sm font-bold text-foreground mb-2 ml-1">{t('unemploymentDescription')}</label>
+                                                <textarea name="unemployment_description" value={profileData.unemployment_description || ''} onChange={(e) => setProfileData((prev) => ({ ...prev, unemployment_description: e.target.value }))} className="block w-full rounded-2xl border border-border py-4 px-5 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:ring-4 focus:ring-primary/5 focus:border-primary focus:outline-none bg-gray-50/30 dark:bg-card transition-all resize-none min-h-[120px]" placeholder={t('unemploymentPlaceholder')} />
                                             </motion.div>
                                         )}
 
@@ -404,15 +406,15 @@ export default function ProfilePage() {
                                                 <input type="checkbox" id="is_info" name="is_information_confirmed" checked={profileData.is_information_confirmed || false} onChange={handleProfileChange} className="w-5 h-5 text-primary border-border rounded-xl focus:ring-primary cursor-pointer transition-all hover:scale-110" />
                                             </div>
                                             <div className="text-sm leading-6">
-                                                <label htmlFor="is_info" className="font-bold text-foreground cursor-pointer">Confirmation of Accuracy</label>
-                                                <p className="text-muted-foreground font-medium">I understand that providing accurate information ensures I receive the correct certifications and course recommendations.</p>
+                                                <label htmlFor="is_info" className="font-bold text-foreground cursor-pointer">{t('confirmationAccuracy')}</label>
+                                                <p className="text-muted-foreground font-medium">{t('confirmationDesc')}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="flex justify-end gap-3 pt-6 border-t border-gray-50 dark:border-border">
                                         <Button variant="secondary" type="submit" disabled={isSavingProfile} className="px-10 py-4 rounded-2xl shadow-xl shadow-secondary/20 font-bold tracking-tight hover:scale-[1.02] active:scale-[0.98] transition-all">
-                                            {isSavingProfile ? 'Processing...' : 'Sync Profile Changes'}
+                                            {isSavingProfile ? t('processing') : t('syncProfile')}
                                         </Button>
                                     </div>
                                 </form>
@@ -435,7 +437,7 @@ export default function ProfilePage() {
 
                                 <div className="relative z-10">
                                     <div className="flex items-center justify-between mb-8">
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Learning Overview</h3>
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">{t('learningOverview')}</h3>
                                         <div className="h-2 w-2 bg-green-500 rounded-full animate-ping"></div>
                                     </div>
 
@@ -451,8 +453,8 @@ export default function ProfilePage() {
                                                     <span className="text-blue-500 font-bold">{learningStats.enrolled}</span>
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-black text-foreground tracking-tight">Enrolled Courses</span>
-                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Active & Completed</span>
+                                                    <span className="text-xs font-black text-foreground tracking-tight">{t('enrolledCourses')}</span>
+                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{t('activeAndCompleted')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -462,15 +464,15 @@ export default function ProfilePage() {
                                                     <span className="text-green-600 font-bold">{learningStats.completed}</span>
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-black text-foreground tracking-tight">Completed</span>
-                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">100% Progress</span>
+                                                    <span className="text-xs font-black text-foreground tracking-tight">{t('completed')}</span>
+                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{t('completed100')}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <button onClick={() => router.push('/dashboard')} className="w-full mt-8 py-4 bg-card hover:bg-muted border border-border rounded-2xl text-[10px] font-black text-foreground uppercase tracking-[0.2em] transition-all hover:shadow-sm shadow-black/5 dark:shadow-none active:scale-95 cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                                        View Dashboard
+                                        {t('viewDashboard')}
                                     </button>
                                 </div>
                             </motion.div>
@@ -478,8 +480,8 @@ export default function ProfilePage() {
 
                         {/* Security Card */}
                         <Card
-                            title="Security settings"
-                            subtitle="Manage your password and authentication"
+                            title={t('securitySettings')}
+                            subtitle={t('securitySettingsDesc')}
                             icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>}
                         >
                             <form onSubmit={handlePasswordSubmit} className="space-y-6">
@@ -496,12 +498,12 @@ export default function ProfilePage() {
                                     )}
                                 </AnimatePresence>
                                 <div className="space-y-5">
-                                    <Input label="Current Password" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required placeholder="••••••••" showPasswordToggle />
-                                    <Input label="New Password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required placeholder="••••••••" showPasswordToggle />
-                                    <Input label="Confirm New Password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder="••••••••" showPasswordToggle />
+                                    <Input label={t('currentPassword')} type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required placeholder={t('passwordPlaceholder')} showPasswordToggle />
+                                    <Input label={t('newPassword')} type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required placeholder={t('passwordPlaceholder')} showPasswordToggle />
+                                    <Input label={t('confirmNewPassword')} type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder={t('passwordPlaceholder')} showPasswordToggle />
                                 </div>
                                 <Button variant="primary" type="submit" disabled={isSavingPassword} className="w-full py-4 rounded-2xl mt-4 shadow-xl shadow-primary/20 font-bold hover:scale-[1.02] active:scale-[0.98] transition-all">
-                                    {isSavingPassword ? 'Securing...' : 'Update Password'}
+                                    {isSavingPassword ? t('securing') : t('updatePassword')}
                                 </Button>
                             </form>
                         </Card>

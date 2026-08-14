@@ -9,14 +9,12 @@ const getMessages = async (locale: string) => {
   switch (locale) {
     case 'am':
       return (await import('@messages/am.json')).default;
-    case 'ar':
-      return (await import('@messages/ar.json')).default;
     case 'om':
       return (await import('@messages/om.json')).default;
     case 'sw':
       return (await import('@messages/sw.json')).default;
-    case 'ti':
-      return (await import('@messages/ti.json')).default;
+    case 'so':
+      return (await import('@messages/so.json')).default;
     case 'en':
     default:
       return (await import('@messages/en.json')).default;

@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { awarenessTopics } from '@/lib/awarenessData';
 import { PageHero } from '@/components/PageHero';
+import { useTranslations } from 'next-intl';
 
 const colorMap: Record<string, { border: string; bg: string; iconBg: string; text: string }> = {
     red: { border: 'border-red-500', bg: 'bg-red-50', iconBg: 'bg-red-100', text: 'text-red-600' },
@@ -13,12 +14,19 @@ const colorMap: Record<string, { border: string; bg: string; iconBg: string; tex
 };
 
 export function AwarenessHubGrid() {
+    const t = useTranslations('awarenessData');
+
+    const toCamel = (s: string) => {
+        const parts = s.split(/[^a-zA-Z0-9]+/);
+        return parts[0].toLowerCase() + parts.slice(1).map(x => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase()).join('');
+    };
+
     return (
         <div className="min-h-screen bg-muted">
             <PageHero
-                badge="KNOWLEDGE HUB"
-                title="Awareness Topics"
-                description="Explore practical guides and actionable steps to protect yourself and your organization from the most common cyber threats."
+                badge={t('knowledgeHubBadge')}
+                title={t('awarenessTopicsTitle')}
+                description={t('awarenessTopicsDesc')}
                 center
             />
 
@@ -27,6 +35,7 @@ export function AwarenessHubGrid() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {awarenessTopics.map((topic) => {
                         const colors = colorMap[topic.accentColor] || colorMap.blue;
+                        const prefix = toCamel(topic.slug);
                         return (
                             <Link key={topic.slug} href={`/awareness/${topic.slug}`} className="group block">
                                 <div
@@ -41,20 +50,20 @@ export function AwarenessHubGrid() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
-                                                {topic.title}
+                                                {(t as any)(`${prefix}Title`) || topic.title}
                                             </h3>
                                             <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                                                {topic.description}
+                                                {(t as any)(`${prefix}Desc`) || topic.description}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-4 text-sm">
                                         <span className={`text-xs font-semibold ${colors.text}`}>
-                                            {topic.sections.length} guides
+                                            {t('guidesCount', { count: topic.sections.length })}
                                         </span>
                                         <span className="text-xs text-muted-foreground font-medium group-hover:text-primary transition-colors flex items-center gap-1 ml-auto">
-                                            Explore Topic &rarr;
+                                            {t('exploreTopic')} &rarr;
                                         </span>
                                     </div>
                                 </div>

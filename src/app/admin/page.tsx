@@ -19,6 +19,7 @@ import {
     TrendingUp, Megaphone, ShieldCheck, Download,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useTranslations } from 'next-intl';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,6 +50,7 @@ function SummaryCard({ icon, label, value, sub, color }: {
 
 export default function AdminDashboard() {
     const { user, isAuthenticated, isLoading } = useAuth();
+    const t = useTranslations('adminDashboard');
     const router = useRouter();
 
     const [coursesCount, setCoursesCount] = useState('0');
@@ -187,9 +189,9 @@ export default function AdminDashboard() {
     if (!user || (user.role !== 'super_admin' && user.role !== 'org_admin' && user.role !== 'course_provider')) return null;
 
     const roleLabel: Record<string, string> = {
-        super_admin: 'System Administrator',
-        org_admin: 'Organization Administrator',
-        course_provider: 'Course Provider',
+        super_admin: t('roleSuperAdmin'),
+        org_admin: t('roleOrgAdmin'),
+        course_provider: t('roleCourseProvider'),
     };
 
     return (
@@ -203,17 +205,17 @@ export default function AdminDashboard() {
                         {roleLabel[user.role] || user.role}
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                        Welcome back, {user.first_name}
+                        {t('welcomeBack', { name: user.first_name })}
                     </h1>
                     <p className="text-muted-foreground mt-2 max-w-2xl">
-                        Here is your personalized dashboard overview. Monitor platform activity, manage content, and oversee organizational health from one central location.
+                        {t('welcomeDesc')}
                     </p>
                 </div>
                 {user.role === 'super_admin' && parseInt(reqsCount) > 0 && (
                     <Link href="/admin/training-requests">
                         <Button variant="destructive" className="mt-4 md:mt-0 gap-2 shadow-sm shadow-black/5 dark:shadow-none">
                             <Clock className="size-4" />
-                            {reqsCount} Pending Requests
+                            {t('pendingRequests', { count: reqsCount })}
                         </Button>
                     </Link>
                 )}
@@ -224,12 +226,12 @@ export default function AdminDashboard() {
                 <>
                     {/* Summary Cards */}
                     <AnimatedSection delay={0.1}><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                        <SummaryCard icon={<Users className="size-4" />} label="Total Users" value={(overview?.total_users ?? analytics?.users.total ?? 0).toLocaleString()} sub="Active across platform" color="blue" />
-                        <SummaryCard icon={<Building2 className="size-4" />} label="Organizations" value={(overview?.total_organizations ?? parseInt(orgsCount) ?? 0).toLocaleString()} sub="Registered partners" color="green" />
-                        <SummaryCard icon={<GraduationCap className="size-4" />} label="Total Courses" value={(overview?.total_courses ?? parseInt(coursesCount) ?? 0).toLocaleString()} sub="Available for enrollment" color="purple" />
-                        <SummaryCard icon={<FileText className="size-4" />} label="Total Enrollments" value={(overview?.total_enrollments ?? 0).toLocaleString()} sub="Across all courses" color="amber" />
-                        <SummaryCard icon={<Award className="size-4" />} label="Completions" value={(overview?.total_completions ?? 0).toLocaleString()} sub="Course completions" color="emerald" />
-                        <SummaryCard icon={<FileCheck className="size-4" />} label="Certificates" value={(overview?.total_certificates ?? analytics?.certificates.total ?? 0).toLocaleString()} sub="Certificates issued" color="rose" />
+                        <SummaryCard icon={<Users className="size-4" />} label={t('totalUsers')} value={(overview?.total_users ?? analytics?.users.total ?? 0).toLocaleString()} sub={t('activeAcrossPlatform')} color="blue" />
+                        <SummaryCard icon={<Building2 className="size-4" />} label={t('organizations')} value={(overview?.total_organizations ?? parseInt(orgsCount) ?? 0).toLocaleString()} sub={t('registeredPartners')} color="green" />
+                        <SummaryCard icon={<GraduationCap className="size-4" />} label={t('totalCourses')} value={(overview?.total_courses ?? parseInt(coursesCount) ?? 0).toLocaleString()} sub={t('availableForEnrollment')} color="purple" />
+                        <SummaryCard icon={<FileText className="size-4" />} label={t('totalEnrollments')} value={(overview?.total_enrollments ?? 0).toLocaleString()} sub={t('acrossAllCourses')} color="amber" />
+                        <SummaryCard icon={<Award className="size-4" />} label={t('completions')} value={(overview?.total_completions ?? 0).toLocaleString()} sub={t('courseCompletions')} color="emerald" />
+                        <SummaryCard icon={<FileCheck className="size-4" />} label={t('certificatesIssued')} value={(overview?.total_certificates ?? analytics?.certificates.total ?? 0).toLocaleString()} sub={t('certificatesIssued')} color="rose" />
                     </div></AnimatedSection>
 
                     {/* Growth Charts */}
@@ -239,8 +241,8 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-2">
                                     <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
-                                        <CardTitle>Enrollment Growth</CardTitle>
-                                        <CardDescription>Monthly enrollment trend (last 12 months)</CardDescription>
+                                        <CardTitle>{t('enrollmentGrowth')}</CardTitle>
+                                        <CardDescription>{t('monthlyEnrollmentTrend')}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
@@ -252,11 +254,11 @@ export default function AdminDashboard() {
                                             <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                                             <YAxis tick={{ fontSize: 11 }} />
                                             <Tooltip />
-                                            <Line type="monotone" dataKey="count" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} name="Enrollments" />
+                                            <Line type="monotone" dataKey="count" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} name={t('enrollments')} />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 ) : (
-                                    <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">No enrollment data available</div>
+                                    <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">{t('noEnrollmentData')}</div>
                                 )}
                             </CardContent>
                         </Card>
@@ -266,8 +268,8 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-2">
                                     <div className="p-2 bg-green-100 text-green-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
-                                        <CardTitle>User Growth</CardTitle>
-                                        <CardDescription>Monthly new user registrations (last 12 months)</CardDescription>
+                                        <CardTitle>{t('userGrowth')}</CardTitle>
+                                        <CardDescription>{t('monthlyNewUserTrend')}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
@@ -279,11 +281,11 @@ export default function AdminDashboard() {
                                             <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                                             <YAxis tick={{ fontSize: 11 }} />
                                             <Tooltip />
-                                            <Line type="monotone" dataKey="count" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} name="Users" />
+                                            <Line type="monotone" dataKey="count" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} name={t('users')} />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 ) : (
-                                    <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">No user growth data available</div>
+                                    <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">{t('noUserGrowthData')}</div>
                                 )}
                             </CardContent>
                         </Card>
@@ -296,8 +298,8 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-2">
                                     <div className="p-2 bg-purple-100 text-purple-600 rounded-lg"><GraduationCap className="size-4" /></div>
                                     <div>
-                                        <CardTitle>Course Performance</CardTitle>
-                                        <CardDescription>Enrollment vs completion across courses</CardDescription>
+                                        <CardTitle>{t('coursePerformance')}</CardTitle>
+                                        <CardDescription>{t('enrollmentVsCompletion')}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
@@ -325,12 +327,12 @@ export default function AdminDashboard() {
                                             <YAxis tick={{ fontSize: 11 }} />
                                             <Tooltip />
                                             <Legend />
-                                            <Bar dataKey="total_enrolled" fill="#2563eb" name="Enrolled" radius={[2, 2, 0, 0]} />
-                                            <Bar dataKey="completed" fill="#10b981" name="Completed" radius={[2, 2, 0, 0]} />
+                                            <Bar dataKey="total_enrolled" fill="#2563eb" name={t('enrolled')} radius={[2, 2, 0, 0]} />
+                                            <Bar dataKey="completed" fill="#10b981" name={t('completed')} radius={[2, 2, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 ) : (
-                                    <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">No course data available</div>
+                                    <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">{t('noCourseData')}</div>
                                 )}
                             </CardContent>
                         </Card>
@@ -340,8 +342,8 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-2">
                                     <div className="p-2 bg-amber-100 text-amber-600 rounded-lg"><Award className="size-4" /></div>
                                     <div>
-                                        <CardTitle>Top Performing Courses</CardTitle>
-                                        <CardDescription>Highest enrollment courses</CardDescription>
+                                        <CardTitle>{t('topPerformingCourses')}</CardTitle>
+                                        <CardDescription>{t('highestEnrollmentCourses')}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
@@ -368,7 +370,7 @@ export default function AdminDashboard() {
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">No course data available</div>
+                                    <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">{t('noCourseData')}</div>
                                 )}
                             </CardContent>
                         </Card>
@@ -381,23 +383,23 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-2">
                                     <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
-                                        <CardTitle>Course Comparison</CardTitle>
-                                        <CardDescription>Compare enrollment metrics across courses</CardDescription>
+                                        <CardTitle>{t('courseComparison')}</CardTitle>
+                                        <CardDescription>{t('compareEnrollmentMetrics')}</CardDescription>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card" placeholder="From" />
-                                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card" placeholder="To" />
+                                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card" placeholder={t('from')} />
+                                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card" placeholder={t('to')} />
                                     <select value={filterCourseIds} onChange={e => setFilterCourseIds(e.target.value)} className="block rounded-lg border border-border py-1.5 px-3 text-xs shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card">
-                                        <option value="">All Courses</option>
+                                        <option value="">{t('courseComparison')}</option>
                                         {allCourses.map(c => (
                                             <option key={c.id} value={c.id}>{c.title}</option>
                                         ))}
                                     </select>
-                                    <Button variant="outline" size="sm" onClick={handleApplyFilter}>Apply</Button>
+                                    <Button variant="outline" size="sm" onClick={handleApplyFilter}>{t('apply')}</Button>
                                     {/* <Button variant="outline" size="sm" onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); setFilterCourseIds(''); }}>Reset</Button> */}
                                     <Button variant="default" size="sm" className="gap-2" onClick={exportCSV} disabled={!comparison.length}>
-                                        <Download className="size-4" /> Export CSV
+                                        <Download className="size-4" /> {t('exportCsv')}
                                     </Button>
                                 </div>
                             </div>
@@ -408,11 +410,11 @@ export default function AdminDashboard() {
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b text-left text-muted-foreground">
-                                                <th className="py-3 px-4 font-medium">Course</th>
-                                                <th className="py-3 px-4 font-medium text-right">Enrolled</th>
-                                                <th className="py-3 px-4 font-medium text-right">Completed</th>
-                                                <th className="py-3 px-4 font-medium text-right">Completion Rate</th>
-                                                <th className="py-3 px-4 font-medium text-right">Certificates</th>
+                                                <th className="py-3 px-4 font-medium">{t('course')}</th>
+                                                <th className="py-3 px-4 font-medium text-right">{t('enrolled')}</th>
+                                                <th className="py-3 px-4 font-medium text-right">{t('completed')}</th>
+                                                <th className="py-3 px-4 font-medium text-right">{t('completionRate')}</th>
+                                                <th className="py-3 px-4 font-medium text-right">{t('certificatesIssued')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -437,7 +439,7 @@ export default function AdminDashboard() {
                                     </table>
                                 </div>
                             ) : (
-                                <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">No course comparison data available. Try adjusting filters.</div>
+                                <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">{t('noCourseComparisonData')}</div>
                             )}
                         </CardContent>
                     </Card>
@@ -449,8 +451,8 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-2">
                                     <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><TrendingUp className="size-4" /></div>
                                     <div>
-                                        <CardTitle>Platform Engagement</CardTitle>
-                                        <CardDescription>Learning progress across all users</CardDescription>
+                                        <CardTitle>{t('platformEngagement')}</CardTitle>
+                                        <CardDescription>{t('learningProgressAcrossUsers')}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
@@ -459,7 +461,7 @@ export default function AdminDashboard() {
                                     <>
                                         <div>
                                             <div className="flex justify-between text-sm mb-1.5">
-                                                <span className="text-muted-foreground font-medium">Total Enrollments</span>
+                                                <span className="text-muted-foreground font-medium">{t('totalEnrollments')}</span>
                                                 <span className="font-bold">{analytics.enrollments.total.toLocaleString()}</span>
                                             </div>
                                             <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
@@ -468,7 +470,7 @@ export default function AdminDashboard() {
                                         </div>
                                         <div>
                                             <div className="flex justify-between text-sm mb-1.5">
-                                                <span className="text-muted-foreground font-medium">Average Progress</span>
+                                                <span className="text-muted-foreground font-medium">{t('averageProgress')}</span>
                                                 <span className="font-bold">{Math.round(analytics.enrollments.average_progress)}%</span>
                                             </div>
                                             <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
@@ -477,7 +479,7 @@ export default function AdminDashboard() {
                                         </div>
                                         <div>
                                             <div className="flex justify-between text-sm mb-1.5">
-                                                <span className="text-muted-foreground font-medium">Average Quiz Score</span>
+                                                <span className="text-muted-foreground font-medium">{t('averageQuizScore')}</span>
                                                 <span className="font-bold">{Math.round(analytics.assessments.average_score)}%</span>
                                             </div>
                                             <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
@@ -486,7 +488,7 @@ export default function AdminDashboard() {
                                         </div>
                                         <div>
                                             <div className="flex justify-between text-sm mb-1.5">
-                                                <span className="text-muted-foreground font-medium">Certificates Issued</span>
+                                                <span className="text-muted-foreground font-medium">{t('certificatesIssued')}</span>
                                                 <span className="font-bold">{analytics.certificates.total.toLocaleString()}</span>
                                             </div>
                                             <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
@@ -495,7 +497,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </>
                                 ) : (
-                                    <p className="text-muted-foreground text-sm text-center py-8">Loading analytics...</p>
+                                    <p className="text-muted-foreground text-sm text-center py-8">{t('loadingAnalytics')}</p>
                                 )}
                             </CardContent>
                         </Card>
@@ -505,15 +507,15 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-2">
                                     <div className="p-2 bg-green-100 text-green-600 rounded-lg"><Building2 className="size-4" /></div>
                                     <div>
-                                        <CardTitle>Recent Organizations</CardTitle>
-                                        <CardDescription>Latest onboarded partners</CardDescription>
+                                        <CardTitle>{t('recentOrganizations')}</CardTitle>
+                                        <CardDescription>{t('latestOnboardedPartners')}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="flex-1 p-0">
                                 <div className="divide-y">
                                     {recentOrgs.length === 0 ? (
-                                        <div className="p-8 text-center text-muted-foreground text-sm">No recent data available.</div>
+                                        <div className="p-8 text-center text-muted-foreground text-sm">{t('noRecentData')}</div>
                                     ) : recentOrgs.map(org => (
                                         <div key={org.id} className="p-4 px-6 hover:bg-muted/50 transition-colors flex items-center justify-between">
                                             <div className="flex items-center gap-3">
@@ -522,11 +524,11 @@ export default function AdminDashboard() {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-medium text-foreground">{org.name}</span>
-                                                    <span className="text-xs text-muted-foreground">Joined {new Date(org.created_at).toLocaleDateString()}</span>
+                                                    <span className="text-xs text-muted-foreground">{t('joinedDate', { date: new Date(org.created_at).toLocaleDateString() })}</span>
                                                 </div>
                                             </div>
                                             <Link href={`/admin/organizations`}>
-                                                <Button variant="outline" size="sm">Manage</Button>
+                                                <Button variant="outline" size="sm">{t('manage')}</Button>
                                             </Link>
                                         </div>
                                     ))}
@@ -535,17 +537,17 @@ export default function AdminDashboard() {
                         </Card>
                     </div>
 
-                    {/* Quick Actions Grid */}
+                    {/* {t('quickActions')} Grid */}
                     <div>
-                        <h2 className="text-lg font-bold text-foreground mb-4 px-1">Quick Actions</h2>
+                        <h2 className="text-lg font-bold text-foreground mb-4 px-1">{t('quickActions')}</h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                             {[
-                                { href: '/admin/users', icon: <Users className="size-5 text-blue-500 mb-1" />, label: 'Manage Users' },
-                                { href: '/admin/organization-applications', icon: <FileCheck className="size-5 text-green-500 mb-1" />, label: 'Org Applications' },
-                                { href: '/admin/courses', icon: <GraduationCap className="size-5 text-purple-500 mb-1" />, label: 'Courses & Content' },
-                                { href: '/admin/campaigns', icon: <Megaphone className="size-5 text-orange-500 mb-1" />, label: 'Campaigns' },
-                                { href: '/admin/audit-logs', icon: <ShieldAlert className="size-5 text-red-500 mb-1" />, label: 'Audit Logs' },
-                                { href: '/admin/awareness-tools', icon: <ShieldCheck className="size-5 text-teal-500 mb-1" />, label: 'Awareness Tools' },
+                                { href: '/admin/users', icon: <Users className="size-5 text-blue-500 mb-1" />, label: t('manageUsers') },
+                                { href: '/admin/organization-applications', icon: <FileCheck className="size-5 text-green-500 mb-1" />, label: t('orgApplications') },
+                                { href: '/admin/courses', icon: <GraduationCap className="size-5 text-purple-500 mb-1" />, label: t('coursesAndContent') },
+                                { href: '/admin/campaigns', icon: <Megaphone className="size-5 text-orange-500 mb-1" />, label: t('campaigns') },
+                                { href: '/admin/audit-logs', icon: <ShieldAlert className="size-5 text-red-500 mb-1" />, label: t('auditLogs') },
+                                { href: '/admin/awareness-tools', icon: <ShieldCheck className="size-5 text-teal-500 mb-1" />, label: t('awarenessTools') },
                             ].map(item => (
                                 <Link key={item.href} href={item.href}>
                                     <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 items-center justify-center hover:border-primary hover:bg-primary/5 w-full">
@@ -565,7 +567,7 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Organization Members</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{t('organizationMembers')}</CardTitle>
                                 <Users className="size-4 text-blue-500" />
                             </CardHeader>
                             <CardContent>
@@ -574,7 +576,7 @@ export default function AdminDashboard() {
                         </Card>
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Available Courses</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{t('availableCourses')}</CardTitle>
                                 <GraduationCap className="size-4 text-green-500" />
                             </CardHeader>
                             <CardContent>
@@ -583,7 +585,7 @@ export default function AdminDashboard() {
                         </Card>
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Training Requests</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{t('trainingRequests')}</CardTitle>
                                 <FileText className="size-4 text-amber-500" />
                             </CardHeader>
                             <CardContent>
@@ -597,8 +599,8 @@ export default function AdminDashboard() {
                             <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
                                 <Users className="size-5 text-blue-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Members</span>
-                                    <span className="text-[10px] text-muted-foreground">Manage organization users</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">{t('members')}</span>
+                                    <span className="text-[10px] text-muted-foreground">{t('manageOrgUsers')}</span>
                                 </div>
                             </div>
                         </Link>
@@ -606,8 +608,8 @@ export default function AdminDashboard() {
                             <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
                                 <FileText className="size-5 text-amber-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Requests</span>
-                                    <span className="text-[10px] text-muted-foreground">Request custom training</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">{t('requests')}</span>
+                                    <span className="text-[10px] text-muted-foreground">{t('requestCustomTraining')}</span>
                                 </div>
                             </div>
                         </Link>
@@ -615,8 +617,8 @@ export default function AdminDashboard() {
                             <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
                                 <TrendingUp className="size-5 text-purple-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Reports</span>
-                                    <span className="text-[10px] text-muted-foreground">Compliance & progress</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">{t('reports')}</span>
+                                    <span className="text-[10px] text-muted-foreground">{t('complianceAndProgress')}</span>
                                 </div>
                             </div>
                         </Link>
@@ -624,8 +626,8 @@ export default function AdminDashboard() {
                             <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
                                 <Megaphone className="size-5 text-orange-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">Campaigns</span>
-                                    <span className="text-[10px] text-muted-foreground">Awareness communications</span>
+                                    <span className="font-semibold text-sm group-hover:text-primary transition-colors">{t('campaigns')}</span>
+                                    <span className="text-[10px] text-muted-foreground">{t('awarenessCommunications')}</span>
                                 </div>
                             </div>
                         </Link>
@@ -639,7 +641,7 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">My Courses</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{t('myCourses')}</CardTitle>
                                 <GraduationCap className="size-4 text-blue-500" />
                             </CardHeader>
                             <CardContent>
@@ -648,7 +650,7 @@ export default function AdminDashboard() {
                         </Card>
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Total Resources</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{t('totalResources')}</CardTitle>
                                 <BookOpen className="size-4 text-green-500" />
                             </CardHeader>
                             <CardContent>
@@ -657,7 +659,7 @@ export default function AdminDashboard() {
                         </Card>
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Assessments</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{t('assessments')}</CardTitle>
                                 <FileCheck className="size-4 text-amber-500" />
                             </CardHeader>
                             <CardContent>
@@ -666,7 +668,7 @@ export default function AdminDashboard() {
                         </Card>
                         <Card className="shadow-sm shadow-black/5 dark:shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Articles</CardTitle>
+                                <CardTitle className="text-sm font-medium text-muted-foreground">{t('articles')}</CardTitle>
                                 <FileText className="size-4 text-purple-500" />
                             </CardHeader>
                             <CardContent>
@@ -678,9 +680,9 @@ export default function AdminDashboard() {
                     <div className="mt-4 bg-amber-500/10 border border-amber-500/20 p-5 rounded-xl text-sm flex gap-3 shadow-sm shadow-black/5 dark:shadow-none">
                         <ShieldAlert className="size-5 text-amber-500 shrink-0 mt-0.5" />
                         <div>
-                            <strong className="text-amber-500 font-semibold block mb-1">Content Approval Workflow</strong>
+                            <strong className="text-amber-500 font-semibold block mb-1">{t('contentApprovalWorkflow')}</strong>
                             <span className="text-amber-500/80 leading-relaxed">
-                                Draft → Submit for Review → Submitted (pending) → Approve / Reject. Course providers can submit content for review; System Administrators can approve or reject with a reason. Rejected content returns to Draft with feedback. Archived content can be restored to Draft.
+                                {t('contentApprovalDesc')}
                             </span>
                         </div>
                     </div>

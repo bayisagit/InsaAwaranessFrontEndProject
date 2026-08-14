@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
+import { useTranslations } from 'next-intl';
 
 interface SupportCTAProps {
     title?: string;

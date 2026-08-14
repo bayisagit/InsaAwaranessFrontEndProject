@@ -17,6 +17,7 @@ import { ConfirmModal } from '@/components/ConfirmModal';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { toast } from 'react-hot-toast';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
+import { useTranslations } from 'next-intl';
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; role: string; }
 
@@ -30,6 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function AdminCoursesPage() {
  const { user, isAuthenticated, isLoading } = useAuth();
+ const t = useTranslations('adminCourses');
  const router = useRouter();
 
  const [courses, setCourses] = useState<Course[]>([]);
@@ -198,7 +200,7 @@ export default function AdminCoursesPage() {
  if (apiErr) {
  setActionError(apiErr);
  } else {
- toast.success(isEditing ? 'Course updated.' : 'Course created.');
+ toast.success(isEditing ? t('courseUpdated') : t('courseCreatedSuccess'));
  fetchCourses();
  if (isEditing) {
  setIsModalOpen(false);
@@ -219,7 +221,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: err } = await deleteCourse(itemToDelete);
  if (err) { toast.error(err); setError(err); }
- else { toast.success('Course deleted.'); fetchCourses(); }
+ else { toast.success(t('courseDeleted')); fetchCourses(); }
  setIsDeleteModalOpen(false); setItemToDelete(null); setIsActionLoading(false);
  };
 
@@ -227,7 +229,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: apiErr } = await updateCourse(id, { status: newStatus as any });
  if (apiErr) toast.error(apiErr);
- else { toast.success(`Course ${newStatus}.`); fetchCourses(); }
+ else { toast.success(`${t('course')} ${newStatus}.`); fetchCourses(); }
  setIsActionLoading(false);
  };
 
@@ -236,7 +238,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: e } = await assignCourseProvider(assignProviderCourse.id, selectedProvider);
  if (e) toast.error(e);
- else { toast.success('Course provider assigned.'); fetchCourses(); setIsAssignProviderOpen(false); }
+ else { toast.success(t('providerAssigned')); fetchCourses(); setIsAssignProviderOpen(false); }
  setIsActionLoading(false);
  };
 
@@ -245,7 +247,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: e } = await assignCourseOrganization(assignOrgCourse.id, selectedOrg || null);
  if (e) toast.error(e);
- else { toast.success('Organization assigned.'); fetchCourses(); setIsAssignOrgOpen(false); }
+ else { toast.success(t('orgAssigned')); fetchCourses(); setIsAssignOrgOpen(false); }
  setIsActionLoading(false);
  };
 
@@ -258,7 +260,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: e } = await submitCourseForReview(submitConfirmId);
  if (e) toast.error(e);
- else { toast.success('Course submitted for review.'); fetchCourses(); }
+ else { toast.success(t('courseSubmitted')); fetchCourses(); }
  setIsActionLoading(false);
  setSubmitConfirmId(null);
  };
@@ -272,7 +274,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: e } = await withdrawCourse(withdrawConfirmId);
  if (e) toast.error(e);
- else { toast.success('Course submission withdrawn. It is now a draft again.'); fetchCourses(); }
+ else { toast.success(t('submissionWithdrawn')); fetchCourses(); }
  setIsActionLoading(false);
  setWithdrawConfirmId(null);
  };
@@ -281,7 +283,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: e } = await approveCourse(id);
  if (e) toast.error(e);
- else { toast.success('Course approved and published.'); fetchCourses(); }
+ else { toast.success(t('courseApproved')); fetchCourses(); }
  setIsActionLoading(false);
  };
 
@@ -296,7 +298,7 @@ export default function AdminCoursesPage() {
  setIsActionLoading(true);
  const { error: e } = await rejectCourse(rejectCourseId, rejectionReason);
  if (e) toast.error(e);
- else { toast.success('Course rejected.'); fetchCourses(); setIsRejectModalOpen(false); }
+ else { toast.success(t('courseRejected')); fetchCourses(); setIsRejectModalOpen(false); }
  setIsActionLoading(false);
  };
 
@@ -323,13 +325,13 @@ export default function AdminCoursesPage() {
  <div className="bg-card border-b border-border">
  <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
  <div>
- <h1 className="text-3xl font-bold text-foreground mb-1">Courses Management</h1>
- <p className="text-muted-foreground">Create and manage cybersecurity training courses.</p>
+ <h1 className="text-3xl font-bold text-foreground mb-1">{t('coursesManagement')}</h1>
+ <p className="text-muted-foreground">{t('coursesDesc')}</p>
  </div>
  <div className="w-full lg:w-72 shrink-0">
  <input
  type="text"
- placeholder="Search course title…"
+ placeholder={t('searchCourse')}
  className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
  value={searchQuery}
  onChange={e => setSearchQuery(e.target.value)}
@@ -340,24 +342,24 @@ export default function AdminCoursesPage() {
 
  {canManage && (
  <ExpandableCreateSection
- title="Add New Course"
+ title={t('addNewCourse')}
  isOpen={isCreateExpanded}
  onToggle={toggleCreate}
  isSuccess={!!createdCourseId}
- successTitle="Course Created Successfully!"
- successDescription="Great! You can now start building the structure of your course."
+ successTitle={t('courseCreatedSuccess')}
+ successDescription={t('courseCreatedDesc')}
  nextSteps={createdCourseId ? [
- { label: 'Add a Module', href: `/admin/modules?create=true&courseId=${createdCourseId}`, icon: '📂' },
- { label: 'Add Course Exam', href: `/admin/assessments?create=true&parent_type=course_exam&courseId=${createdCourseId}`, variant: 'secondary', icon: '🎓' }
+ { label: t('addModule'), href: `/admin/modules?create=true&courseId=${createdCourseId}`, icon: '📂' },
+ { label: t('addCourseExam'), href: `/admin/assessments?create=true&parent_type=course_exam&courseId=${createdCourseId}`, variant: 'secondary', icon: '🎓' }
  ] : []}
  >
  <form onSubmit={handleSubmit} className="space-y-4">
  {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
- <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
+ <Input label={t('title')} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
  <CloudinaryUpload
- label="Course Thumbnail"
+ label={t('courseThumbnail')}
  folder="lms-course-thumbnails"
  resourceType="image"
  value={form.thumbnail_url || ''}
@@ -371,10 +373,10 @@ export default function AdminCoursesPage() {
  )}
 
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Description</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('description')}</label>
  <textarea
  className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px] resize-y"
- placeholder="Course description…"
+ placeholder={t('description')}
  value={form.description}
  onChange={e => setForm({ ...form, description: e.target.value })}
  disabled={isActionLoading}
@@ -383,9 +385,9 @@ export default function AdminCoursesPage() {
 
  {isSuperAdmin && (
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Organization <span className="text-muted-foreground font-normal">(optional)</span></label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('organization')} <span className="text-muted-foreground font-normal">{t('optional')}</span></label>
  <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
- <option value="">None</option>
+ <option value="">{t('none')}</option>
  {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
  </select>
  </div>
@@ -393,41 +395,41 @@ export default function AdminCoursesPage() {
 
  {isSuperAdmin && (
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Course Provider <span className="text-primary">*</span></label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('courseProvider')} <span className="text-primary">*</span></label>
  <select className={SELECT_CLS} value={form.course_provider} onChange={e => setForm({ ...form, course_provider: e.target.value })} disabled={isActionLoading} required>
- <option value="">Select provider</option>
+ <option value="">{t('selectProvider')}</option>
  {providers.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>)}
  </select>
- {providers.length === 0 && <p className="text-[10px] text-red-500 mt-1">No course provider users found.</p>}
+ {providers.length === 0 && <p className="text-[10px] text-red-500 mt-1">{t('noCourseProviderFound')}</p>}
  </div>
  )}
 
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('language')}</label>
  <select className={SELECT_CLS} value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} disabled={isActionLoading}>
- <option value="en">English (en)</option>
- <option value="am">Amharic (am)</option>
- <option value="om">Oromo (om)</option>
- <option value="so">Somali (so)</option>
- <option value="ti">Tigrinya (ti)</option>
+ <option value="en">{t('english')}</option>
+ <option value="am">{t('amharic')}</option>
+ <option value="om">{t('oromo')}</option>
+ <option value="so">{t('somali')}</option>
+ <option value="ti">{t('tigrinya')}</option>
  </select>
  </div>
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Level</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('level')}</label>
  <select className={SELECT_CLS} value={form.level} onChange={e => setForm({ ...form, level: e.target.value })} disabled={isActionLoading}>
- <option value="Beginner">Beginner</option>
- <option value="Intermediate">Intermediate</option>
- <option value="Advanced">Advanced</option>
+ <option value="Beginner">{t('beginner')}</option>
+ <option value="Intermediate">{t('intermediate')}</option>
+ <option value="Advanced">{t('advanced')}</option>
  </select>
  </div>
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('status')}</label>
  <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
- <option value="draft">Draft</option>
- <option value="submitted">Submitted</option>
- <option value="published">Published</option>
- <option value="archived">Archived</option>
+ <option value="draft">{t('draft')}</option>
+ <option value="submitted">{t('submitted')}</option>
+ <option value="published">{t('published')}</option>
+ <option value="archived">{t('archived')}</option>
  </select>
  </div>
  </div>
@@ -435,15 +437,15 @@ export default function AdminCoursesPage() {
  {isSuperAdmin && (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Payment Type</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('paymentType')}</label>
  <select className={SELECT_CLS} value={form.payment_type} onChange={e => setForm({ ...form, payment_type: e.target.value })} disabled={isActionLoading}>
- <option value="free">Free</option>
- <option value="paid">Paid</option>
+ <option value="free">{t('free')}</option>
+ <option value="paid">{t('paid')}</option>
  </select>
  </div>
  {form.payment_type === 'paid' && (
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Course Price (ETB)</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('coursePriceEtb')}</label>
  <input type="number" step="0.01" className={SELECT_CLS} value={form.course_price} onChange={e => setForm({ ...form, course_price: e.target.value })} disabled={isActionLoading} required />
  </div>
  )}
@@ -451,8 +453,8 @@ export default function AdminCoursesPage() {
  )}
 
  <div className="pt-4 flex justify-end gap-3">
- <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
- <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving…' : 'Create Course'}</Button>
+ <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>{t('cancel')}</Button>
+ <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? t('saving') : t('createCourse')}</Button>
  </div>
  </form>
  </ExpandableCreateSection>
@@ -462,17 +464,17 @@ export default function AdminCoursesPage() {
  <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8">
  <div className="flex flex-wrap items-center gap-4 mb-6">
  <div className="flex items-center gap-2">
- <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Status</label>
+ <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('status')}</label>
  <select
  className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
  value={statusFilter}
  onChange={e => setStatusFilter(e.target.value)}
  >
- <option value="">All</option>
- <option value="draft">Draft</option>
- <option value="submitted">Submitted</option>
- <option value="published">Published</option>
- <option value="archived">Archived</option>
+ <option value="">{t('all')}</option>
+ <option value="draft">{t('draft')}</option>
+ <option value="submitted">{t('submitted')}</option>
+ <option value="published">{t('published')}</option>
+ <option value="archived">{t('archived')}</option>
  </select>
  </div>
  {user?.role !== 'org_admin' && (
@@ -483,7 +485,7 @@ export default function AdminCoursesPage() {
  value={orgFilter}
  onChange={e => setOrgFilter(e.target.value)}
  >
- <option value="">All</option>
+ <option value="">{t('all')}</option>
  {orgs.map(o => (
  <option key={o.id} value={o.id}>{o.name}</option>
  ))}
@@ -492,13 +494,13 @@ export default function AdminCoursesPage() {
  )}
  {isSuperAdmin && (
  <div className="flex items-center gap-2">
- <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Provider</label>
+ <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('provider')}</label>
  <select
  className="rounded-lg border border-border py-1.5 px-2 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card max-w-[140px]"
  value={providerFilter}
  onChange={e => setProviderFilter(e.target.value)}
  >
- <option value="">All</option>
+ <option value="">{t('all')}</option>
  {allUsers.map(u => (
  <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.role})</option>
  ))}
@@ -510,7 +512,7 @@ export default function AdminCoursesPage() {
  onClick={() => { setStatusFilter(''); setOrgFilter(''); setProviderFilter(''); setSearchQuery(''); }}
  className="text-xs text-primary font-bold hover:text-primary transition-colors duration-200-hover cursor-pointer"
  >
- ✕ Clear filters
+ {t('clearFilters')}
  </button>
  )}
  </div>
@@ -523,16 +525,16 @@ export default function AdminCoursesPage() {
  <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
  <tr>
  <th className="px-4 py-3">Title</th>
- <th className="px-4 py-3">Level</th>
- <th className="px-4 py-3">Language</th>
+ <th className="px-4 py-3">{t('level')}</th>
+ <th className="px-4 py-3">{t('language')}</th>
  <th className="px-4 py-3">Organization</th>
- <th className="px-4 py-3">Status</th>
- <th className="px-4 py-3 text-right">Actions</th>
+ <th className="px-4 py-3">{t('status')}</th>
+ <th className="px-4 py-3 text-right">{t('actions')}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-border">
  {filteredCourses.length === 0 ? (
- <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No courses found.</td></tr>
+ <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">{t('noCoursesFound')}</td></tr>
  ) : filteredCourses.map(c => (
  <tr key={c.id} className="hover:bg-muted transition-colors">
  <td className="px-4 py-3 font-medium text-foreground">
@@ -582,25 +584,25 @@ export default function AdminCoursesPage() {
  </Link>
  )}
  {canManage && (
- <button onClick={() => openModal(c)} className="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
+ <button onClick={() => openModal(c)} className="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('edit')}</button>
  )}
  {c.status === 'draft' && user.role === 'course_provider' && (
- <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Submit</button>
+ <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('submit')}</button>
  )}
  {c.status === 'submitted' && user.role === 'course_provider' && (
- <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Withdraw</button>
+ <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('withdraw')}</button>
  )}
  {c.status === 'submitted' && isSuperAdmin && (
  <>
- <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Approve</button>
- <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Reject</button>
+ <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('approve')}</button>
+ <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('reject')}</button>
  </>
  )}
  {isSuperAdmin && (
- <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Provider</button>
+ <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('provider')}</button>
  )}
  {canManage && (
- <button onClick={() => handleDelete(c.id)} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Delete</button>
+ <button onClick={() => handleDelete(c.id)} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('delete')}</button>
  )}
  </div>
  </td>
@@ -613,14 +615,14 @@ export default function AdminCoursesPage() {
  </div>
 
  {/* Edit Modal */}
- <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Course">
+ <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('edit')}>
  <form onSubmit={handleSubmit} className="space-y-4">
  {actionError && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100">{actionError}</div>}
 
- <Input label="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
+ <Input label={t('title')} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required disabled={isActionLoading} autoFocus />
 
  <CloudinaryUpload
- label="Course Thumbnail"
+ label={t('courseThumbnail')}
  folder="lms-course-thumbnails"
  resourceType="image"
  value={form.thumbnail_url || ''}
@@ -634,10 +636,10 @@ export default function AdminCoursesPage() {
  )}
 
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Description</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('description')}</label>
  <textarea
  className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 outline-none min-h-[80px] resize-y"
- placeholder="Course description…"
+ placeholder={t('description')}
  value={form.description}
  onChange={e => setForm({ ...form, description: e.target.value })}
  disabled={isActionLoading}
@@ -646,9 +648,9 @@ export default function AdminCoursesPage() {
 
  {isSuperAdmin && (
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Organization <span className="text-muted-foreground font-normal">(optional)</span></label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('organization')} <span className="text-muted-foreground font-normal">{t('optional')}</span></label>
  <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
- <option value="">None</option>
+ <option value="">{t('none')}</option>
  {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
  </select>
  </div>
@@ -656,30 +658,30 @@ export default function AdminCoursesPage() {
 
  <div className="grid grid-cols-3 gap-3">
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('language')}</label>
  <select className={SELECT_CLS} value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} disabled={isActionLoading}>
- <option value="en">English (en)</option>
- <option value="am">Amharic (am)</option>
- <option value="om">Oromo (om)</option>
- <option value="so">Somali (so)</option>
- <option value="ti">Tigrinya (ti)</option>
+ <option value="en">{t('english')}</option>
+ <option value="am">{t('amharic')}</option>
+ <option value="om">{t('oromo')}</option>
+ <option value="so">{t('somali')}</option>
+ <option value="ti">{t('tigrinya')}</option>
  </select>
  </div>
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Level</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('level')}</label>
  <select className={SELECT_CLS} value={form.level} onChange={e => setForm({ ...form, level: e.target.value })} disabled={isActionLoading}>
- <option value="Beginner">Beginner</option>
- <option value="Intermediate">Intermediate</option>
- <option value="Advanced">Advanced</option>
+ <option value="Beginner">{t('beginner')}</option>
+ <option value="Intermediate">{t('intermediate')}</option>
+ <option value="Advanced">{t('advanced')}</option>
  </select>
  </div>
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('status')}</label>
  <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading || (!!selectedCourse && selectedCourse.status === 'submitted')}>
- <option value="draft">Draft</option>
- <option value="submitted">Submitted</option>
- <option value="published">Published</option>
- <option value="archived">Archived</option>
+ <option value="draft">{t('draft')}</option>
+ <option value="submitted">{t('submitted')}</option>
+ <option value="published">{t('published')}</option>
+ <option value="archived">{t('archived')}</option>
  </select>
  </div>
  </div>
@@ -687,15 +689,15 @@ export default function AdminCoursesPage() {
  {isSuperAdmin && (
  <div className="grid grid-cols-2 gap-3 mt-3">
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Payment Type</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('paymentType')}</label>
  <select className={SELECT_CLS} value={form.payment_type} onChange={e => setForm({ ...form, payment_type: e.target.value })} disabled={isActionLoading}>
- <option value="free">Free</option>
- <option value="paid">Paid</option>
+ <option value="free">{t('free')}</option>
+ <option value="paid">{t('paid')}</option>
  </select>
  </div>
  {form.payment_type === 'paid' && (
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Course Price (ETB)</label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('coursePriceEtb')}</label>
  <input type="number" step="0.01" className={SELECT_CLS} value={form.course_price} onChange={e => setForm({ ...form, course_price: e.target.value })} disabled={isActionLoading} required />
  </div>
  )}
@@ -703,38 +705,38 @@ export default function AdminCoursesPage() {
  )}
 
  <div className="pt-4 flex justify-end gap-3">
- <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
- <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving…' : 'Save Changes'}</Button>
+ <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>{t('cancel')}</Button>
+ <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? t('saving') : t('saveChanges')}</Button>
  </div>
  </form>
  </Modal>
 
  {/* Assign Provider Modal */}
- <Modal isOpen={isAssignProviderOpen} onClose={() => setIsAssignProviderOpen(false)} title="Reassign Course Provider">
+ <Modal isOpen={isAssignProviderOpen} onClose={() => setIsAssignProviderOpen(false)} title={t('reassignCourseProvider')}>
  <div className="space-y-4">
- <p className="text-sm text-muted-foreground">Select a new course provider for: <strong>{assignProviderCourse?.title}</strong></p>
+ <p className="text-sm text-muted-foreground">{t('selectNewProvider')} <strong>{assignProviderCourse?.title}</strong></p>
  <select className={SELECT_CLS} value={selectedProvider} onChange={e => setSelectedProvider(e.target.value)}>
- <option value="">Select provider</option>
+ <option value="">{t('selectProvider')}</option>
  {providers.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>)}
  </select>
  <div className="flex justify-end gap-3 pt-2">
- <Button variant="outline" onClick={() => setIsAssignProviderOpen(false)}>Cancel</Button>
- <Button variant="primary" onClick={handleAssignProvider} disabled={!selectedProvider || isActionLoading}>{isActionLoading ? 'Assigning…' : 'Assign'}</Button>
+ <Button variant="outline" onClick={() => setIsAssignProviderOpen(false)}>{t('cancel')}</Button>
+ <Button variant="primary" onClick={handleAssignProvider} disabled={!selectedProvider || isActionLoading}>{isActionLoading ? t('assigning') : t('assign')}</Button>
  </div>
  </div>
  </Modal>
 
  {/* Assign Organization Modal */}
- <Modal isOpen={isAssignOrgOpen} onClose={() => setIsAssignOrgOpen(false)} title="Assign Organization">
+ <Modal isOpen={isAssignOrgOpen} onClose={() => setIsAssignOrgOpen(false)} title={t('assignOrganization')}>
  <div className="space-y-4">
- <p className="text-sm text-muted-foreground">Link organization for: <strong>{assignOrgCourse?.title}</strong></p>
+ <p className="text-sm text-muted-foreground">{t('linkOrgFor')} <strong>{assignOrgCourse?.title}</strong></p>
  <select className={SELECT_CLS} value={selectedOrg} onChange={e => setSelectedOrg(e.target.value)}>
- <option value="">Unlink (none)</option>
+ <option value="">{t('unlinkNone')}</option>
  {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
  </select>
  <div className="flex justify-end gap-3 pt-2">
- <Button variant="outline" onClick={() => setIsAssignOrgOpen(false)}>Cancel</Button>
- <Button variant="primary" onClick={handleAssignOrg} disabled={isActionLoading}>{isActionLoading ? 'Saving…' : 'Save'}</Button>
+ <Button variant="outline" onClick={() => setIsAssignOrgOpen(false)}>{t('cancel')}</Button>
+ <Button variant="primary" onClick={handleAssignOrg} disabled={isActionLoading}>{isActionLoading ? t('saving') : t('save')}</Button>
  </div>
  </div>
  </Modal>
@@ -743,9 +745,9 @@ export default function AdminCoursesPage() {
  isOpen={!!submitConfirmId}
  onClose={() => setSubmitConfirmId(null)}
  onConfirm={handleSubmitForReview}
- title="Submit for Review"
- message="Are you sure you want to submit this course for review? Once submitted, it will be locked and only a System Administrator can approve or reject it. You will not be able to edit it until the review is complete."
- confirmText="Submit"
+ title={t('submitForReview')}
+ message={t('submitConfirmMessage')}
+ confirmText={t('submit')}
  variant="warning"
  isLoading={isActionLoading}
  />
@@ -754,9 +756,9 @@ export default function AdminCoursesPage() {
  isOpen={!!withdrawConfirmId}
  onClose={() => setWithdrawConfirmId(null)}
  onConfirm={handleWithdraw}
- title="Withdraw Submission"
- message="Are you sure you want to withdraw this course from review? It will be moved back to Draft so you can make changes. You will need to submit it again for review when ready."
- confirmText="Withdraw"
+ title={t('withdrawSubmission')}
+ message={t('withdrawConfirmMessage')}
+ confirmText={t('withdraw')}
  variant="warning"
  isLoading={isActionLoading}
  />
@@ -765,29 +767,29 @@ export default function AdminCoursesPage() {
  isOpen={isDeleteModalOpen}
  onClose={() => setIsDeleteModalOpen(false)}
  onConfirm={handleDeleteConfirm}
- title="Delete Course"
- message="Are you sure you want to delete this course? This action cannot be undone."
- confirmText="Delete"
+ title={t('deleteCourse')}
+ message={t('deleteConfirmMessage')}
+ confirmText={t('delete')}
  isLoading={isActionLoading}
  />
 
  {/* Rejection Reason Modal */}
- <Modal isOpen={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} title="Reject Course">
+ <Modal isOpen={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} title={t('rejectCourse')}>
  <div className="space-y-4">
- <p className="text-sm text-muted-foreground">Provide a reason for rejecting this course. The course provider will see this feedback.</p>
+ <p className="text-sm text-muted-foreground">{t('rejectReasonDesc')}</p>
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Rejection Reason <span className="text-red-500">*</span></label>
+ <label className="block text-sm font-semibold text-foreground mb-1">{t('rejectionReason')} <span className="text-red-500">*</span></label>
  <textarea
  className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 outline-none min-h-[100px] resize-y"
- placeholder="Explain why the course is being rejected…"
+ placeholder={t('explainRejection')}
  value={rejectionReason}
  onChange={e => setRejectionReason(e.target.value)}
  disabled={isActionLoading}
  />
  </div>
  <div className="flex justify-end gap-3 pt-2">
- <Button variant="outline" onClick={() => setIsRejectModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
- <Button variant="primary" onClick={handleRejectConfirm} disabled={!rejectionReason.trim() || isActionLoading}>{isActionLoading ? 'Rejecting…' : 'Reject'}</Button>
+ <Button variant="outline" onClick={() => setIsRejectModalOpen(false)} disabled={isActionLoading}>{t('cancel')}</Button>
+ <Button variant="primary" onClick={handleRejectConfirm} disabled={!rejectionReason.trim() || isActionLoading}>{isActionLoading ? t('rejecting') : t('reject')}</Button>
  </div>
  </div>
  </Modal>

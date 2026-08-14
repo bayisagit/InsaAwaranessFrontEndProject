@@ -6,6 +6,7 @@ import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { EmptyState } from '@/components/EmptyState';
 import { LinkifyText } from '@/components/LinkifyText';
+import { useTranslations } from 'next-intl';
 
 interface Course {
  id: string;
@@ -23,8 +24,10 @@ interface Course {
  currency?: string;
 }
 
-export default function TrainingPage() {
+ export default function TrainingPage() {
  const { isAuthenticated } = useAuth();
+ const t = useTranslations('courses');
+ const tCommon = useTranslations('common');
  const [courses, setCourses] = useState<Course[]>([]);
  const [isLoading, setIsLoading] = useState(true);
  const [searchQuery, setSearchQuery] = useState('');
@@ -100,13 +103,15 @@ export default function TrainingPage() {
  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[300px] bg-primary/5 rounded-[100%] filter blur-3xl opacity-70"></div>
  <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 flex items-center gap-2">
  <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
- CYBERSECURITY TRAINING
+ {t('pageBadge')}
  </span>
  <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl max-w-2xl">
- Ignite Your <span className="text-primary">Cyber Resilience</span>
+ {t.rich('heroTitle', {
+ highlight: (chunks) => <span className="text-primary">{chunks}</span>
+ })}
  </h1>
  <p className="mt-6 text-base leading-7 text-muted-foreground max-w-2xl">
- Expert-led training designed to empower you with the skills to identify threats and protect our digital nation.
+ {t('heroSubtitle')}
  </p>
  <div className="mt-8 max-w-xl w-full flex bg-card border border-border rounded-full p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
  <div className="pl-4 flex items-center text-muted-foreground">
@@ -116,13 +121,13 @@ export default function TrainingPage() {
  </div>
  <input
  type="text"
- placeholder="Search courses..."
+ placeholder={t('searchPlaceholder')}
  className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
  <button className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
- Search
+ {tCommon('search')}
  </button>
  </div>
  </section>
@@ -132,7 +137,7 @@ export default function TrainingPage() {
  {/* Sidebar */}
  <div className="w-full lg:w-64 shrink-0 space-y-8">
  <div>
- <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Level</h4>
+ <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">{t('level')}</h4>
  <div className="space-y-3">
  {['beginner', 'medium', 'advanced'].map(item => (
  <label key={item} className="flex items-center gap-3 cursor-pointer group">
@@ -144,14 +149,14 @@ export default function TrainingPage() {
  </svg>
  )}
  </div>
- <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors capitalize">{item}</span>
+ <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors capitalize">{t(item as 'beginner' | 'medium' | 'advanced')}</span>
  </label>
  ))}
  </div>
  </div>
 
  <div>
- <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Language</h4>
+ <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">{t('language')}</h4>
  <div className="space-y-3">
  {['en', 'am', 'om', 'so', 'ti'].map(item => (
  <label key={item} className="flex items-center gap-3 cursor-pointer group">
@@ -176,7 +181,7 @@ export default function TrainingPage() {
  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
  </svg>
- Clear all filters
+ {tCommon('clearFilters')}
  </button>
  )}
  </div>
@@ -186,16 +191,16 @@ export default function TrainingPage() {
  <div className="flex-1">
  <div className="flex justify-between items-center mb-6">
  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
- All Courses <span className="text-xs font-normal text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">{filteredCourses.length} total</span>
+ {t('allCourses')} <span className="text-xs font-normal text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">{filteredCourses.length} {tCommon('total')}</span>
  </h3>
  <select
  className="border border-border rounded-lg bg-card px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
  value={sortBy}
  onChange={(e) => setSortBy(e.target.value)}
  >
- <option value="Newest">Newest</option>
- <option value="Oldest">Oldest</option>
- <option value="Alphabetical">Alphabetical</option>
+ <option value="Newest">{t('sortNewest')}</option>
+ <option value="Oldest">{t('sortOldest')}</option>
+ <option value="Alphabetical">{t('sortAlphabetical')}</option>
  </select>
  </div>
 
@@ -212,8 +217,8 @@ export default function TrainingPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
  </svg>
  }
- title={searchQuery ? 'No courses matched your search.' : 'No courses available yet.'}
- description={searchQuery ? 'Try a different search term or adjust your filters.' : 'Check back soon for new training opportunities.'}
+ title={searchQuery ? tCommon('noSearchResults') : tCommon('noCourses')}
+ description={searchQuery ? tCommon('noSearchResultsDesc') : tCommon('noCoursesDesc')}
  />
  ) : (
  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -243,7 +248,7 @@ export default function TrainingPage() {
  )}
  <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors pr-16">{course.title}</h4>
  <p className="text-xs text-muted-foreground mb-4 flex-1 line-clamp-3">
- <LinkifyText text={course.description || 'Explore this cybersecurity course and build your skills.'} />
+ <LinkifyText text={course.description || ''} />
  </p>
  <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
  {course.language ? (
@@ -266,11 +271,11 @@ export default function TrainingPage() {
  
  {(course as any).payment_type === 'paid' && !(course as any).is_unlocked ? (
  <Link href={isAuthenticated ? `/dashboard/courses/${course.id}/payment` : '/login'} className="text-xs font-semibold text-yellow-600 dark:text-yellow-500 hover:underline inline-flex items-center gap-1">
- Unlock Course
+ {tCommon('unlockCourse') || 'Unlock Course'}
  </Link>
  ) : (
  <Link href={`/courses/${course.id}`} className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1">
- View Course
+ {tCommon('viewCourse')}
  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
  </svg>

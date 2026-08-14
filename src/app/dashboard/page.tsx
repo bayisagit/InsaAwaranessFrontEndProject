@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { apiFetch, enrollInCourse, getEnrollments, getCourses, getAlerts, createTrainingRequest, getTrainingRequests } from '@/lib/api';
 import { Button } from '@/components/Button';
@@ -192,14 +193,14 @@ export default function DashboardPage() {
  <div className="max-w-7xl mx-auto">
  <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
  <div>
- <h1 className="text-3xl font-bold text-primary mb-1">Welcome back, {user?.first_name || 'User'}.</h1>
+ <h1 className="text-3xl font-bold text-primary mb-1">{t('welcomeBack', { name: user?.first_name || t('user') })}</h1>
  <p className="text-muted-foreground">
- You have <span className="font-bold text-orange-500">{enrollments.filter(e => e.progress < 100).length} active training sessions</span>. Check latest advisories below.
+ {t.rich('activeSessions', { count: enrollments.filter(e => e.progress < 100).length, span: (chunks) => <span className="font-bold text-orange-500">{chunks}</span> })}
  </p>
  </div>
  <button className="bg-card border border-green-200 text-green-700 px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-green-50 transition-colors shadow-sm shadow-black/5 dark:shadow-none relative overflow-hidden group cursor-pointer">
  <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
- <span className="relative z-10">Live Dashboard &bull; {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+ <span className="relative z-10">{t('liveDashboard')} &bull; {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
  <div className="absolute inset-0 bg-green-50/0 group-hover:bg-green-50/50 transition-colors"></div>
  </button>
  </div>
@@ -214,8 +215,8 @@ export default function DashboardPage() {
  </div>
  <div className="flex-1 relative z-10">
  <div className="flex items-center gap-3 mb-1">
- <h3 className="font-bold text-foreground">{alerts[0]?.title || 'National Threat Advisory'}</h3>
- <span className="bg-orange-600 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded">Action Required</span>
+ <h3 className="font-bold text-foreground">{alerts[0]?.title || t('nationalThreatAdvisory')}</h3>
+ <span className="bg-orange-600 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded">{t('actionRequired')}</span>
  </div>
  <p className="text-sm text-foreground max-w-4xl">
  {alerts[0]?.message || 'Phishing campaigns targeting public sector employees increased by 42%. Verify all communications immediately through the official portal.'}
@@ -223,7 +224,7 @@ export default function DashboardPage() {
  </div>
  <Link href="/dashboard/alerts" className="relative z-10">
  <button className="bg-card border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-orange-50 dark:hover:bg-orange-500/10 shrink-0 mt-2 sm:mt-0 cursor-pointer">
- View Briefing
+ {t('viewBriefing')}
  </button>
  </Link>
  </div>
@@ -251,7 +252,7 @@ export default function DashboardPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
  </svg>
  }
- label="Enrolled"
+ label={t('enrolled')}
  value={stats.totalCourses}
  color="blue"
  />
@@ -261,7 +262,7 @@ export default function DashboardPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
  }
- label="Completed"
+ label={t('completed')}
  value={stats.completedCourses}
  color="green"
  />
@@ -271,7 +272,7 @@ export default function DashboardPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
  </svg>
  }
- label="Avg Progress"
+ label={t('avgProgress')}
  value={`${stats.avgProgress}%`}
  color="purple"
  />
@@ -281,8 +282,8 @@ export default function DashboardPage() {
  {/* Stats Row */}
  <AnimatedSection delay={0.2}>
  <div className="flex justify-between items-center mb-4">
- <h2 className="text-lg font-bold text-foreground">Resuming Courses</h2>
- <Link href="/courses/enrolled" className="text-xs font-bold text-primary hover:underline">See all enrolled &rarr;</Link>
+ <h2 className="text-lg font-bold text-foreground">{t('resumingCourses')}</h2>
+ <Link href="/courses/enrolled" className="text-xs font-bold text-primary hover:underline">{t('seeAllEnrolled')}</Link>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  {enrollments.slice(0, 2).map((enrollment: any, idx) => {
@@ -301,14 +302,14 @@ export default function DashboardPage() {
  )}
  </div>
  <div className="flex-1">
- <h4 className="font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">{typeof enrollment.course === 'object' ? enrollment.course.title : 'Researching Course...'}</h4>
- <p className="text-xs text-muted-foreground mb-2">Progress • {enrollment.progress}% completed</p>
+ <h4 className="font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">{typeof enrollment.course === 'object' ? enrollment.course.title : t('researchingCourse')}</h4>
+ <p className="text-xs text-muted-foreground mb-2">{t('progress', { progress: enrollment.progress })}</p>
  <div className="w-full bg-muted/50 rounded-full h-1.5 mb-1 overflow-hidden">
  <div className="bg-primary h-1.5 rounded-full transition-all duration-500" style={{ width: `${enrollment.progress}%` }}></div>
  </div>
  <div className="flex justify-between text-[10px] font-bold text-muted-foreground mt-2">
- <span>{enrollment.progress}% COMPLETED</span>
- <span className="text-primary group-hover:underline cursor-pointer">RESUME &rarr;</span>
+ <span>{t('completedPercent', { progress: enrollment.progress })}</span>
+ <span className="text-primary group-hover:underline cursor-pointer">{t('resume')}</span>
  </div>
  </div>
  </Link>
@@ -322,8 +323,8 @@ export default function DashboardPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
  </svg>
  }
- title="You are not enrolled in any courses yet."
- action={{ label: "Explore Courses", onClick: () => router.push('/courses') }}
+ title={t('noCoursesEnrolled')}
+ action={{ label: t('exploreCourses'), onClick: () => router.push('/courses') }}
  />
  </div>
  )}
@@ -335,10 +336,10 @@ export default function DashboardPage() {
  <div>
  <div className="flex justify-between items-center mb-4">
  <div className="flex items-center gap-2">
- <h2 className="text-lg font-bold text-foreground border-l-4 border-orange-500 pl-3">Top Recommendations</h2>
+ <h2 className="text-lg font-bold text-foreground border-l-4 border-orange-500 pl-3">{t('topRecommendations')}</h2>
  <span className="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded font-bold">{recommendedCourses.length}</span>
  </div>
- <Link href="/courses" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">View full catalog &rarr;</Link>
+ <Link href="/courses" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">{t('viewFullCatalog')}</Link>
  </div>
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -355,7 +356,7 @@ export default function DashboardPage() {
  )}
 
  <div className="absolute bottom-3 left-3 flex gap-2">
- <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm shadow-black/5 dark:shadow-none">NEW</span>
+ <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm shadow-black/5 dark:shadow-none">{t('new')}</span>
  <span className={`text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm shadow-sm shadow-black/5 dark:shadow-none ${(course as any).level === 'beginner' ? 'bg-green-500/50' : (course as any).level === 'medium' ? 'bg-yellow-500/50' : 'bg-red-500/50'
  }`}>
  {(course as any).level || 'beginner'}
@@ -370,7 +371,7 @@ export default function DashboardPage() {
  {(course as any).payment_type === 'paid' ? (
  <div className="w-full bg-muted text-muted-foreground border border-border py-2.5 rounded-xl text-sm font-semibold text-center flex items-center justify-center gap-2">
  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
- Locked - {course.currency || 'ETB'} {course.course_price}
+ {t('lockedPrice', { currency: course.currency || 'ETB', price: course.course_price })}
  </div>
  ) : (
  <button
@@ -378,7 +379,7 @@ export default function DashboardPage() {
  disabled={actionLoading === course.id}
  className="w-full bg-primary text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm shadow-black/5 dark:shadow-none disabled:opacity-50 cursor-pointer"
  >
- {actionLoading === course.id ? 'Enrolling...' : 'Enroll Now'}
+ {actionLoading === course.id ? t('enrolling') : t('enrollNow')}
  </button>
  )}
  </div>
@@ -392,8 +393,8 @@ export default function DashboardPage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
  }
- title="No new recommendations at this time."
- description="Check back later for new course suggestions."
+ title={t('noNewRecommendations')}
+ description={t('checkBackLater')}
  />
  </div>
  )}
@@ -406,7 +407,7 @@ export default function DashboardPage() {
  <div className="lg:col-span-1 space-y-8">
  {/* Quick Actions */}
  <AnimatedSection delay={0.4}>
- <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">Quick Actions</h2>
+ <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">{t('quickActions')}</h2>
  <div className="space-y-3">
  <Link href="/tools/phishing" className="bg-card border text-left border-border p-4 rounded-xl flex items-center gap-4 hover:border-primary/30 hover:shadow-sm shadow-black/5 dark:shadow-none cursor-pointer transition-all group w-full cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
  <div className="w-10 h-10 rounded-full bg-red-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
@@ -415,8 +416,8 @@ export default function DashboardPage() {
  </svg>
  </div>
  <div className="flex-1">
- <h4 className="font-bold text-foreground text-sm">Phishing Test</h4>
- <p className="text-xs text-muted-foreground">Practice spotting threats.</p>
+ <h4 className="font-bold text-foreground text-sm">{t('phishingTest')}</h4>
+ <p className="text-xs text-muted-foreground">{t('phishingTestDesc')}</p>
  </div>
  <svg className="w-4 h-4 text-gray-300 group-hover:text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -430,8 +431,8 @@ export default function DashboardPage() {
  </svg>
  </div>
  <div className="flex-1">
- <h4 className="font-bold text-foreground text-sm">Password Check</h4>
- <p className="text-xs text-muted-foreground">Test credentials strength.</p>
+ <h4 className="font-bold text-foreground text-sm">{t('passwordCheck')}</h4>
+ <p className="text-xs text-muted-foreground">{t('passwordCheckDesc')}</p>
  </div>
  <svg className="w-4 h-4 text-gray-300 group-hover:text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -445,8 +446,8 @@ export default function DashboardPage() {
  </svg>
  </div>
  <div className="flex-1">
- <h4 className="font-bold text-foreground text-sm">Request Training</h4>
- <p className="text-xs text-muted-foreground">Need specific content?</p>
+ <h4 className="font-bold text-foreground text-sm">{t('requestTraining')}</h4>
+ <p className="text-xs text-muted-foreground">{t('requestTrainingDesc')}</p>
  </div>
  <svg className="w-4 h-4 text-gray-300 group-hover:text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -458,7 +459,7 @@ export default function DashboardPage() {
  {/* Recent Requests Status */}
  {myRequests.length > 0 && (
  <div>
- <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">My Requests</h2>
+ <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">{t('myRequests')}</h2>
  <div className="space-y-3">
  {myRequests.slice(0, 3).map(req => (
  <div key={req.id} className="bg-card border border-border p-4 rounded-xl shadow-sm shadow-black/5 dark:shadow-none">
@@ -483,7 +484,7 @@ export default function DashboardPage() {
  {/* Latest Intelligence */}
  <div>
  <div className="flex justify-between items-center mb-4">
- <h2 className="text-sm font-bold text-primary tracking-wider uppercase">Latest Intelligence</h2>
+ <h2 className="text-sm font-bold text-primary tracking-wider uppercase">{t('latestIntelligence')}</h2>
  <button className="text-muted-foreground hover:text-muted-foreground p-1 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" aria-label="Refresh intelligence">
  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -512,13 +513,13 @@ export default function DashboardPage() {
  </div>
  ))}
  {alerts.length === 0 && !isFetching && (
- <p className="text-xs text-muted-foreground text-center py-4">No active advisories.</p>
+ <p className="text-xs text-muted-foreground text-center py-4">{t('noActiveAdvisories')}</p>
  )}
  </div>
 
  <div className="mt-5 pt-4 border-t border-border text-center">
  <Link href="/alerts" className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-500 uppercase tracking-widest hover:underline">
- View Full Intel Briefing
+ {t('viewFullIntelBriefing')}
  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
  </svg>
@@ -534,16 +535,16 @@ export default function DashboardPage() {
  <Modal
  isOpen={isRequestModalOpen}
  onClose={() => setIsRequestModalOpen(false)}
- title="Request Custom Training"
+ title={t('requestCustomTraining')}
  >
  <form onSubmit={handleRequestSubmit} className="space-y-4">
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">
- Training Description
+ {t('trainingDescription')}
  </label>
  <textarea
  className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[120px]"
- placeholder="Describe the training requirements for your organization..."
+ placeholder={t('trainingDescPlaceholder')}
  value={requestFormData.description}
  onChange={(e) => setRequestFormData({ ...requestFormData, description: e.target.value })}
  required
@@ -552,7 +553,7 @@ export default function DashboardPage() {
 
  <div className="space-y-1">
  <label className="block text-sm font-semibold text-foreground mb-1">
- Supporting Document (Optional PDF)
+ {t('supportingDocument')}
  </label>
  <CloudinaryUpload
  onUploadSuccess={(url) => setRequestFormData({ ...requestFormData, attachment_url: url })}
@@ -562,32 +563,32 @@ export default function DashboardPage() {
  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
  </svg>
- File uploaded successfully
+ {t('fileUploadedSuccess')}
  </p>
  )}
  </div>
 
  <div className="pt-4 flex justify-end gap-3">
  <Button type="button" variant="outline" onClick={() => setIsRequestModalOpen(false)} disabled={actionLoading === 'request'}>
- Cancel
+ {t('cancel')}
  </Button>
  <Button type="submit" variant="primary" disabled={actionLoading === 'request'}>
- {actionLoading === 'request' ? 'Submitting...' : 'Submit Request'}
+ {actionLoading === 'request' ? t('submitting') : t('submitRequest')}
  </Button>
  </div>
  </form>
  </Modal>
 
- <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title="Complete Your Profile">
+ <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title={t('completeYourProfile')}>
  <div className="text-center py-4">
  <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
  <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
  </svg>
  </div>
- <h3 className="text-lg font-bold text-foreground mb-2">Profile Required</h3>
+ <h3 className="text-lg font-bold text-foreground mb-2">{t('profileRequired')}</h3>
  <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
- Please complete your background profile before enrolling in this course.
+ {t('profileRequiredDesc')}
  </p>
  <div className="flex flex-col gap-3">
  <Button
@@ -598,14 +599,14 @@ export default function DashboardPage() {
  }}
  className="w-full py-3"
  >
- Complete Profile
+ {t('completeProfileBtn')}
  </Button>
  <Button
  variant="secondary"
  onClick={() => setShowProfileModal(false)}
  className="w-full py-3"
  >
- Cancel
+ {t('cancel')}
  </Button>
  </div>
  </div>

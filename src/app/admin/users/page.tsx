@@ -9,6 +9,7 @@ import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
+import { useTranslations } from 'next-intl';
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card disabled:opacity-75 disabled:bg-muted/50 disabled:cursor-not-allowed";
 
@@ -24,6 +25,7 @@ interface UserData {
 
 export default function AdminUsersPage() {
  const { user, isAuthenticated, isLoading } = useAuth();
+ const t = useTranslations('adminUsers');
  const router = useRouter();
  const [users, setUsers] = useState<UserData[]>([]);
  const [isFetching, setIsFetching] = useState(true);
@@ -231,8 +233,8 @@ export default function AdminUsersPage() {
  <div className="bg-card border-b border-border">
  <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
  <div>
- <h1 className="text-3xl font-bold text-foreground mb-2">User Management</h1>
- <p className="text-muted-foreground">Manage all registered users, permissions, and roles.</p>
+ <h1 className="text-3xl font-bold text-foreground mb-2">{t('userManagement')}</h1>
+ <p className="text-muted-foreground">{t('userManagementDesc')}</p>
  </div>
  </div>
  </div>
@@ -245,7 +247,7 @@ export default function AdminUsersPage() {
  )}
 
  <ExpandableCreateSection
- title="Add New User"
+ title={t('addNewUser')}
  isOpen={isCreateExpanded}
  onToggle={toggleCreate}
  >
@@ -258,7 +260,7 @@ export default function AdminUsersPage() {
 
  <div className="grid grid-cols-2 gap-4">
  <Input
- label="First Name"
+ label={t('firstName')}
  name="first_name"
  value={formData.first_name}
  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
@@ -267,7 +269,7 @@ export default function AdminUsersPage() {
  autoFocus
  />
  <Input
- label="Last Name"
+ label={t('lastName')}
  name="last_name"
  value={formData.last_name}
  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
@@ -277,7 +279,7 @@ export default function AdminUsersPage() {
  </div>
 
  <Input
- label="Email Address"
+ label={t('emailAddress')}
  type="email"
  name="email"
  value={formData.email}
@@ -293,7 +295,7 @@ export default function AdminUsersPage() {
  Organization
  </label>
  <div className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-muted-foreground font-medium text-sm">
- {user.organization_name || 'Your Organization'}
+ {user.organization_name || t('yourOrganization')}
  </div>
  </div>
  ) : (
@@ -308,7 +310,7 @@ export default function AdminUsersPage() {
  disabled={isActionLoading}
  required={formData.role !== 'course_provider'}
  >
- <option value="">Select Organization</option>
+ <option value="">{t('selectOrganization')}</option>
  {organizations.map(org => (
  <option key={org.id} value={org.id}>{org.name}</option>
  ))}
@@ -325,8 +327,8 @@ export default function AdminUsersPage() {
  onChange={(e) => setFormData({ ...formData, preferred_language: e.target.value })}
  disabled={isActionLoading}
  >
- <option value="en">English</option>
- <option value="am">Amharic</option>
+ <option value="en">{t('english')}</option>
+ <option value="am">{t('amharic')}</option>
  </select>
  </div>
  </div>
@@ -346,17 +348,17 @@ export default function AdminUsersPage() {
  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
  disabled={isActionLoading}
  >
- <option value="member">Member</option>
- <option value="course_provider">Course Provider</option>
- <option value="org_admin">Organization Admin</option>
- <option value="super_admin">Super Admin</option>
- <option value="public user">Public User</option>
+ <option value="member">{t('member')}</option>
+ <option value="course_provider">{t('courseProvider')}</option>
+ <option value="org_admin">{t('organizationAdmin')}</option>
+ <option value="super_admin">{t('superAdmin')}</option>
+ <option value="public user">{t('publicUser')}</option>
  </select>
  )}
 
  {formData.role === 'public user' && (
  <Input
- label="Password"
+ label={t('password')}
  type="password"
  name="password"
  value={formData.password}
@@ -373,7 +375,7 @@ export default function AdminUsersPage() {
  Cancel
  </Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>
- {isActionLoading ? 'Saving...' : 'Create User'}
+ {isActionLoading ? t('saving') : t('createUser')}
  </Button>
  </div>
  </form>
@@ -382,18 +384,18 @@ export default function AdminUsersPage() {
  {/* Filter Bar */}
  <div className="flex flex-wrap items-center gap-4 mb-6">
  <div className="flex items-center gap-2">
- <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Role</label>
+ <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('role')}</label>
  <select
  className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
  value={roleFilter}
  onChange={e => setRoleFilter(e.target.value)}
  >
- <option value="">All</option>
- <option value="member">Member</option>
- <option value="course_provider">Course Provider</option>
+ <option value="">{t('all')}</option>
+ <option value="member">{t('member')}</option>
+ <option value="course_provider">{t('courseProvider')}</option>
  <option value="org_admin">Org Admin</option>
- <option value="super_admin">Super Admin</option>
- <option value="public user">Public User</option>
+ <option value="super_admin">{t('superAdmin')}</option>
+ <option value="public user">{t('publicUser')}</option>
  </select>
  </div>
  {roleFilter && (
@@ -401,7 +403,7 @@ export default function AdminUsersPage() {
  onClick={() => setRoleFilter('')}
  className="text-xs text-primary font-bold hover:text-primary transition-colors duration-200-hover cursor-pointer"
  >
- ✕ Clear filter
+ {t('clearFilter')}
  </button>
  )}
  </div>
@@ -411,11 +413,11 @@ export default function AdminUsersPage() {
  <table className="w-full text-left text-sm text-muted-foreground">
  <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
  <tr>
- <th className="px-4 py-3">Name</th>
- <th className="px-4 py-3">Email</th>
- <th className="px-4 py-3">Role</th>
- <th className="px-4 py-3">Status</th>
- <th className="px-4 py-3 text-right">Actions</th>
+ <th className="px-4 py-3">{t('name')}</th>
+ <th className="px-4 py-3">{t('email')}</th>
+ <th className="px-4 py-3">{t('role')}</th>
+ <th className="px-4 py-3">{t('status')}</th>
+ <th className="px-4 py-3 text-right">{t('actions')}</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-border">
@@ -439,13 +441,13 @@ export default function AdminUsersPage() {
  </td>
  <td className="px-4 py-3">
  <span className={`px-2 py-1 rounded-full text-xs font-medium border ${u.is_active ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
- {u.is_active ? 'Active' : 'Inactive'}
+ {u.is_active ? t('active') : t('inactive')}
  </span>
  </td>
  <td className="px-4 py-3 text-right">
  <div className="flex items-center justify-end gap-2">
- <button onClick={() => openModal(u)} className="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
- <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Delete</button>
+ <button onClick={() => openModal(u)} className="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('edit')}</button>
+ <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('delete')}</button>
  </div>
  </td>
  </tr>
@@ -459,7 +461,7 @@ export default function AdminUsersPage() {
  <Modal
  isOpen={isModalOpen}
  onClose={handleCloseModal}
- title="Edit User"
+ title={t('editUser')}
  >
  <form onSubmit={handleFormSubmit} className="space-y-4">
  {actionError && (
@@ -470,7 +472,7 @@ export default function AdminUsersPage() {
 
  <div className="grid grid-cols-2 gap-4">
  <Input
- label="First Name"
+ label={t('firstName')}
  name="first_name"
  value={formData.first_name}
  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
@@ -479,7 +481,7 @@ export default function AdminUsersPage() {
  autoFocus
  />
  <Input
- label="Last Name"
+ label={t('lastName')}
  name="last_name"
  value={formData.last_name}
  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
@@ -489,7 +491,7 @@ export default function AdminUsersPage() {
  </div>
 
  <Input
- label="Email Address"
+ label={t('emailAddress')}
  type="email"
  name="email"
  value={formData.email}
@@ -513,17 +515,17 @@ export default function AdminUsersPage() {
  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
  disabled={isActionLoading}
  >
- <option value="member">Member</option>
- <option value="course_provider">Course Provider</option>
- <option value="org_admin">Organization Admin</option>
- <option value="super_admin">Super Admin</option>
- <option value="public user">Public User</option>
+ <option value="member">{t('member')}</option>
+ <option value="course_provider">{t('courseProvider')}</option>
+ <option value="org_admin">{t('organizationAdmin')}</option>
+ <option value="super_admin">{t('superAdmin')}</option>
+ <option value="public user">{t('publicUser')}</option>
  </select>
  )}
  </div>
 
  <Input
- label="New Password (Optional)"
+ label={t('newPasswordOptional')}
  type="password"
  name="password"
  value={formData.password}
@@ -537,7 +539,7 @@ export default function AdminUsersPage() {
  Cancel
  </Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>
- {isActionLoading ? 'Saving...' : 'Save Changes'}
+ {isActionLoading ? t('saving') : t('saveChanges')}
  </Button>
  </div>
  </form>
@@ -547,9 +549,9 @@ export default function AdminUsersPage() {
  isOpen={isDeleteModalOpen}
  onClose={() => setIsDeleteModalOpen(false)}
  onConfirm={confirmDelete}
- title="Delete User"
- message="Are you sure you want to delete this user? This action cannot be undone."
- confirmText="Delete"
+ title={t('deleteUser')}
+ message={t('deleteConfirmMessage')}
+ confirmText={t('delete')}
  isLoading={isActionLoading}
  />
  </div>
