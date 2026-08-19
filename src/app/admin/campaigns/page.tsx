@@ -11,6 +11,7 @@ import { ConfirmModal } from '@/components/ConfirmModal';
 import { PageHeader } from '@/components/PageHeader';
 import { Pagination } from '@/components/Pagination';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
+import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 
 interface Organization {
  id: string;
@@ -36,7 +37,10 @@ export default function AdminCampaignsPage() {
  const [actionError, setActionError] = useState('');
  const [selected, setSelected] = useState<Campaign | null>(null);
  const [orgs, setOrgs] = useState<Organization[]>([]);
- const [form, setForm] = useState({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: '', status: 'draft' });
+ const [form, setForm] = useState({ 
+   organization: '', title: '', message: '', start_date: '', send_time: '', 
+   channels: '', status: 'draft', content_type: 'none', content_url: '' 
+ });
  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
@@ -98,7 +102,9 @@ export default function AdminCampaignsPage() {
  start_date: item.start_date.split('T')[0],
  send_time: item.send_time ? (item.send_time.includes('T') ? item.send_time.split('T')[1].substring(0, 5) : item.send_time.substring(0, 5)) : '',
  channels: Array.isArray(item.channels) ? item.channels.join(', ') : item.channels || '',
- status: item.status || 'draft'
+ status: item.status || 'draft',
+ content_type: item.content_type || 'none',
+ content_url: item.content_url || ''
  });
  setIsModalOpen(true);
  };
@@ -107,7 +113,7 @@ export default function AdminCampaignsPage() {
  if (!isCreateExpanded) {
  setActionError('');
  setSelected(null);
- setForm({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: '', status: 'draft' });
+ setForm({ organization: '', title: '', message: '', start_date: '', send_time: '', channels: '', status: 'draft', content_type: 'none', content_url: '' });
  }
  setIsCreateExpanded(!isCreateExpanded);
  };
@@ -116,10 +122,17 @@ export default function AdminCampaignsPage() {
  ev.preventDefault(); setActionError(''); setIsActionLoading(true);
  const isEditing = !!selected;
  const endpoint = `/api/v1/campaigns/${isEditing ? `${selected!.id}/` : ''}`;
- const payload = {
+ const payload: any = {
  ...form,
  channels: form.channels.split(',').map(c => c.trim()).filter(Boolean)
  };
+ if (payload.content_type === 'none') {
+   payload.content_url = '';
+ } else if (!payload.content_url) {
+   setActionError('Please upload a file for the selected content type.');
+   setIsActionLoading(false);
+   return;
+ }
  const { error: apiErr, status } = await apiFetch(endpoint, { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(payload) });
  if (apiErr || (status !== 200 && status !== 201)) setActionError(apiErr || 'Failed to save.');
  else { 
@@ -204,6 +217,7 @@ export default function AdminCampaignsPage() {
  <Input label="Start Date" type="date" value={form.start_date} onChange={e => setForm({ ...form, start_date: e.target.value })} required disabled={isActionLoading} />
  <Input label="Send Time" type="time" value={form.send_time} onChange={e => setForm({ ...form, send_time: e.target.value })} required disabled={isActionLoading} />
  </div>
+ <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
  <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
@@ -214,6 +228,28 @@ export default function AdminCampaignsPage() {
  <option value="cancelled" className="text-foreground">Cancelled</option>
  </select>
  </div>
+ <div>
+ <label className="block text-sm font-semibold text-foreground mb-1">Content Type</label>
+ <select className={SELECT_CLS} value={form.content_type} onChange={e => setForm({ ...form, content_type: e.target.value })} disabled={isActionLoading}>
+ <option value="none" className="text-foreground">None</option>
+ <option value="poster" className="text-foreground">Poster/Image</option>
+ <option value="video" className="text-foreground">Video</option>
+ </select>
+ </div>
+ </div>
+
+ {form.content_type !== 'none' && (
+ <div className="bg-muted p-4 rounded-xl border border-border">
+ <CloudinaryUpload
+ label={`Upload ${form.content_type === 'video' ? 'Video' : 'Poster Image'}`}
+ folder="campaigns"
+ resourceType={form.content_type === 'video' ? 'video' : 'image'}
+ value={form.content_url}
+ onUploadSuccess={(url) => setForm({ ...form, content_url: url })}
+ disabled={isActionLoading}
+ />
+ </div>
+ )}
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Campaign Message</label>
  <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
@@ -312,6 +348,7 @@ export default function AdminCampaignsPage() {
  <Input label="Start Date" type="date" value={form.start_date} onChange={e => setForm({ ...form, start_date: e.target.value })} required disabled={isActionLoading} />
  <Input label="Send Time" type="time" value={form.send_time} onChange={e => setForm({ ...form, send_time: e.target.value })} required disabled={isActionLoading} />
  </div>
+ <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Status</label>
  <select className={SELECT_CLS} value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} disabled={isActionLoading}>
@@ -322,6 +359,28 @@ export default function AdminCampaignsPage() {
  <option value="cancelled" className="text-foreground">Cancelled</option>
  </select>
  </div>
+ <div>
+ <label className="block text-sm font-semibold text-foreground mb-1">Content Type</label>
+ <select className={SELECT_CLS} value={form.content_type} onChange={e => setForm({ ...form, content_type: e.target.value })} disabled={isActionLoading}>
+ <option value="none" className="text-foreground">None</option>
+ <option value="poster" className="text-foreground">Poster/Image</option>
+ <option value="video" className="text-foreground">Video</option>
+ </select>
+ </div>
+ </div>
+
+ {form.content_type !== 'none' && (
+ <div className="bg-muted p-4 rounded-xl border border-border">
+ <CloudinaryUpload
+ label={`Upload ${form.content_type === 'video' ? 'Video' : 'Poster Image'}`}
+ folder="campaigns"
+ resourceType={form.content_type === 'video' ? 'video' : 'image'}
+ value={form.content_url}
+ onUploadSuccess={(url) => setForm({ ...form, content_url: url })}
+ disabled={isActionLoading}
+ />
+ </div>
+ )}
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Campaign Message</label>
  <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />

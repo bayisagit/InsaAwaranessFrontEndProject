@@ -233,7 +233,7 @@ export default function AdminUsersPage() {
  <div className="bg-card border-b border-border">
  <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
  <div>
- <h1 className="text-3xl font-bold text-foreground mb-2">{t('userManagement')}</h1>
+ <h1 className="text-3xl font-bold text-foreground mb-2">Members</h1>
  <p className="text-muted-foreground">{t('userManagementDesc')}</p>
  </div>
  </div>
@@ -352,11 +352,11 @@ export default function AdminUsersPage() {
  <option value="course_provider">{t('courseProvider')}</option>
  <option value="org_admin">{t('organizationAdmin')}</option>
  <option value="super_admin">{t('superAdmin')}</option>
- <option value="public user">{t('publicUser')}</option>
+ <option value="public_user">{t('publicUser')}</option>
  </select>
  )}
 
- {formData.role === 'public user' && (
+ {formData.role === 'public_user' && (
  <Input
  label={t('password')}
  type="password"
@@ -381,32 +381,34 @@ export default function AdminUsersPage() {
  </form>
  </ExpandableCreateSection>
 
- {/* Filter Bar */}
- <div className="flex flex-wrap items-center gap-4 mb-6">
- <div className="flex items-center gap-2">
- <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('role')}</label>
- <select
- className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
- value={roleFilter}
- onChange={e => setRoleFilter(e.target.value)}
- >
- <option value="">{t('all')}</option>
- <option value="member">{t('member')}</option>
- <option value="course_provider">{t('courseProvider')}</option>
- <option value="org_admin">Org Admin</option>
- <option value="super_admin">{t('superAdmin')}</option>
- <option value="public user">{t('publicUser')}</option>
- </select>
- </div>
- {roleFilter && (
- <button
- onClick={() => setRoleFilter('')}
- className="text-xs text-primary font-bold hover:text-primary transition-colors duration-200-hover cursor-pointer"
- >
- {t('clearFilter')}
- </button>
- )}
- </div>
+  {/* Filter Bar */}
+  {user?.role === 'super_admin' && (
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+      <div className="flex items-center gap-2">
+      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('role')}</label>
+      <select
+      className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
+      value={roleFilter}
+      onChange={e => setRoleFilter(e.target.value)}
+      >
+      <option value="">{t('all')}</option>
+      <option value="member">{t('member')}</option>
+      <option value="course_provider">{t('courseProvider')}</option>
+      <option value="org_admin">Org Admin</option>
+      <option value="super_admin">{t('superAdmin')}</option>
+      <option value="public_user">{t('publicUser')}</option>
+      </select>
+      </div>
+      {roleFilter && (
+      <button
+      onClick={() => setRoleFilter('')}
+      className="text-xs text-primary font-bold hover:text-primary transition-colors duration-200-hover cursor-pointer"
+      >
+      {t('clearFilter')}
+      </button>
+      )}
+      </div>
+  )}
 
  {/* User Table */}
  <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
@@ -519,7 +521,7 @@ export default function AdminUsersPage() {
  <option value="course_provider">{t('courseProvider')}</option>
  <option value="org_admin">{t('organizationAdmin')}</option>
  <option value="super_admin">{t('superAdmin')}</option>
- <option value="public user">{t('publicUser')}</option>
+ <option value="public_user">{t('publicUser')}</option>
  </select>
  )}
  </div>

@@ -88,7 +88,11 @@ export default function CampaignsPage() {
  {campaigns.map((camp) => (
  <div key={camp.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden flex flex-col hover:shadow-xl hover:border-primary/20 transition-all group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
  <div className="h-48 bg-background relative">
+ {camp.content_type === 'poster' && camp.content_url ? (
+ <img src={camp.content_url} alt={camp.title} className="w-full h-full object-cover" />
+ ) : (
  <div className="w-full h-full bg-gradient-to-br from-secondary to-gray-900 opacity-80"></div>
+ )}
  <div className="absolute top-4 right-4">
  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${camp.status === 'live' ? 'bg-green-500 text-white' :
  camp.status === 'scheduled' ? 'bg-blue-500 text-white' :
@@ -108,6 +112,11 @@ export default function CampaignsPage() {
  <p className="text-sm text-muted-foreground leading-relaxed mb-8 flex-1">
  <LinkifyText text={camp.message} />
  </p>
+ {camp.content_type === 'video' && camp.content_url && (
+ <div className="mb-6 rounded-xl overflow-hidden border border-border bg-black" onClick={(e) => e.stopPropagation()}>
+ <video controls src={camp.content_url} className="w-full max-h-[300px]" />
+ </div>
+ )}
  <Link href={`/courses`} className="inline-block">
  <button className="text-sm font-bold text-primary group-hover:underline inline-flex items-center gap-1.5 cursor-pointer">
  Participate Now

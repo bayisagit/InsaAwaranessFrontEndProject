@@ -393,6 +393,8 @@ export interface Campaign {
     send_time: string;
     channels: string[];
     status: 'draft' | 'scheduled' | 'live' | 'completed' | 'cancelled';
+    content_type?: 'none' | 'poster' | 'video' | null;
+    content_url?: string | null;
     created_by: string;
     created_at: string;
     updated_at: string;

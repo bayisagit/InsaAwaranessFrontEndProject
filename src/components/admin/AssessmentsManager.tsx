@@ -117,9 +117,9 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
  const params = new URLSearchParams(window.location.search);
  const create = params.get('create');
  const parentType = params.get('parent_type') as ParentType;
- const courseId = params.get('courseId') || params.get('course_id');
- const moduleId = params.get('moduleId') || params.get('module_id');
- const lessonId = params.get('lessonId') || params.get('lesson_id');
+ const courseId = params.get('courseId') || params.get('course_id') || lockedCourseId;
+ const moduleId = params.get('moduleId') || params.get('module_id') || lockedModuleId;
+ const lessonId = params.get('lessonId') || params.get('lesson_id') || lockedLessonId;
  
  if (create === 'true') {
  setIsCreateExpanded(true);
@@ -157,14 +157,14 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
  }, [lockedLessonId, lockedModuleId, lockedCourseId]);
 
  useEffect(() => {
- if (!isModalOpen || !form.course_id) { setModules([]); setLessons([]); return; }
+ if ((!isModalOpen && !isCreateExpanded) || !form.course_id) { setModules([]); setLessons([]); return; }
  getModules({ course: form.course_id, page_size: 100 }).then(({ data }) => setModules(data?.results ?? []));
- }, [form.course_id, isModalOpen]);
+ }, [form.course_id, isModalOpen, isCreateExpanded]);
 
  useEffect(() => {
- if (!isModalOpen || !form.module_id || form.parent_type !== 'lesson_assessment') { setLessons([]); return; }
+ if ((!isModalOpen && !isCreateExpanded) || !form.module_id || form.parent_type !== 'lesson_assessment') { setLessons([]); return; }
  getLessons({ module: form.module_id, page_size: 100 }).then(({ data }) => setLessons(data?.results ?? []));
- }, [form.module_id, form.parent_type, isModalOpen]);
+ }, [form.module_id, form.parent_type, isModalOpen, isCreateExpanded]);
 
  const resetForm = () => setForm({
  parent_type: filterType || 'lesson_assessment', course_id: '', module_id: '', lesson_id: '',

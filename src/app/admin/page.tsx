@@ -595,7 +595,7 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-                        <Link href="/admin/memberships">
+                        <Link href="/admin/users">
                             <div className="flex h-16 items-center px-4 rounded-xl bg-card border border-border shadow-sm cursor-pointer transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/50 w-full group">
                                 <Users className="size-5 text-blue-500 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex flex-col items-start">

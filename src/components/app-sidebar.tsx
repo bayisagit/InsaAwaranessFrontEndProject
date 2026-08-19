@@ -173,8 +173,8 @@ const sidebarConfig: SidebarConfig = {
           url: "/admin/users", 
           icon: Users,
           subItems: [
-            { title: "All Users", url: "/admin/users" },
-            { title: "Members", url: "/admin/memberships" },
+            { title: "Members", url: "/admin/users" },
+            { title: "All Users", url: "/admin/memberships" },
           ]
         },
         { title: "Training Requests", url: "/admin/training-requests", icon: ClipboardList },

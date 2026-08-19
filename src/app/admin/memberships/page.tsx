@@ -205,7 +205,7 @@ export default function AdminMembershipsPage() {
  <div className="bg-card border-b border-border">
  <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex justify-between items-center">
  <div>
- <h1 className="text-3xl font-bold text-foreground mb-1">Memberships</h1>
+ <h1 className="text-3xl font-bold text-foreground mb-1">All Users</h1>
  <p className="text-muted-foreground">Manage user roles and departmental links within organizations.</p>
  </div>
  </div>

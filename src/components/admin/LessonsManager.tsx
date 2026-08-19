@@ -121,7 +121,8 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  }, [lockedModuleId]);
 
  const fetchModules = async () => {
- const { data } = await apiFetch('/api/v1/modules/?page_size=100');
+ const endpoint = lockedCourseId ? `/api/v1/modules/?course=${lockedCourseId}&page_size=100` : '/api/v1/modules/?page_size=100';
+ const { data } = await apiFetch(endpoint);
  if (data?.results) setModules(data.results);
  else if (Array.isArray(data)) setModules(data);
  };
@@ -139,7 +140,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  if (lockedModuleId) {
  queryParams.module = lockedModuleId;
  } else if (lockedCourseId) {
- queryParams.course = lockedCourseId; // Assumes backend supports course=... for lessons
+ queryParams.module__course = lockedCourseId;
  }
 
  const query = new URLSearchParams(queryParams).toString();
@@ -347,7 +348,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  successTitle="Lesson Created Successfully!"
  successDescription="What would you like to add next?"
  nextSteps={createdLessonId ? [
- { label: 'Add Lesson Assessment', href: lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments?create=true&parent_type=lesson_assessment&lessonId=${createdLessonId}` : `/admin/assessments?create=true&parent_type=lesson_assessment&lessonId=${createdLessonId}`, icon: '📝' },
+ { label: 'Add Lesson Assessment', href: lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments?create=true&parent_type=lesson_assessment&moduleId=${form.module}&lessonId=${createdLessonId}` : `/admin/assessments?create=true&parent_type=lesson_assessment&moduleId=${form.module}&lessonId=${createdLessonId}`, icon: '📝' },
  ...(lockedCourseId ? [] : [{ label: 'Add Global Resource', href: `/admin/resources?create=true`, variant: 'secondary' as const, icon: '📎' as const }])
  ] : []}
  >

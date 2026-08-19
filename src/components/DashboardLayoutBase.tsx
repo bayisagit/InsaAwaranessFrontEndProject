@@ -87,7 +87,9 @@ export function DashboardLayoutBase({ children }: DashboardLayoutBaseProps) {
                                     <DropdownMenuGroup>
                                         <DropdownMenuLabel className="font-normal">
                                             <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium leading-none">{user?.first_name || 'User'} {user?.last_name || ''}</p>
+                                                <p className="text-sm font-bold leading-none text-emerald-500">
+                                                    {user?.role ? user.role.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 'User'}
+                                                </p>
                                                 <p className="text-xs leading-none text-muted-foreground">
                                                     {user?.email || 'user@example.com'}
                                                 </p>
