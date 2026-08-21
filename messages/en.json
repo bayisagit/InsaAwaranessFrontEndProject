@@ -913,6 +913,7 @@
     "awarenessCommunications": "Awareness communications",
     "myCourses": "My Courses",
     "totalResources": "Total Resources",
+    "assessments": "Assessments",
     "articles": "Articles",
     "contentApprovalWorkflow": "Content Approval Workflow",
     "contentApprovalDesc": "Draft → Submit for Review → Submitted (pending) → Approve / Reject. Course providers can submit content for review; System Administrators can approve or reject with a reason. Rejected content returns to Draft with feedback. Archived content can be restored to Draft.",

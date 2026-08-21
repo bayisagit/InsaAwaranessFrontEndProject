@@ -66,7 +66,7 @@ export default function CourseModuleDetailPage() {
                     <h2 className="text-xl font-bold text-foreground">Module Quizzes</h2>
                     <p className="text-sm text-muted-foreground">Manage quizzes for this module.</p>
                 </div>
-                <AssessmentsManager lockedModuleId={moduleId} />
+                <AssessmentsManager lockedModuleId={moduleId} lockedCourseId={courseId} />
             </div>
         </div>
     );

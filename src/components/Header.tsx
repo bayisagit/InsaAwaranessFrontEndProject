@@ -24,7 +24,6 @@ const adminGroups = [
  { label: 'Modules', href: '/admin/modules' },
  { label: 'Lessons', href: '/admin/lessons' },
  { label: 'Videos', href: '/admin/videos' },
- { label: 'Articles', href: '/admin/articles' },
  { label: 'Resources', href: '/admin/resources' },
  ]
  },

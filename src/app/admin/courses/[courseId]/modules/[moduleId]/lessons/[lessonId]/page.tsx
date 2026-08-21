@@ -9,6 +9,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { AssessmentsManager } from '@/components/admin/AssessmentsManager';
+import { VideoPlayer } from '@/components/VideoPlayer';
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
@@ -319,7 +320,7 @@ export default function CourseLessonDetailPage() {
                                 <h2 className="text-lg font-bold text-foreground mb-4">Lesson Content</h2>
                                 {lessonData.content_type === 'video' && lessonData.media_url ? (
                                     <div className="aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center">
-                                        <video controls src={lessonData.media_url} className="w-full h-full object-contain" />
+                                        <VideoPlayer src={lessonData.media_url} className="w-full h-full object-contain" />
                                     </div>
                                 ) : lessonData.content_type === 'image' && lessonData.image_url ? (
                                     <div className="rounded-xl overflow-hidden bg-muted/50 p-2 flex justify-center">
@@ -334,7 +335,7 @@ export default function CourseLessonDetailPage() {
                                         </pre>
                                     </div>
                                 ) : (
-                                    <div className="tiptap prose prose-sm max-w-none bg-muted p-6 rounded-xl border border-border min-h-[200px]"
+                                    <div className="tiptap prose prose-sm max-w-none bg-muted p-6 rounded-xl border border-border min-h-[200px] overflow-x-auto break-words"
                                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(lessonData.content || '<p class="text-muted-foreground italic">No content available.</p>', { ADD_ATTR: ['target', 'rel'] }) }} />
                                 )}
                             </div>
@@ -348,7 +349,7 @@ export default function CourseLessonDetailPage() {
                     <h2 className="text-xl font-bold text-foreground">Lesson Assessment</h2>
                     <p className="text-sm text-muted-foreground">Manage the assessment for this lesson.</p>
                 </div>
-                <AssessmentsManager lockedLessonId={lessonId} />
+                <AssessmentsManager lockedLessonId={lessonId} lockedCourseId={courseId} lockedModuleId={moduleId} />
             </div>
         </div>
     );

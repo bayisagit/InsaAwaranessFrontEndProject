@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, SidebarFooter } from '@/components/ui/sidebar';
-import { BookOpen, Layers, FileText, CheckSquare, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert, User, LogOut, BarChart3, PieChart } from 'lucide-react';
+import { BookOpen, Layers, FileText, CheckSquare, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert, User, LogOut, BarChart3, PieChart, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
 import { apiFetch, getModule, getLesson, getAssessment } from '@/lib/api';
@@ -38,14 +38,18 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
     const [lessonId, setLessonId] = useState<string | null>(null);
 
     // Resolve hierarchy based on current URL
+    const paramCourseId = params.courseId as string | undefined;
+    const paramModuleId = params.moduleId as string | undefined;
+    const paramLessonId = params.lessonId as string | undefined;
+
     useEffect(() => {
         const resolveContext = async () => {
             let resolvedCourseId = null;
             let resolvedModuleId = null;
             let resolvedLessonId = null;
 
-            if (pathname.startsWith('/admin/courses/') && params.courseId) {
-                const cId = params.courseId as string;
+            if (pathname.startsWith('/admin/courses/') && paramCourseId) {
+                const cId = paramCourseId;
                 if (cId !== 'create') {
                     resolvedCourseId = cId;
                     setCourseId(resolvedCourseId);
@@ -53,8 +57,8 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     if (data?.title) setCourseName(data.title);
                 }
 
-                if (params.moduleId) {
-                    const mId = params.moduleId as string;
+                if (paramModuleId) {
+                    const mId = paramModuleId;
                     if (mId !== 'create') {
                         resolvedModuleId = mId;
                         const { data: moduleData } = await getModule(mId);
@@ -69,8 +73,8 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     }
                 }
 
-                if (params.moduleId && params.lessonId) {
-                    const lId = params.lessonId as string;
+                if (paramModuleId && paramLessonId) {
+                    const lId = paramLessonId;
                     if (lId !== 'create') {
                         resolvedLessonId = lId;
                         const { data: lessonData } = await getLesson(lId);
@@ -79,8 +83,8 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                             setLessonId(lId);
                         }
                     }
-                } else if (params.lessonId && !params.moduleId) {
-                    const lId = params.lessonId as string;
+                } else if (paramLessonId && !paramModuleId) {
+                    const lId = paramLessonId;
                     if (lId !== 'create') {
                         resolvedLessonId = lId;
                         const { data: lessonData } = await getLesson(lId);
@@ -100,10 +104,10 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     }
                 }
 
-                if (!params.moduleId) setModuleId(null);
-                if (!params.lessonId) setLessonId(null);
-            } else if (pathname.startsWith('/admin/modules/') && params.moduleId) {
-                const mId = params.moduleId as string;
+                if (!paramModuleId) setModuleId(null);
+                if (!paramLessonId) setLessonId(null);
+            } else if (pathname.startsWith('/admin/modules/') && paramModuleId) {
+                const mId = paramModuleId;
                 if (mId !== 'create') {
                     resolvedModuleId = mId;
                     const { data: moduleData } = await getModule(mId);
@@ -116,8 +120,8 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                         if (data?.title) setCourseName(data.title);
                     }
                 }
-            } else if (pathname.startsWith('/admin/lessons/') && params.lessonId) {
-                const lId = params.lessonId as string;
+            } else if (pathname.startsWith('/admin/lessons/') && paramLessonId) {
+                const lId = paramLessonId;
                 if (lId !== 'create') {
                     resolvedLessonId = lId;
                     const { data: lessonData } = await getLesson(lId);
@@ -138,10 +142,11 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
             }
         };
         resolveContext();
-    }, [pathname, params]);
+    }, [pathname, paramCourseId, paramModuleId, paramLessonId]);
 
     const navItems = [
         { title: "Overview", url: `/admin/courses/${courseId}`, icon: LayoutDashboard },
+        { title: "Preview", url: `/admin/courses/${courseId}/preview`, icon: Eye },
         { title: "Modules", url: `/admin/courses/${courseId}/modules`, icon: Layers },
         { title: "Lessons", url: `/admin/courses/${courseId}/lessons`, icon: FileText },
         { title: "Assessments", url: `/admin/courses/${courseId}/assessments`, icon: CheckSquare },

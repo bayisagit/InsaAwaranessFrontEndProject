@@ -12,6 +12,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import NextTopLoader from 'nextjs-toploader';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -42,6 +43,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <NextTopLoader color="var(--color-primary)" showSpinner={false} height={3} shadow="0 0 10px var(--color-primary),0 0 5px var(--color-primary)" />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2.5 focus:bg-primary focus:text-primary-foreground focus:rounded-xl focus:outline-none focus:ring-2 focus:ring-background focus:ring-offset-2 focus:ring-offset-primary focus:text-sm focus:font-semibold"

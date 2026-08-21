@@ -7,6 +7,7 @@ import {
   startAssessment, resumeAssessment, saveAssessmentProgress, submitAssessment, getAssessmentAttempts, apiFetch,
 } from '@/lib/api';
 import { Button } from '@/components/Button';
+import { AssessmentSkeleton } from '@/components/LoadingSkeleton';
 import { LinkifyText } from '@/components/LinkifyText';
 import Link from 'next/link';
 
@@ -17,6 +18,7 @@ interface AssessmentViewerProps {
  lessonId?: string;
  certificateExamId?: string;
  onComplete?: () => void;
+ previewMode?: boolean;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────────
@@ -47,7 +49,7 @@ function formatAnswerForApi(q: AssessmentQuestion, raw: any): any {
  return raw ?? '';
 }
 
-export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, certificateExamId, onComplete }: AssessmentViewerProps) {
+export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, certificateExamId, onComplete, previewMode }: AssessmentViewerProps) {
  const [assessment, setAssessment] = useState<Assessment | null>(null);
  const [attempt, setAttempt] = useState<AssessmentAttempt | null>(null);
  const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -83,6 +85,16 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
   const { data: aData, error: aErr } = await getAssessment(id);
   if (aErr || !aData) { setLoadError(aErr || 'Failed to load assessment.'); setIsLoading(false); return; }
   setAssessment(aData);
+
+  if (previewMode) {
+      setAttempt(null);
+      setResult(null);
+      setHistory([]);
+      setAnswers({});
+      setCurrentIndex(0);
+      setIsLoading(false);
+      return;
+  }
 
   // 2. Load history first to check for completed attempts
   const { data: hist } = await getAssessmentAttempts(id);
@@ -127,6 +139,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  // ── Auto-save on answer change ────────────────────────────────────────────────
  const scheduleSave = useCallback((qId: string, answer: any, index: number) => {
+ if (previewMode) return;
  if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
  saveTimerRef.current = setTimeout(async () => {
  const aId = assessmentIdRef.current;
@@ -136,7 +149,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  if (q) await saveAssessmentProgress(aId, { question_id: qId, answer: formatAnswerForApi(q, answer), current_question_index: index });
  setIsSaving(false);
  }, 800);
- }, [assessment]);
+ }, [assessment, previewMode]);
 
  const handleAnswer = (qId: string, value: any) => {
  setAnswers(prev => ({ ...prev, [qId]: value }));
@@ -163,7 +176,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  // ── Navigate ──────────────────────────────────────────────────────────────────
  const navigate = async (nextIndex: number) => {
  const aId = assessmentIdRef.current;
- if (aId) await saveAssessmentProgress(aId, { current_question_index: nextIndex });
+ if (aId && !previewMode) await saveAssessmentProgress(aId, { current_question_index: nextIndex });
  setCurrentIndex(nextIndex);
  };
 
@@ -178,6 +191,27 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  for (const q of assessment.questions) {
  const raw = answers[q.id];
  if (raw !== undefined) finalAnswers[q.id] = formatAnswerForApi(q, raw);
+ }
+
+ if (previewMode) {
+     // Fake submission
+     setTimeout(() => {
+         setResult({
+             id: 'fake-preview',
+             assessment: aId,
+             user: 'preview',
+             attempt_number: 1,
+             score: 100,
+             passed: true,
+             status: 'graded',
+             started_at: new Date().toISOString(),
+             submitted_at: new Date().toISOString(),
+             answers: []
+         } as any);
+         setIsSubmitting(false);
+         if (onComplete) onComplete();
+     }, 1000);
+     return;
  }
 
  const { data, error: err, status } = await submitAssessment(aId, finalAnswers);
@@ -198,6 +232,11 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  setResult(null); setAnswers({}); setCurrentIndex(0); setSubmitError('');
  const aId = assessmentIdRef.current;
  if (!aId) return;
+ 
+ if (previewMode) {
+     return;
+ }
+ 
  setIsLoading(true);
  const { data, error: err } = await startAssessment(aId);
  if (err || !data) { setLoadError(err || 'Failed to start new attempt.'); setIsLoading(false); return; }
@@ -205,11 +244,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  };
 
  // ── Render ────────────────────────────────────────────────────────────────────
- if (isLoading) return (
- <div className="flex justify-center items-center py-16">
- <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
- </div>
- );
+ if (isLoading) return <AssessmentSkeleton />;
 
  if (loadError) return (
  <div className="p-6 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm">{loadError}</div>
@@ -301,8 +336,8 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
   <div className="px-6 pb-6 flex justify-end gap-3">
   {!passed && <Button variant="outline" onClick={handleRetake}>Try Again</Button>}
-  {passed && (
-  <Link href="/dashboard/certificates">
+  {passed && assessment?.parent_type === 'course_exam' && (
+  <Link href={previewMode ? "#" : "/dashboard/certificates"}>
   <Button variant="primary">🎓 Get Certificate</Button>
   </Link>
   )}

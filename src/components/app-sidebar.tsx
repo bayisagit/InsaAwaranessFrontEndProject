@@ -134,7 +134,6 @@ const sidebarConfig: SidebarConfig = {
           icon: BookOpen,
           subItems: [
             { title: "All Resources", url: "/admin/resources" },
-            { title: "Articles", url: "/admin/articles" },
           ]
         },
       ]
@@ -218,7 +217,6 @@ const sidebarConfig: SidebarConfig = {
           icon: BookOpen,
           subItems: [
             { title: "Files & Documents", url: "/admin/resources" },
-            { title: "Articles", url: "/admin/articles" },
           ]
         },
       ]

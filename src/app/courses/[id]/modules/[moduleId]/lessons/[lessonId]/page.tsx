@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
 import { AssessmentViewer } from '@/components/AssessmentViewer';
 import { LinkifyText } from '@/components/LinkifyText';
+import { VideoPlayer } from '@/components/VideoPlayer';
 
 // Using imported Lesson interface from lib/api
 
@@ -207,10 +208,9 @@ export default function LessonDetailPage() {
                     {lesson.content_type === 'video' && lesson.media_url && (
                         <div className="mb-8">
                             <div className="aspect-video bg-background rounded-3xl overflow-hidden shadow-2xl mb-8 border border-border">
-                                <video
+                                <VideoPlayer
                                     ref={videoRef}
                                     src={lesson.media_url}
-                                    controls
                                     onTimeUpdate={handleVideoTimeUpdate}
                                     className="w-full h-full object-cover"
                                 />

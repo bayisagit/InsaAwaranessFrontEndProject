@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { AssessmentsManager } from '@/components/admin/AssessmentsManager';
+import { VideoPlayer } from '@/components/VideoPlayer';
 import DOMPurify from 'isomorphic-dompurify';
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
@@ -313,7 +314,7 @@ export default function LessonWorkspacePage() {
                                 <h2 className="text-lg font-bold text-foreground mb-4">Lesson Content</h2>
                                 {lessonData.content_type === 'video' && lessonData.media_url ? (
                                     <div className="aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center">
-                                        <video controls src={lessonData.media_url} className="w-full h-full object-contain" />
+                                        <VideoPlayer src={lessonData.media_url} className="w-full h-full object-contain" />
                                     </div>
                                 ) : lessonData.content_type === 'image' && lessonData.image_url ? (
                                     <div className="rounded-xl overflow-hidden bg-muted/50 p-2 flex justify-center">

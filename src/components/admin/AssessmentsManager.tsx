@@ -90,8 +90,8 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
  const params: Record<string, any> = { page, page_size: pageSize };
  if (filterType) params.parent_type = filterType;
  if (lockedLessonId) params.lesson = lockedLessonId;
- if (lockedModuleId) params.module = lockedModuleId;
- if (lockedCourseId) params.course_scope = lockedCourseId;
+ else if (lockedModuleId) params.module = lockedModuleId;
+ else if (lockedCourseId) params.course_scope = lockedCourseId;
  const { data, error: e } = await getAssessments(params);
  if (e) setError(e);
  else if (data?.results) { setAssessments(data.results); setTotalCount(data.count); }

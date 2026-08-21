@@ -421,7 +421,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  <option value="video">Video</option>
  <option value="article">Article</option>
  <option value="image">Image</option>
- <option value="assessment">Assessment</option>
+ {form.content_type === 'assessment' && <option value="assessment">Assessment (Legacy)</option>}
  </select>
  </div>
 
@@ -781,7 +781,7 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  <option value="video">Video</option>
  <option value="article">Article</option>
  <option value="image">Image</option>
- <option value="assessment">Assessment</option>
+ {form.content_type === 'assessment' && <option value="assessment">Assessment (Legacy)</option>}
  </select>
  </div>
 

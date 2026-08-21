@@ -50,6 +50,7 @@ interface Course {
 export default function DashboardPage() {
  const { user, isAuthenticated, isLoading } = useAuth();
  const router = useRouter();
+ const t = useTranslations('dashboard');
  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
  const [alerts, setAlerts] = useState<Alert[]>([]);
  const [isFetching, setIsFetching] = useState(true);

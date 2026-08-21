@@ -221,6 +221,7 @@ export interface Lesson {
     language?: string;
     assessment_type?: 'multiple_choice' | 'true_false' | 'matching' | 'multiple';
     assessment_payload?: AssessmentPayload | string;
+    assessment?: Assessment;
     passing_score?: number;
     order: number;
     created_at?: string;
@@ -256,6 +257,7 @@ export interface CourseModule {
     articles: Article[];
     videos: Video[];
     lessons: Lesson[];
+    module_quizzes?: Assessment[];
 }
 
 // Module shape from /api/v1/modules/ (includes nested articles/videos/lessons)
@@ -307,8 +309,8 @@ export interface AssessmentQuestion {
     correct_text_answer: string;
     requires_manual_grading: boolean;
     choices: AssessmentChoice[];
-    matching_pairs: { id: string; left_text: string; right_text: string }[];
-    ordering_items: { id: string; text: string; order: number }[];
+    matching_pairs: { id: string; left_text: string; right_text: string; order: number }[];
+    ordering_items: { id: string; text: string; correct_order: number; order: number }[];
     created_at: string;
     updated_at: string;
 }
@@ -1334,6 +1336,52 @@ export const updateAssessmentChoice = (id: string, data: Partial<{
 
 export const deleteAssessmentChoice = (id: string) =>
     apiFetch(`/api/v1/assessment-choices/${id}/`, { method: 'DELETE' });
+
+// ── Assessment Matching Pairs ─────────────────────────────────
+
+export const createAssessmentMatchingPair = (data: {
+    question: string;
+    left_text: string;
+    right_text: string;
+    order: number;
+}) => apiFetch<any>('/api/v1/assessment-matching-pairs/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+});
+
+export const updateAssessmentMatchingPair = (id: string, data: Partial<{
+    left_text: string;
+    right_text: string;
+    order: number;
+}>) => apiFetch<any>(`/api/v1/assessment-matching-pairs/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+});
+
+export const deleteAssessmentMatchingPair = (id: string) =>
+    apiFetch(`/api/v1/assessment-matching-pairs/${id}/`, { method: 'DELETE' });
+
+// ── Assessment Ordering Items ─────────────────────────────────
+
+export const createAssessmentOrderingItem = (data: {
+    question: string;
+    text: string;
+    order: number;
+}) => apiFetch<any>('/api/v1/assessment-ordering-items/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+});
+
+export const updateAssessmentOrderingItem = (id: string, data: Partial<{
+    text: string;
+    order: number;
+}>) => apiFetch<any>(`/api/v1/assessment-ordering-items/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+});
+
+export const deleteAssessmentOrderingItem = (id: string) =>
+    apiFetch(`/api/v1/assessment-ordering-items/${id}/`, { method: 'DELETE' });
 
 // ──────────────────────────────────────────────────────────
 // Certificate Actions

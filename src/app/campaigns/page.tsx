@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { CardSkeleton } from '@/components/LoadingSkeleton';
 import { LinkifyText } from '@/components/LinkifyText';
 import { PageHero } from '@/components/PageHero';
+import { VideoPlayer } from '@/components/VideoPlayer';
 
 
 
@@ -114,7 +115,7 @@ export default function CampaignsPage() {
  </p>
  {camp.content_type === 'video' && camp.content_url && (
  <div className="mb-6 rounded-xl overflow-hidden border border-border bg-black" onClick={(e) => e.stopPropagation()}>
- <video controls src={camp.content_url} className="w-full max-h-[300px]" />
+ <VideoPlayer src={camp.content_url} className="w-full aspect-video" />
  </div>
  )}
  <Link href={`/courses`} className="inline-block">

@@ -11,7 +11,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Check if we are inside a specific course, module, or lesson workspace
     // e.g. /admin/courses/123, /admin/modules/123, /admin/lessons/123
     const isWorkspace = pathname?.match(/^\/admin\/(courses|modules|lessons)\/([a-zA-Z0-9_-]+)(?:\/.*)?$/);
+    const isPreview = pathname?.endsWith('/preview');
     
+    if (isPreview) {
+        return <>{children}</>;
+    }
+
     if (isWorkspace) {
         return <CourseWorkspaceLayout>{children}</CourseWorkspaceLayout>;
     }
