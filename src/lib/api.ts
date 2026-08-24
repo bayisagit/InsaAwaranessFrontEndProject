@@ -27,6 +27,10 @@ export interface User {
     organization_id?: string;
     organization_name?: string;
     profile_photo?: string;
+    nationality?: string;
+    employment_status?: string;
+    gender?: string;
+    age_range?: string;
 }
 
 // Background profile — matches GET/PUT/PATCH /api/auth/user/background-profile/
