@@ -412,10 +412,9 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                                                     Lesson {index + 1}.{lIdx + 1}: {lesson.title}
                                                 </h3>
                                                 
-                                                {/* Video Content */}
                                                 {(lesson.media_url || lesson.video_url) && (
                                                     <div className="bg-black rounded-lg overflow-hidden flex items-center justify-center mb-8">
-                                                        <VideoPlayer src={lesson.media_url || lesson.video_url} className="w-full aspect-video" />
+                                                        <VideoPlayer src={(lesson.media_url || lesson.video_url) as string} className="w-full aspect-video" />
                                                     </div>
                                                 )}
                                                 
