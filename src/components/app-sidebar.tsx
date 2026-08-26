@@ -21,7 +21,8 @@ import {
   Video,
   Shield,
   Activity,
-  ClipboardList
+  ClipboardList,
+  Trash2
 } from "lucide-react"
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -152,7 +153,8 @@ const sidebarConfig: SidebarConfig = {
         },
         { title: "Reports", url: "/admin/reports", icon: BarChart },
         { title: "Audit Logs", url: "/admin/audit-logs", icon: Shield },
-        { title: "Awareness Tools", url: "/admin/awareness-tools", icon: ShieldAlert }
+        { title: "Awareness Tools", url: "/admin/awareness-tools", icon: ShieldAlert },
+        { title: "System Trash", url: "/admin/trash", icon: Trash2 }
       ]
     }
   ],
@@ -302,6 +304,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return false;
   };
 
+  const getTitle = (title: string) => {
+    const key = toCamel(title);
+    
+    // Check if the translation key exists safely before calling it
+    if (typeof (t as any).has === 'function' && (t as any).has(key)) {
+      const translated = (t as any)(key);
+      if (typeof translated === 'string' && translated !== key && !translated.startsWith('sidebar.')) {
+        return translated;
+      }
+    }
+    
+    return title;
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="py-4">
@@ -326,7 +342,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {navGroups.map((group) => (
           <SidebarGroup key={group.title}>
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:opacity-0">{(t as any)(toCamel(group.title)) || group.title}</SidebarGroupLabel>
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:opacity-0">{getTitle(group.title)}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
@@ -342,9 +358,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
-                          <CollapsibleTrigger render={<SidebarMenuButton tooltip={(t as any)(toCamel(item.title)) || item.title} isActive={isActive} />}>
+                          <CollapsibleTrigger render={<SidebarMenuButton tooltip={getTitle(item.title)} isActive={isActive} />}>
                             <item.icon className="size-4 shrink-0" />
-                            <span>{(t as any)(toCamel(item.title)) || item.title}</span>
+                            <span>{getTitle(item.title)}</span>
                             <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="group-data-[collapsible=icon]:hidden">
@@ -352,7 +368,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               {item.subItems!.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
                                   <SidebarMenuSubButton isActive={pathname === subItem.url} render={<Link href={subItem.url} />}>
-                                    <span>{(t as any)(toCamel(subItem.title)) || subItem.title}</span>
+                                    <span>{getTitle(subItem.title)}</span>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}
@@ -366,9 +382,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   // No sub-items
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton isActive={isActive} tooltip={(t as any)(toCamel(item.title)) || item.title} render={<Link href={item.url} />}>
+                      <SidebarMenuButton isActive={isActive} tooltip={getTitle(item.title)} render={<Link href={item.url} />}>
                         <item.icon className="size-4 shrink-0" />
-                        <span>{(t as any)(toCamel(item.title)) || item.title}</span>
+                        <span>{getTitle(item.title)}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );

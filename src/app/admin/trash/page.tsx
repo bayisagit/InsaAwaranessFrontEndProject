@@ -26,13 +26,13 @@ export default function TrashPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || !user?.is_superuser)) {
+    if (!isLoading && (!isAuthenticated || user?.role !== 'super_admin')) {
       router.push('/dashboard');
     }
   }, [isLoading, isAuthenticated, user, router]);
 
   useEffect(() => {
-    if (user?.is_superuser) {
+    if (user?.role === 'super_admin') {
       fetchTrash();
     }
   }, [user, filterModel]);
@@ -41,9 +41,10 @@ export default function TrashPage() {
     setIsFetching(true);
     setError(null);
     try {
-      const url = filterModel ? `/superadmin/trash/?model=${filterModel}` : '/superadmin/trash/';
-      const data = await apiFetch(url);
-      setItems(data);
+      const url = filterModel ? `/api/v1/superadmin/trash/?model=${filterModel}` : '/api/v1/superadmin/trash/';
+      const response = await apiFetch(url);
+      if (response.error) throw new Error(response.error);
+      setItems(Array.isArray(response.data) ? response.data : []);
     } catch (err: any) {
       setError(err.message || 'Failed to load trash items');
     } finally {
@@ -99,7 +100,7 @@ export default function TrashPage() {
     }
   };
 
-  if (isLoading || (isAuthenticated && !user?.is_superuser)) {
+  if (isLoading || (isAuthenticated && user?.role !== 'super_admin')) {
     return <div className="p-8 text-center text-gray-500">Loading...</div>;
   }
 
