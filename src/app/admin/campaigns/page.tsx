@@ -203,9 +203,9 @@ export default function AdminCampaignsPage() {
  </div>
  ) : (
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
- <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
- <option value="" className="text-foreground">Select Organization</option>
+ <label className="block text-sm font-semibold text-foreground mb-1">Organization (Optional for Global)</label>
+ <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
+ <option value="" className="text-foreground">None (Global Public Campaign)</option>
  {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
  </select>
  </div>
@@ -334,9 +334,9 @@ export default function AdminCampaignsPage() {
  </div>
  ) : (
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
- <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
- <option value="" className="text-foreground">Select Organization</option>
+ <label className="block text-sm font-semibold text-foreground mb-1">Organization (Optional for Global)</label>
+ <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
+ <option value="" className="text-foreground">None (Global Public Campaign)</option>
  {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
  </select>
  </div>

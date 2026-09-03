@@ -271,7 +271,7 @@ interface Course {
  
  {(course as any).payment_type === 'paid' && !(course as any).is_unlocked ? (
  <Link href={isAuthenticated ? `/dashboard/courses/${course.id}/payment` : '/login'} className="text-xs font-semibold text-yellow-600 dark:text-yellow-500 hover:underline inline-flex items-center gap-1">
- {tCommon('unlockCourse') || 'Unlock Course'}
+ {tCommon('enrollNow')}
  </Link>
  ) : (
  <Link href={`/courses/${course.id}`} className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1">

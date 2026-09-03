@@ -30,7 +30,6 @@ export default function CourseLessonDetailPage() {
     const [form, setForm] = useState({
         title: '',
         content_type: 'video',
-        language: 'en',
         content: '',
         media_url: '',
         image_url: '',
@@ -59,7 +58,6 @@ export default function CourseLessonDetailPage() {
             setForm({
                 title: lData.title,
                 content_type: lData.content_type,
-                language: lData.language || 'en',
                 content: lData.content || '',
                 media_url: lData.media_url || '',
                 image_url: lData.image_url || '',
@@ -84,7 +82,6 @@ export default function CourseLessonDetailPage() {
         const payload: Record<string, any> = {
             title: form.title,
             content_type: form.content_type,
-            language: form.language,
             order: form.order,
         };
 
@@ -154,10 +151,6 @@ export default function CourseLessonDetailPage() {
                         <span className="text-muted-foreground font-medium">Order:</span>
                         <span className="ml-2 font-bold text-foreground">{lessonData.order}</span>
                     </div>
-                    <div className="text-sm">
-                        <span className="text-muted-foreground font-medium">Language:</span>
-                        <span className="ml-2 font-bold text-foreground uppercase">{lessonData.language}</span>
-                    </div>
                 </div>
             </div>
 
@@ -180,21 +173,6 @@ export default function CourseLessonDetailPage() {
                                             required
                                             autoFocus
                                         />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-foreground mb-1">Language</label>
-                                        <select
-                                            className={SELECT_CLS}
-                                            value={form.language}
-                                            onChange={(e) => setForm({ ...form, language: e.target.value })}
-                                            required
-                                        >
-                                            <option value="en">English</option>
-                                            <option value="am">Amharic</option>
-                                            <option value="om">Oromo</option>
-                                            <option value="so">Somali</option>
-                                            <option value="ti">Tigrinya</option>
-                                        </select>
                                     </div>
                                     <div>
                                         <label className="block text-sm font-semibold text-foreground mb-1">Content Type</label>
