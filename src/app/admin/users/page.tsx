@@ -28,6 +28,8 @@ export default function AdminUsersPage() {
  const t = useTranslations('adminUsers');
  const router = useRouter();
  const [users, setUsers] = useState<UserData[]>([]);
+ const [nextUrl, setNextUrl] = useState<string | null>(null);
+ const [prevUrl, setPrevUrl] = useState<string | null>(null);
  const [isFetching, setIsFetching] = useState(true);
  const [error, setError] = useState('');
  const [actionError, setActionError] = useState('');
@@ -70,18 +72,22 @@ export default function AdminUsersPage() {
  else if (Array.isArray(data)) setOrganizations(data);
  };
 
- const fetchUsers = async () => {
+ const fetchUsers = async (url: string = '/api/auth/users/') => {
  setIsFetching(true);
  setError('');
- const { data, error: apiError, status } = await apiFetch('/api/auth/users/');
+ const { data, error: apiError, status } = await apiFetch(url);
 
  if (apiError || status !== 200) {
  setError(apiError || 'Failed to fetch users');
  } else if (Array.isArray(data)) {
  // Sometimes DRF returns paginated results { count, next, previous, results: [] }
  setUsers(data);
+ setNextUrl(null);
+ setPrevUrl(null);
  } else if (data && Array.isArray(data.results)) {
  setUsers(data.results);
+ setNextUrl(data.next);
+ setPrevUrl(data.previous);
  }
  setIsFetching(false);
  };
@@ -411,8 +417,8 @@ export default function AdminUsersPage() {
   )}
 
  {/* User Table */}
- <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
- <table className="w-full text-left text-sm text-muted-foreground">
+ <div className="bg-card rounded-xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-x-auto">
+ <table className="w-full text-left text-sm text-muted-foreground min-w-[800px]">
  <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
  <tr>
  <th className="px-4 py-3">{t('name')}</th>
@@ -457,6 +463,40 @@ export default function AdminUsersPage() {
  )}
  </tbody>
  </table>
+ 
+ {/* Pagination Controls */}
+ {(prevUrl || nextUrl) && (
+ <div className="flex justify-between items-center p-4 border-t border-border bg-card">
+ <Button 
+ variant="outline" 
+ onClick={() => {
+ if (prevUrl) {
+ // Extract just the path and query string, apiFetch prepends base URL
+ const urlObj = new URL(prevUrl);
+ fetchUsers(urlObj.pathname + urlObj.search);
+ }
+ }} 
+ disabled={!prevUrl || isFetching}
+ >
+ Previous
+ </Button>
+ <span className="text-sm text-muted-foreground">
+ {isFetching ? 'Loading...' : ''}
+ </span>
+ <Button 
+ variant="outline" 
+ onClick={() => {
+ if (nextUrl) {
+ const urlObj = new URL(nextUrl);
+ fetchUsers(urlObj.pathname + urlObj.search);
+ }
+ }} 
+ disabled={!nextUrl || isFetching}
+ >
+ Next
+ </Button>
+ </div>
+ )}
  </div>
  </div>
 

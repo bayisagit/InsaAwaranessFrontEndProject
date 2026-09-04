@@ -20,6 +20,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { useTranslations } from 'next-intl';
+import { NotificationBell } from '@/components/NotificationBell';
 
 interface DashboardLayoutBaseProps {
     children: React.ReactNode;
@@ -64,12 +65,7 @@ export function DashboardLayoutBase({ children }: DashboardLayoutBaseProps) {
 
                         {/* Actions */}
                         <div className="flex items-center gap-3 ml-auto">
-                            <Link href="/notifications">
-                                <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
-                                    <Bell className="h-5 w-5" />
-                                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
-                                </Button>
-                            </Link>
+                            <NotificationBell />
                             
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="relative h-9 w-9 rounded-full ml-1 hover:bg-accent hover:text-accent-foreground cursor-pointer outline-none">

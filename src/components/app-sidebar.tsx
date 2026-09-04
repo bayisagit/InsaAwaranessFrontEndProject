@@ -350,10 +350,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   const isActive = pathname === item.url || (item.url !== "/admin" && item.url !== "/dashboard" && pathname?.startsWith(item.url));
 
                   if (hasSubItems) {
+                    const isExpanded = openState[item.title] ?? isMenuExpanded(item.url, item.subItems);
                     return (
                       <Collapsible
                         key={item.title}
-                        open={openState[item.title] ?? isMenuExpanded(item.url, item.subItems)}
+                        open={isExpanded}
                         onOpenChange={(open) => setOpenState(prev => ({ ...prev, [item.title]: open }))}
                         className="group/collapsible"
                       >
@@ -361,7 +362,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           <CollapsibleTrigger render={<SidebarMenuButton tooltip={getTitle(item.title)} isActive={isActive} />}>
                             <item.icon className="size-4 shrink-0" />
                             <span>{getTitle(item.title)}</span>
-                            <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
+                            <ChevronRight className={`ml-auto size-4 transition-transform duration-200 group-data-[collapsible=icon]:hidden ${isExpanded ? "rotate-90" : ""}`} />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="group-data-[collapsible=icon]:hidden">
                             <SidebarMenuSub>
