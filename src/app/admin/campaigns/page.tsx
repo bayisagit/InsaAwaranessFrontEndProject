@@ -254,7 +254,7 @@ export default function AdminCampaignsPage() {
  <label className="block text-sm font-semibold text-foreground mb-1">Campaign Message</label>
  <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
  </div>
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Create Campaign'}</Button>
  </div>
@@ -385,7 +385,7 @@ export default function AdminCampaignsPage() {
  <label className="block text-sm font-semibold text-foreground mb-1">Campaign Message</label>
  <textarea className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]" placeholder="Enter campaign message..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required disabled={isActionLoading} />
  </div>
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Save Changes'}</Button>
  </div>

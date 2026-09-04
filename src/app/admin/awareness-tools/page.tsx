@@ -221,7 +221,7 @@ export default function AdminAwarenessToolsPage() {
  onChange={(e) => setFormData({ ...formData, config: e.target.value })}
  />
  </div>
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>
  {isActionLoading ? 'Saving...' : 'Create Tool'}
@@ -266,7 +266,7 @@ export default function AdminAwarenessToolsPage() {
  <p className="text-sm font-semibold text-foreground">{tool.usage_count || 0}</p>
  </td>
  <td className="px-6 py-4 text-right">
- <div className="flex justify-end gap-2">
+ <div className="flex flex-wrap justify-end gap-2 min-w-fit">
  <button
  onClick={() => handleToggleStatus(tool)}
  className="p-2 text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors cursor-pointer"
@@ -363,7 +363,7 @@ export default function AdminAwarenessToolsPage() {
  onChange={(e) => setFormData({ ...formData, config: e.target.value })}
  />
  </div>
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>
  {isActionLoading ? 'Saving...' : 'Update Tool'}

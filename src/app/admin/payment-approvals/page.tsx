@@ -229,7 +229,7 @@ export default function PaymentApprovalsPage() {
  </select>
  </div>
  <Input label="Amount (ETB)" type="number" step="0.01" min="0" placeholder="e.g. 1500.00" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} required disabled={isActionLoading} />
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Create Request'}</Button>
  </div>
@@ -269,7 +269,7 @@ export default function PaymentApprovalsPage() {
  <td className="px-6 py-4 text-xs text-muted-foreground">{a.reviewed_by ? a.reviewed_by.substring(0, 8) + '...' : '—'}</td>
  <td className="px-6 py-4 text-xs">{new Date(a.created_at).toLocaleDateString()}</td>
  <td className="px-6 py-4 text-right whitespace-nowrap">
- <div className="flex justify-end gap-1.5">
+ <div className="flex flex-wrap justify-end gap-1.5 min-w-fit">
  {isSuperAdmin && (
  <>
  {a.status === 'pending' && (
@@ -320,7 +320,7 @@ export default function PaymentApprovalsPage() {
  </select>
  </div>
  <Input label="Amount (ETB)" type="number" step="0.01" min="0" placeholder="e.g. 1500.00" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} required disabled={isActionLoading} />
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsFormModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Save Changes'}</Button>
  </div>

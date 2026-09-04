@@ -229,7 +229,7 @@ export default function AdminVideosPage() {
  <Input label="Duration (seconds)" type="number" value={form.duration.toString()} onChange={e => setForm({ ...form, duration: parseInt(e.target.value) || 0 })} required disabled={isActionLoading} />
  <Input label="Display Order" type="number" value={form.order.toString()} onChange={e => setForm({ ...form, order: parseInt(e.target.value) || 0 })} required disabled={isActionLoading} />
  </div>
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Add Video'}</Button>
  </div>
@@ -301,7 +301,7 @@ export default function AdminVideosPage() {
  <Input label="Duration (seconds)" type="number" value={form.duration.toString()} onChange={e => setForm({ ...form, duration: parseInt(e.target.value) || 0 })} required disabled={isActionLoading} />
  <Input label="Display Order" type="number" value={form.order.toString()} onChange={e => setForm({ ...form, order: parseInt(e.target.value) || 0 })} required disabled={isActionLoading} />
  </div>
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? 'Saving...' : 'Save Changes'}</Button>
  </div>

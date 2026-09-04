@@ -302,7 +302,7 @@ export default function LessonWorkspacePage() {
                                     )}
                                 </div>
 
-                                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-border">
+                                <div className="flex flex-wrap justify-end gap-3 mt-8 pt-4 border-t border-border min-w-fit">
                                     <Button type="button" variant="outline" onClick={() => { setIsEditing(false); setForm(lessonData); }}>Cancel</Button>
                                     <Button type="submit" variant="primary" disabled={isActionLoading}>
                                         {isActionLoading ? 'Saving...' : 'Save Lesson'}

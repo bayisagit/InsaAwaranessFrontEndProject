@@ -412,7 +412,7 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-end gap-3 pt-6 border-t border-gray-50 dark:border-border">
+                                    <div className="flex flex-wrap justify-end gap-3 pt-6 border-t border-gray-50 dark:border-border min-w-fit">
                                         <Button variant="secondary" type="submit" disabled={isSavingProfile} className="px-10 py-4 rounded-2xl shadow-xl shadow-secondary/20 font-bold tracking-tight hover:scale-[1.02] active:scale-[0.98] transition-all">
                                             {isSavingProfile ? t('processing') : t('syncProfile')}
                                         </Button>

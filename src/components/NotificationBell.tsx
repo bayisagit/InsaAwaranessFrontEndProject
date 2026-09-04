@@ -40,8 +40,9 @@ export function NotificationBell() {
         try {
             const { data, status } = await apiFetch('/api/v1/notifications/');
             if (status === 200 && data) {
-                setNotifications(data);
-                setUnreadCount(data.filter((n: Notification) => !n.is_read).length);
+                const notificationsArray = Array.isArray(data) ? data : (data.results || []);
+                setNotifications(notificationsArray);
+                setUnreadCount(notificationsArray.filter((n: Notification) => !n.is_read).length);
             }
         } catch (error) {
             console.error("Failed to fetch notifications:", error);

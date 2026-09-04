@@ -569,7 +569,7 @@ export default function DashboardPage() {
  )}
  </div>
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsRequestModalOpen(false)} disabled={actionLoading === 'request'}>
  {t('cancel')}
  </Button>

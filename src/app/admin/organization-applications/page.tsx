@@ -304,7 +304,7 @@ export default function AdminOrgApplicationsPage() {
  </div>
  )}
  {selectedApp.status === 'pending' && (
- <div className="pt-4 flex gap-3 justify-end border-t border-border">
+ <div className="pt-4 flex flex-wrap gap-3 justify-end border-t border-border min-w-fit">
  <Button
  variant="outline"
  className="text-red-500 border-red-200"

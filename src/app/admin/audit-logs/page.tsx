@@ -21,14 +21,24 @@ export default function AuditLogsPage() {
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const pageSize = 15;
-
     useEffect(() => {
         if (!isLoading) {
-            if (!isAuthenticated) router.push('/login');
-            else if (user?.role !== 'super_admin') router.push('/dashboard');
-            else fetchLogs();
+            if (!isAuthenticated) {
+                router.push('/login');
+                return;
+            }
+            if (user?.role !== 'super_admin') {
+                router.push('/dashboard');
+                return;
+            }
+            
+            const timer = setTimeout(() => {
+                fetchLogs();
+            }, 300);
+            
+            return () => clearTimeout(timer);
         }
-    }, [isAuthenticated, isLoading, user, router, page]);
+    }, [isAuthenticated, isLoading, user, router, page, searchTerm, actionFilter, appFilter]);
 
     const fetchLogs = async () => {
         setIsFetching(true);

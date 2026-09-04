@@ -1568,3 +1568,30 @@ export const updateContactMessage = (id: string, payload: Partial<ContactMessage
 
 export const deleteContactMessage = (id: string) =>
     apiFetch<{ detail: string }>(`/api/v1/contact-messages/${id}/`, { method: 'DELETE' });
+
+// --- Allowed Email Domains (Super Admin) ---
+export interface AllowedEmailDomain {
+    id: string;
+    domain: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export const getAllowedEmailDomains = () =>
+    apiFetch<AllowedEmailDomain[]>('/api/auth/email-domains/');
+
+export const createAllowedEmailDomain = (payload: { domain: string; is_active?: boolean }) =>
+    apiFetch<AllowedEmailDomain>('/api/auth/email-domains/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+
+export const updateAllowedEmailDomain = (id: string, payload: Partial<AllowedEmailDomain>) =>
+    apiFetch<AllowedEmailDomain>(`/api/auth/email-domains/${id}/`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+    });
+
+export const deleteAllowedEmailDomain = (id: string) =>
+    apiFetch<{ detail: string }>(`/api/auth/email-domains/${id}/`, { method: 'DELETE' });

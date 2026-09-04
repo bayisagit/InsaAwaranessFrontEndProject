@@ -86,6 +86,8 @@ export default function AdminCoursesPage() {
  const [orgFilter, setOrgFilter] = useState<string>('');
  const [providerFilter, setProviderFilter] = useState<string>('');
  const [searchQuery, setSearchQuery] = useState('');
+ const [dateFilter, setDateFilter] = useState('');
+ const [sortBy, setSortBy] = useState('Newest');
 
  const fetchCourses = useCallback(async () => {
  setIsFetching(true); setError('');
@@ -309,13 +311,42 @@ export default function AdminCoursesPage() {
  );
  if (!user || !['super_admin', 'org_admin', 'course_provider'].includes(user.role)) return null;
 
- const filteredCourses = courses.filter(c => {
+ let filteredCourses = courses.filter(c => {
  const matchesStatus = !statusFilter || c.status === statusFilter;
  const matchesOrg = !orgFilter || c.organization === orgFilter;
  const matchesProvider = !providerFilter || c.course_provider === providerFilter;
  const matchesSearch = !searchQuery || c.title.toLowerCase().includes(searchQuery.toLowerCase());
- return matchesStatus && matchesOrg && matchesProvider && matchesSearch;
+ 
+ let matchesDate = true;
+ if (dateFilter) {
+ const createdDate = new Date(c.created_at || Date.now());
+ const now = new Date();
+ const diffTime = Math.abs(now.getTime() - createdDate.getTime());
+ const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+ 
+ if (dateFilter === '7days') matchesDate = diffDays <= 7;
+ else if (dateFilter === '30days') matchesDate = diffDays <= 30;
+ else if (dateFilter === 'this_year') matchesDate = createdDate.getFullYear() === now.getFullYear();
+ }
+
+ return matchesStatus && matchesOrg && matchesProvider && matchesSearch && matchesDate;
  });
+
+ if (sortBy === 'Alphabetical') {
+ filteredCourses.sort((a, b) => a.title.localeCompare(b.title));
+ } else if (sortBy === 'Newest') {
+ filteredCourses.sort((a, b) => {
+ const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+ const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+ return dateB - dateA;
+ });
+ } else if (sortBy === 'Oldest') {
+ filteredCourses.sort((a, b) => {
+ const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+ const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+ return dateA - dateB;
+ });
+ }
 
  const isSuperAdmin = user.role === 'super_admin';
  const canManage = isSuperAdmin || user.role === 'course_provider';
@@ -452,7 +483,7 @@ export default function AdminCoursesPage() {
  </div>
  )}
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>{t('cancel')}</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? t('saving') : t('createCourse')}</Button>
  </div>
@@ -501,15 +532,40 @@ export default function AdminCoursesPage() {
  onChange={e => setProviderFilter(e.target.value)}
  >
  <option value="">{t('all')}</option>
- {allUsers.map(u => (
- <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.role})</option>
+ {providers.map(p => (
+ <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.role})</option>
  ))}
  </select>
  </div>
  )}
- {(statusFilter || orgFilter || providerFilter || searchQuery) && (
+ <div className="flex items-center gap-2">
+ <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Date Added</label>
+ <select
+ className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
+ value={dateFilter}
+ onChange={e => setDateFilter(e.target.value)}
+ >
+ <option value="">Any time</option>
+ <option value="7days">Last 7 days</option>
+ <option value="30days">Last 30 days</option>
+ <option value="this_year">This year</option>
+ </select>
+ </div>
+ <div className="flex items-center gap-2">
+ <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sort By</label>
+ <select
+ className="rounded-lg border border-border py-1.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card"
+ value={sortBy}
+ onChange={e => setSortBy(e.target.value)}
+ >
+ <option value="Newest">Newest First</option>
+ <option value="Oldest">Oldest First</option>
+ <option value="Alphabetical">Alphabetical (A-Z)</option>
+ </select>
+ </div>
+ {(statusFilter || orgFilter || providerFilter || searchQuery || dateFilter) && (
  <button
- onClick={() => { setStatusFilter(''); setOrgFilter(''); setProviderFilter(''); setSearchQuery(''); }}
+ onClick={() => { setStatusFilter(''); setOrgFilter(''); setProviderFilter(''); setSearchQuery(''); setDateFilter(''); }}
  className="text-xs text-primary font-bold hover:text-primary transition-colors duration-200-hover cursor-pointer"
  >
  {t('clearFilters')}
@@ -576,7 +632,7 @@ export default function AdminCoursesPage() {
  </div>
  </td>
  <td className="px-4 py-3 text-right">
- <div className="flex items-center justify-end gap-2">
+ <div className="flex flex-wrap items-center justify-end gap-2 min-w-fit">
  {user?.role === 'org_admin' && (c as any).payment_type === 'paid' && !(c as any).is_unlocked && (
  <Link href={`/dashboard/courses/${c.id}/payment`} className="px-3 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 border border-yellow-200 rounded-lg text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1">
  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
@@ -704,7 +760,7 @@ export default function AdminCoursesPage() {
  </div>
  )}
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>{t('cancel')}</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>{isActionLoading ? t('saving') : t('saveChanges')}</Button>
  </div>
@@ -719,7 +775,7 @@ export default function AdminCoursesPage() {
  <option value="">{t('selectProvider')}</option>
  {providers.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>)}
  </select>
- <div className="flex justify-end gap-3 pt-2">
+ <div className="flex flex-wrap justify-end gap-3 pt-2 min-w-fit">
  <Button variant="outline" onClick={() => setIsAssignProviderOpen(false)}>{t('cancel')}</Button>
  <Button variant="primary" onClick={handleAssignProvider} disabled={!selectedProvider || isActionLoading}>{isActionLoading ? t('assigning') : t('assign')}</Button>
  </div>
@@ -734,7 +790,7 @@ export default function AdminCoursesPage() {
  <option value="">{t('unlinkNone')}</option>
  {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
  </select>
- <div className="flex justify-end gap-3 pt-2">
+ <div className="flex flex-wrap justify-end gap-3 pt-2 min-w-fit">
  <Button variant="outline" onClick={() => setIsAssignOrgOpen(false)}>{t('cancel')}</Button>
  <Button variant="primary" onClick={handleAssignOrg} disabled={isActionLoading}>{isActionLoading ? t('saving') : t('save')}</Button>
  </div>
@@ -787,7 +843,7 @@ export default function AdminCoursesPage() {
  disabled={isActionLoading}
  />
  </div>
- <div className="flex justify-end gap-3 pt-2">
+ <div className="flex flex-wrap justify-end gap-3 pt-2 min-w-fit">
  <Button variant="outline" onClick={() => setIsRejectModalOpen(false)} disabled={isActionLoading}>{t('cancel')}</Button>
  <Button variant="primary" onClick={handleRejectConfirm} disabled={!rejectionReason.trim() || isActionLoading}>{isActionLoading ? t('rejecting') : t('reject')}</Button>
  </div>

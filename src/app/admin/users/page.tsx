@@ -376,7 +376,7 @@ export default function AdminUsersPage() {
 
  </div>
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>
  Cancel
  </Button>
@@ -453,7 +453,7 @@ export default function AdminUsersPage() {
  </span>
  </td>
  <td className="px-4 py-3 text-right">
- <div className="flex items-center justify-end gap-2">
+ <div className="flex flex-wrap items-center justify-end gap-2 min-w-fit">
  <button onClick={() => openModal(u)} className="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('edit')}</button>
  <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('delete')}</button>
  </div>
@@ -576,7 +576,7 @@ export default function AdminUsersPage() {
  disabled={isActionLoading}
  />
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isActionLoading}>
  Cancel
  </Button>

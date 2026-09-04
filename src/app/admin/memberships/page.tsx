@@ -330,7 +330,7 @@ export default function AdminMembershipsPage() {
  />
  </div>
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>
  {isActionLoading ? 'Saving...' : 'Link User'}
@@ -491,7 +491,7 @@ export default function AdminMembershipsPage() {
  />
  </div>
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={isActionLoading}>Cancel</Button>
  <Button type="submit" variant="primary" disabled={isActionLoading}>
  {isActionLoading ? 'Saving...' : 'Save Changes'}

@@ -377,7 +377,7 @@ export default function AdminArticlesPage() {
  />
  </div>
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={() => setIsCreateExpanded(false)} disabled={isActionLoading}>
  Cancel
  </Button>
@@ -481,7 +481,7 @@ export default function AdminArticlesPage() {
  </div>
 
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isActionLoading}>
  Cancel
  </Button>

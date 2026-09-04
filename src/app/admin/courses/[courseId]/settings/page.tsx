@@ -204,7 +204,7 @@ export default function CourseSettingsPage() {
             )}
 
             {!isReadOnly && (
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex flex-wrap justify-end gap-3 pt-4 min-w-fit">
                     <Button variant="outline" onClick={() => router.back()} disabled={isSaving}>Cancel</Button>
                     <Button variant="primary" onClick={handleSave} disabled={isSaving}>
                         {isSaving ? 'Saving...' : 'Save Settings'}

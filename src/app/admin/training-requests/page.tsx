@@ -234,7 +234,7 @@ export default function AdminTrainingRequestsPage() {
  Your request will be automatically linked to your organization and submitted for Super Admin review.
  </div>
 
- <div className="pt-4 flex justify-end gap-3">
+ <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
  <Button
  type="button"
  variant="outline"

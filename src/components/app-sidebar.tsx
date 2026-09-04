@@ -150,6 +150,7 @@ const sidebarConfig: SidebarConfig = {
           subItems: [
             { title: "Campaigns", url: "/admin/campaigns" },
             { title: "Alerts", url: "/admin/alerts" },
+            { title: "Email Domains", url: "/admin/email-domains" },
           ]
         },
         { title: "Reports", url: "/admin/reports", icon: BarChart },
