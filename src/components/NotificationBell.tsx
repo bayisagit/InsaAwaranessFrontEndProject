@@ -24,25 +24,22 @@ interface Notification {
 }
 
 export function NotificationBell() {
-    const { token } = useAuth();
+    const { isAuthenticated } = useAuth();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
-        if (!token) return;
+        if (!isAuthenticated) return;
         fetchNotifications();
         // Set up polling every 60 seconds
         const interval = setInterval(fetchNotifications, 60000);
         return () => clearInterval(interval);
-    }, [token]);
+    }, [isAuthenticated]);
 
     const fetchNotifications = async () => {
         try {
-            const res = await apiFetch('/api/v1/notifications/', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
+            const { data, status } = await apiFetch('/api/v1/notifications/');
+            if (status === 200 && data) {
                 setNotifications(data);
                 setUnreadCount(data.filter((n: Notification) => !n.is_read).length);
             }
@@ -53,11 +50,10 @@ export function NotificationBell() {
 
     const markAsRead = async (id: string) => {
         try {
-            const res = await apiFetch(`/api/v1/notifications/${id}/mark_read/`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+            const { status } = await apiFetch(`/api/v1/notifications/${id}/mark_read/`, {
+                method: 'POST'
             });
-            if (res.ok) {
+            if (status === 200 || status === 201 || status === 204) {
                 setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
                 setUnreadCount(prev => Math.max(0, prev - 1));
             }
