@@ -6,21 +6,31 @@ import { toast } from 'react-hot-toast';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { requestPasswordReset } from '@/lib/api';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 type PageState = 'form' | 'sent';
 
 export default function ForgotPasswordPage() {
  const [email, setEmail] = useState('');
  const [error, setError] = useState('');
+ const [captchaToken, setCaptchaToken] = useState<string>('');
  const [isLoading, setIsLoading] = useState(false);
  const [pageState, setPageState] = useState<PageState>('form');
 
  const handleSubmit = async (e: React.FormEvent) => {
  e.preventDefault();
  setError('');
+
+ if (!captchaToken) {
+     const msg = 'Please complete the security check (CAPTCHA).';
+     setError(msg);
+     toast.error(msg);
+     return;
+ }
+
  setIsLoading(true);
 
- const { error: apiError, status } = await requestPasswordReset(email.trim());
+ const { error: apiError, status } = await requestPasswordReset(email.trim(), captchaToken);
 
  setIsLoading(false);
 
@@ -125,6 +135,15 @@ export default function ForgotPasswordPage() {
  disabled={isLoading}
  autoComplete="email"
  />
+
+ <div className="flex justify-center mt-4 mb-2">
+     <Turnstile 
+         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+         onSuccess={(token) => setCaptchaToken(token)}
+         onExpire={() => setCaptchaToken('')}
+         options={{ theme: 'auto' }}
+     />
+ </div>
 
  <Button variant="secondary" type="submit" fullWidth className="py-3 rounded-xl" disabled={isLoading}>
  {isLoading ? (

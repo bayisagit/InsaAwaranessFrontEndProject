@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useTranslations } from 'next-intl';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 const LANGUAGE_OPTIONS = [
     { value: 'en', label: 'English' },
@@ -57,6 +58,7 @@ export default function SignupPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [preferredLanguage, setPreferredLanguage] = useState('en');
     const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState<string>('');
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
@@ -132,6 +134,10 @@ export default function SignupPage() {
             toast.error('You must accept the terms of service.');
             return;
         }
+        if (!captchaToken) {
+            toast.error('Please complete the security check (CAPTCHA).');
+            return;
+        }
 
         setIsLoading(true);
 
@@ -141,6 +147,7 @@ export default function SignupPage() {
             first_name: firstName.trim(),
             last_name: lastName.trim(),
             preferred_language: preferredLanguage,
+            cf_turnstile_response: captchaToken,
         });
 
         if (status !== 201) {
@@ -366,10 +373,20 @@ export default function SignupPage() {
                             </div>
                             <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed">
                                 {t.rich('termsAndService', {
-                                    terms: (chunks) => <Link href="/about" className="font-semibold text-primary hover:underline">{chunks}</Link>
+                                    terms: <Link href="/about" className="font-semibold text-primary hover:underline">{t('termsOfService')}</Link>
                                 })}
                             </label>
                         </div>
+                        
+                        <div className="flex justify-center mt-4">
+                            <Turnstile 
+                                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+                                onSuccess={(token) => setCaptchaToken(token)}
+                                onExpire={() => setCaptchaToken('')}
+                                options={{ theme: 'auto' }}
+                            />
+                        </div>
+
                         <Button type="submit" fullWidth className="mt-6" loading={isLoading}>
                             {t('createAccount')}
                         </Button>

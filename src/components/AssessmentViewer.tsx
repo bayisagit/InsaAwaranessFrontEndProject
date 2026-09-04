@@ -268,14 +268,14 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  return (
  <div className="bg-card border border-border rounded-2xl shadow-sm shadow-black/5 dark:shadow-none overflow-hidden">
  {/* Result header */}
- <div className={`px-6 py-8 text-center ${passed ? 'bg-green-50' : isPendingReview ? 'bg-yellow-50' : 'bg-red-50'}`}>
+ <div className={`px-6 py-8 text-center ${passed ? 'bg-green-50 dark:bg-green-950/30' : isPendingReview ? 'bg-yellow-50 dark:bg-yellow-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}>
  <div className="text-5xl mb-3">{passed ? '🏆' : isPendingReview ? '⏳' : '📚'}</div>
  {isPendingReview ? (
- <><h3 className="text-xl font-bold text-yellow-800 mb-1">Pending Review</h3>
- <p className="text-yellow-700 text-sm">Your answers include questions that require manual grading. Results will be updated once reviewed by an instructor.</p></>
+ <><h3 className="text-xl font-bold text-yellow-800 dark:text-yellow-400 mb-1">Pending Review</h3>
+ <p className="text-yellow-700 dark:text-yellow-400 text-sm">Your answers include questions that require manual grading. Results will be updated once reviewed by an instructor.</p></>
  ) : (
- <><h3 className={`text-xl font-bold mb-1 ${passed ? 'text-green-800' : 'text-red-800'}`}>{passed ? 'Well done! You passed!' : 'Keep practicing!'}</h3>
- <p className={`text-sm ${passed ? 'text-green-700' : 'text-red-700'}`}>
+ <><h3 className={`text-xl font-bold mb-1 ${passed ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>{passed ? 'Well done! You passed!' : 'Keep practicing!'}</h3>
+ <p className={`text-sm ${passed ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
  Score: <strong>{result.score.toFixed(1)}%</strong> (Pass mark: {assessment.passing_score}%)
  </p></>
  )}
@@ -297,15 +297,15 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
   if (!q) return null;
   const isPending = ans.requires_manual_grading;
   return (
-  <div key={ans.id} className={`p-4 rounded-xl border ${isPending ? 'border-yellow-200 bg-yellow-50' : ans.is_correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+  <div key={ans.id} className={`p-4 rounded-xl border ${isPending ? 'border-yellow-200 dark:border-yellow-900/50 bg-yellow-50 dark:bg-yellow-950/30' : ans.is_correct ? 'border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/30' : 'border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30'}`}>
   <div className="flex justify-between items-start gap-3">
   <p className="text-sm font-semibold text-foreground flex-1"><LinkifyText text={q.prompt} /></p>
-  <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 text-yellow-800' : ans.is_correct ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+  <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400' : ans.is_correct ? 'bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-400' : 'bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-400'}`}>
   {isPending ? '⏳ Pending' : ans.is_correct ? `✓ +${ans.score}pts` : '✗ 0pts'}
   </span>
   </div>
   {!isPending && !ans.is_correct && q.explanation && (
-  <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-xl"><LinkifyText text={q.explanation} /></p>
+  <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-xl dark:text-red-300 dark:bg-red-900/30"><LinkifyText text={q.explanation} /></p>
   )}
   </div>
   );
@@ -326,7 +326,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  <span className="text-muted-foreground">Attempt #{h.attempt_number}</span>
  <span className="text-muted-foreground">{h.submitted_at ? new Date(h.submitted_at).toLocaleDateString() : '—'}</span>
  <span className={`font-bold ${h.passed ? 'text-green-600' : 'text-red-500'}`}>{h.score.toFixed(1)}%</span>
- <span className={`px-2 py-0.5 rounded-full font-bold ${h.status === 'graded' ? (h.passed ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700') : 'bg-yellow-50 text-yellow-700'}`}>{h.status}</span>
+ <span className={`px-2 py-0.5 rounded-full font-bold ${h.status === 'graded' ? (h.passed ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400') : 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'}`}>{h.status}</span>
  </div>
  ))}
  </div>

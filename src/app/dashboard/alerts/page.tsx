@@ -48,9 +48,9 @@ export default function DashboardAlertsPage() {
  };
 
  const severityStyles: Record<string, string> = {
- high: 'border-red-500 bg-red-50 text-red-700',
- medium: 'border-orange-500 bg-orange-50 text-orange-700',
- low: 'border-blue-500 bg-blue-50 text-blue-700'
+ high: 'border-red-500 bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400',
+ medium: 'border-orange-500 bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400',
+ low: 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400'
  };
 
  return (
@@ -120,7 +120,7 @@ export default function DashboardAlertsPage() {
  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
  <LinkifyText text={alert.message} />
  </p>
- <div className="flex justify-end pt-4 border-t border-gray-50">
+ <div className="flex justify-end pt-4 border-t border-border mt-4">
  <button
  onClick={() => handleViewDetails(alert)}
  className="text-xs font-bold text-primary hover:underline uppercase tracking-widest inline-flex items-center gap-1 cursor-pointer"

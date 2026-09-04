@@ -22,7 +22,8 @@ import {
   Shield,
   Activity,
   ClipboardList,
-  Trash2
+  Trash2,
+  MessageSquare
 } from "lucide-react"
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -154,6 +155,7 @@ const sidebarConfig: SidebarConfig = {
         { title: "Reports", url: "/admin/reports", icon: BarChart },
         { title: "Audit Logs", url: "/admin/audit-logs", icon: Shield },
         { title: "Awareness Tools", url: "/admin/awareness-tools", icon: ShieldAlert },
+        { title: "Contact Messages", url: "/admin/contact-messages", icon: MessageSquare },
         { title: "System Trash", url: "/admin/trash", icon: Trash2 }
       ]
     }

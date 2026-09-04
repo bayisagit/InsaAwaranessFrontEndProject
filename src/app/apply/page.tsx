@@ -7,6 +7,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { useTranslations } from 'next-intl';
 import { toast } from 'react-hot-toast';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 interface FieldErrors {
     name?: string;
@@ -25,6 +26,7 @@ export default function ApplyPage() {
     const [pageState, setPageState] = useState<PageState>('form');
     const [submittedName, setSubmittedName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
     const [form, setForm] = useState({
@@ -49,6 +51,12 @@ export default function ApplyPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFieldErrors({});
+        
+        if (!captchaToken) {
+            setFieldErrors({ non_field: 'Please complete the CAPTCHA verification.' });
+            return;
+        }
+
         setIsLoading(true);
 
         const payload = {
@@ -58,6 +66,7 @@ export default function ApplyPage() {
             contact_phone: form.contact_phone.trim(),
             address: form.address.trim(),
             ...(form.website.trim() ? { website: form.website.trim() } : {}),
+            cf_turnstile_response: captchaToken,
         };
 
         const { error: apiError, status, data } = await createOrgApplication(payload);
@@ -240,7 +249,16 @@ export default function ApplyPage() {
                             </div>
                         </div>
 
-                        <Button type="submit" variant="secondary" fullWidth className="py-3 mt-2 rounded-xl" disabled={isLoading}>
+                        <div className="flex justify-center sm:justify-start">
+                            <Turnstile
+                                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                                onSuccess={(token) => setCaptchaToken(token)}
+                                onError={() => setCaptchaToken(null)}
+                                onExpire={() => setCaptchaToken(null)}
+                            />
+                        </div>
+
+                        <Button type="submit" variant="secondary" fullWidth className="py-3 mt-2 rounded-xl" disabled={isLoading || !captchaToken}>
                             {isLoading ? (
                                 <span className="flex items-center gap-2">
                                     <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">

@@ -79,6 +79,7 @@ export interface OrganizationApplication {
     contact_phone: string;
     website?: string;
     address: string;
+    cf_turnstile_response?: string;
     submitted_by: string | null;
     status: 'pending' | 'approved' | 'rejected';
     reviewed_by: string | null;
@@ -1147,10 +1148,10 @@ export const updateBackgroundProfile = (data: Partial<BackgroundProfile>) =>
     });
 
 // Login — POST /api/auth/login/
-export const loginUser = (email: string, password: string) =>
+export const loginUser = (email: string, password: string, cf_turnstile_response?: string) =>
     apiFetch<LoginResponse>('/api/auth/login/', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, cf_turnstile_response }),
     });
 
 // Register — POST /api/auth/register/
@@ -1160,6 +1161,7 @@ export interface RegisterPayload {
     first_name?: string;
     last_name?: string;
     preferred_language?: string;
+    cf_turnstile_response?: string;
 }
 export const registerUser = (payload: RegisterPayload) =>
     apiFetch('/api/auth/register/', {
@@ -1168,10 +1170,10 @@ export const registerUser = (payload: RegisterPayload) =>
     });
 
 // Password reset request — POST /api/auth/password-reset/
-export const requestPasswordReset = (email: string) =>
+export const requestPasswordReset = (email: string, cf_turnstile_response?: string) =>
     apiFetch<{ detail: string; uid?: string; token?: string }>('/api/auth/password-reset/', {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, cf_turnstile_response }),
     });
 
 // Password reset confirm — POST /api/auth/password-reset/confirm/
@@ -1524,3 +1526,45 @@ export const markNotificationRead = (id: string) =>
 export const markNotificationUnread = (id: string) =>
     apiFetch<{ detail: string }>(`/api/v1/notifications/${id}/mark_unread/`, { method: 'POST', body: JSON.stringify({}) });
 
+// ──────────────────────────────────────────────────────────
+// Contact Messages
+// ──────────────────────────────────────────────────────────
+export interface ContactMessage {
+    id: string;
+    first_name: string;
+    last_name: string;
+    work_email: string;
+    subject_category: string;
+    message: string;
+    status: 'pending' | 'reviewed' | 'resolved';
+    created_at: string;
+}
+
+export interface ContactMessagePayload {
+    first_name: string;
+    last_name: string;
+    work_email: string;
+    subject_category: string;
+    message: string;
+    cf_turnstile_response?: string;
+}
+
+export const createContactMessage = (payload: ContactMessagePayload) =>
+    apiFetch<ContactMessage>('/api/v1/contact-messages/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+
+export const getContactMessages = (params?: Record<string, any>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return apiFetch<PaginatedResponse<ContactMessage>>(`/api/v1/contact-messages/${query}`);
+};
+
+export const updateContactMessage = (id: string, payload: Partial<ContactMessage>) =>
+    apiFetch<ContactMessage>(`/api/v1/contact-messages/${id}/`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+    });
+
+export const deleteContactMessage = (id: string) =>
+    apiFetch<{ detail: string }>(`/api/v1/contact-messages/${id}/`, { method: 'DELETE' });

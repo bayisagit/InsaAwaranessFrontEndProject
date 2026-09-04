@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useTranslations } from 'next-intl';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 function handlePostLogin(data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }, router: ReturnType<typeof useRouter>, checkAuth: () => Promise<any>) {
     setTokens({ access: data.access, refresh: data.refresh });
@@ -40,6 +41,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
     const { checkAuth } = useAuth();
@@ -50,8 +52,9 @@ export default function LoginPage() {
         setError('');
         if (!email.trim()) { setError('Please enter your email address.'); return; }
         if (!password) { setError('Please enter your password.'); return; }
+        if (!captchaToken) { setError('Please complete the CAPTCHA verification.'); return; }
         setIsLoading(true);
-        const { data, error: apiError, status } = await loginUser(email.trim(), password);
+        const { data, error: apiError, status } = await loginUser(email.trim(), password, captchaToken);
         if (apiError || status !== 200) {
             const errorMsg = apiError || 'Invalid credentials.';
             setError(errorMsg);
@@ -198,7 +201,16 @@ export default function LoginPage() {
                         </Link>
                     </div>
 
-                    <Button variant="primary" type="submit" fullWidth className="py-3 rounded-xl" loading={isLoading}>
+                    <div className="flex justify-center sm:justify-start">
+                        <Turnstile
+                            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                            onSuccess={(token) => setCaptchaToken(token)}
+                            onError={() => setCaptchaToken(null)}
+                            onExpire={() => setCaptchaToken(null)}
+                        />
+                    </div>
+
+                    <Button variant="primary" type="submit" fullWidth className="py-3 rounded-xl" loading={isLoading} disabled={!captchaToken}>
                         {t('signIn')}
                     </Button>
                 </form>

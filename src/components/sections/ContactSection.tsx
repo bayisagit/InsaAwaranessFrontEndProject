@@ -1,9 +1,13 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { PageHero } from '@/components/PageHero';
 import { useTranslations } from 'next-intl';
+import { Turnstile } from '@marsidev/react-turnstile';
+import { createContactMessage } from '@/lib/api';
 
 interface ContactSectionProps {
     variant?: 'full' | 'home';
@@ -11,6 +15,51 @@ interface ContactSectionProps {
 
 export function ContactSection({ variant = 'full' }: ContactSectionProps) {
     const t = useTranslations('common');
+    
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [workEmail, setWorkEmail] = useState('');
+    const [subjectCategory, setSubjectCategory] = useState(t('subjectGeneral'));
+    const [message, setMessage] = useState('');
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!captchaToken) {
+            setErrorMsg("Please complete the CAPTCHA verification.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        setErrorMsg('');
+        setSuccessMsg('');
+
+        try {
+            await createContactMessage({
+                first_name: firstName,
+                last_name: lastName,
+                work_email: workEmail,
+                subject_category: subjectCategory,
+                message,
+                cf_turnstile_response: captchaToken
+            });
+            setSuccessMsg("Your message has been sent successfully. We will get back to you shortly.");
+            // Reset form
+            setFirstName('');
+            setLastName('');
+            setWorkEmail('');
+            setMessage('');
+            // Reset turnstile is handled by re-rendering or user action if necessary
+        } catch (error: any) {
+            setErrorMsg(error.message || "Failed to send message. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (variant === 'home') {
         return (
@@ -116,13 +165,36 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                             {t('commonQuestions')}
                         </h3>
                         <div className="space-y-4">
-                            <div className="flex justify-between items-center py-2 border-b border-border cursor-pointer group">
-                                <span className="text-sm font-medium text-foreground group-hover:text-primary">{t('faqVerifyEmail')}</span>
-                                <span className="text-muted-foreground">&#11163;</span>
+                            {/* FAQ 1 */}
+                            <div className="border-b border-border pb-2">
+                                <div 
+                                    className="flex justify-between items-center cursor-pointer group"
+                                    onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
+                                >
+                                    <span className="text-sm font-medium text-foreground group-hover:text-primary">{t('faqVerifyEmail')}</span>
+                                    <span className={`text-muted-foreground transition-transform duration-200 ${openFaq === 1 ? 'rotate-180' : ''}`}>&#11163;</span>
+                                </div>
+                                {openFaq === 1 && (
+                                    <div className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                                        You can verify a government email by ensuring it ends with the official ".gov.et" domain. If you are unsure, you can contact the IT support desk or refer to our directory.
+                                    </div>
+                                )}
                             </div>
-                            <div className="flex justify-between items-center py-2 border-b border-border cursor-pointer group">
-                                <span className="text-sm font-medium text-foreground group-hover:text-primary">{t('faqTrainingMandatory')}</span>
-                                <span className="text-muted-foreground">&#11163;</span>
+
+                            {/* FAQ 2 */}
+                            <div className="border-b border-border pb-2">
+                                <div 
+                                    className="flex justify-between items-center cursor-pointer group"
+                                    onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
+                                >
+                                    <span className="text-sm font-medium text-foreground group-hover:text-primary">{t('faqTrainingMandatory')}</span>
+                                    <span className={`text-muted-foreground transition-transform duration-200 ${openFaq === 2 ? 'rotate-180' : ''}`}>&#11163;</span>
+                                </div>
+                                {openFaq === 2 && (
+                                    <div className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                                        Yes, basic cybersecurity awareness training is mandatory for all active employees. Please log into your dashboard to check your progress and complete pending modules.
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -134,22 +206,45 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                         <h2 className="text-2xl font-bold text-foreground mb-2">{t('sendMessage')}</h2>
                         <p className="text-muted-foreground text-sm mb-8">{t('sendMessageDesc')}</p>
 
-                        <form className="space-y-6">
+                        {successMsg && (
+                            <div className="mb-6 p-4 bg-green-50/50 border border-green-200 text-green-700 rounded-lg text-sm flex items-start gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span>{successMsg}</span>
+                            </div>
+                        )}
+
+                        {errorMsg && (
+                            <div className="mb-6 p-4 bg-red-50/50 border border-red-200 text-red-700 rounded-lg text-sm flex items-start gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                                <span>{errorMsg}</span>
+                            </div>
+                        )}
+
+                        <form className="space-y-6" onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <Input label={t('firstName')} placeholder="Jane" required />
-                                <Input label={t('lastName')} placeholder="Doe" required />
+                                <Input label={t('firstName')} placeholder="Jane" required value={firstName} onChange={e => setFirstName(e.target.value)} disabled={isSubmitting} />
+                                <Input label={t('lastName')} placeholder="Doe" required value={lastName} onChange={e => setLastName(e.target.value)} disabled={isSubmitting} />
                             </div>
 
-                            <Input label={t('workEmail')} type="email" placeholder="jane.doe@organization.com" required />
+                            <Input label={t('workEmail')} type="email" placeholder="jane.doe@organization.com" required value={workEmail} onChange={e => setWorkEmail(e.target.value)} disabled={isSubmitting} />
 
                             <div>
                                 <label className="block text-sm font-medium text-foreground mb-1">{t('subjectCategory')} <span className="text-primary">*</span></label>
                                 <div className="relative">
-                                    <select className="block w-full rounded-lg border border-border py-3 pl-3 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary appearance-none bg-card">
-                                        <option>{t('subjectGeneral')}</option>
-                                        <option>{t('subjectReport')}</option>
-                                        <option>{t('subjectTraining')}</option>
-                                        <option>{t('subjectTechnical')}</option>
+                                    <select 
+                                        className="block w-full rounded-lg border border-border py-3 pl-3 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary appearance-none bg-card"
+                                        value={subjectCategory}
+                                        onChange={e => setSubjectCategory(e.target.value)}
+                                        disabled={isSubmitting}
+                                    >
+                                        <option value={t('subjectGeneral')}>{t('subjectGeneral')}</option>
+                                        <option value={t('subjectReport')}>{t('subjectReport')}</option>
+                                        <option value={t('subjectTraining')}>{t('subjectTraining')}</option>
+                                        <option value={t('subjectTechnical')}>{t('subjectTechnical')}</option>
                                     </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground">
                                         &#11163;
@@ -164,12 +259,15 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                     required
                                     placeholder={t('messagePlaceholder')}
                                     className="block w-full rounded-lg border border-border py-3 px-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                                    value={message}
+                                    onChange={e => setMessage(e.target.value)}
+                                    disabled={isSubmitting}
                                 ></textarea>
                             </div>
 
                             <div className="flex items-start gap-3">
                                 <div className="flex items-center h-5">
-                                    <input id="consent" type="checkbox" className="w-4 h-4 text-primary bg-card border-border rounded focus:ring-primary focus:ring-2" required />
+                                    <input id="consent" type="checkbox" className="w-4 h-4 text-primary bg-card border-border rounded focus:ring-primary focus:ring-2" required disabled={isSubmitting} />
                                 </div>
                                 <label htmlFor="consent" className="text-xs text-muted-foreground leading-relaxed">
                                     {t.rich('privacyConsent', {
@@ -178,8 +276,17 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                 </label>
                             </div>
 
-                            <Button type="button" className="bg-orange-500 hover:bg-orange-600 text-white px-8">
-                                {t('sendMessage')}
+                            <div className="flex justify-center sm:justify-start">
+                                <Turnstile
+                                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                                    onSuccess={(token) => setCaptchaToken(token)}
+                                    onError={() => setCaptchaToken(null)}
+                                    onExpire={() => setCaptchaToken(null)}
+                                />
+                            </div>
+
+                            <Button type="submit" disabled={isSubmitting || !captchaToken} className="bg-orange-500 hover:bg-orange-600 text-white px-8">
+                                {isSubmitting ? 'Sending...' : t('sendMessage')}
                             </Button>
                         </form>
                     </div>
