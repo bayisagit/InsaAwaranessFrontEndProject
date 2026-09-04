@@ -271,7 +271,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                 </div>
                                 <label htmlFor="consent" className="text-xs text-muted-foreground leading-relaxed">
                                     {t.rich('privacyConsent', {
-                                        privacyLink: (chunks) => <Link href="/about" className="text-primary hover:underline">{chunks}</Link>
+                                        privacyLink: (chunks) => <Link href="/privacy" className="text-primary hover:underline">{chunks}</Link>
                                     })}
                                 </label>
                             </div>
