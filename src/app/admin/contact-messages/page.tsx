@@ -312,7 +312,7 @@ export default function AdminContactMessagesPage() {
                 title="Delete Message"
                 message="Are you sure you want to delete this message? This action cannot be undone."
                 confirmText="Delete Message"
-                isDestructive={true}
+                variant="danger"
                 isLoading={isActionLoading}
             />
         </div>
