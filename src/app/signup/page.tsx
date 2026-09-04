@@ -373,7 +373,7 @@ export default function SignupPage() {
                             </div>
                             <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed">
                                 {t.rich('termsAndService', {
-                                    terms: <Link href="/about" className="font-semibold text-primary hover:underline">{t('termsOfService')}</Link>
+                                    terms: (chunks) => <Link href="/terms" className="font-semibold text-primary hover:underline">{chunks}</Link>
                                 })}
                             </label>
                         </div>
