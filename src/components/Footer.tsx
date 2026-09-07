@@ -1,11 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { getPublicSettings } from '@/lib/api';
-import { getLocale } from 'next-intl/server';
 
 export const Footer = async () => {
-    const t = await useTranslations('footer');
+    const t = await getTranslations('footer');
     const locale = await getLocale();
     
     let cms: Record<string, any> = {};

@@ -3,13 +3,12 @@ import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { AboutSection } from '@/components/sections/AboutSection';
 import { ContactSection } from '@/components/sections/ContactSection';
-import { useTranslations } from 'next-intl';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { getPublicSettings } from '@/lib/api';
-import { getLocale } from 'next-intl/server';
 
 export default async function Home() {
-  const t = await useTranslations('landing');
-  const tCommon = await useTranslations('common');
+  const t = await getTranslations('landing');
+  const tCommon = await getTranslations('common');
   const locale = await getLocale();
   
   // Fetch CMS Settings safely
