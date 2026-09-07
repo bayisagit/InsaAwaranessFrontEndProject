@@ -157,6 +157,7 @@ const sidebarConfig: SidebarConfig = {
         { title: "Audit Logs", url: "/admin/audit-logs", icon: Shield },
         { title: "Awareness Tools", url: "/admin/awareness-tools", icon: ShieldAlert },
         { title: "Contact Messages", url: "/admin/contact-messages", icon: MessageSquare },
+        { title: "Content Management", url: "/admin/cms", icon: FileText },
         { title: "System Trash", url: "/admin/trash", icon: Trash2 }
       ]
     }

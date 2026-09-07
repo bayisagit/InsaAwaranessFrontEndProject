@@ -1,19 +1,34 @@
 import React from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { getPublicSettings } from '@/lib/api';
+import { getLocale } from 'next-intl/server';
 
-export const Footer: React.FC = () => {
-    const t = useTranslations('footer');
+export const Footer = async () => {
+    const t = await useTranslations('footer');
+    const locale = await getLocale();
+    
+    let cms: Record<string, any> = {};
+    try {
+        const res = await getPublicSettings();
+        if (res.data) cms = res.data;
+    } catch (err) {
+        console.error("Failed to fetch CMS settings for Footer", err);
+    }
+    
+    const logoUrl = cms['site_logo_image'] || "/logo.png";
+    const aboutText = cms['footer_about']?.[locale] || t('description');
+
     return (
         <footer className="w-full bg-card border-t border-border">
             <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="col-span-1 md:col-span-1">
                     <div className="flex items-center gap-2 mb-4">
-                        <img src="/logo.png" alt="INSA" className="h-6 w-6 object-contain" />
+                        <img src={logoUrl} alt="INSA" className="h-6 w-6 object-contain" />
                         <span className="font-bold text-foreground">INSA Cyber Awareness</span>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                        {t('description')}
+                        {aboutText}
                     </p>
                     <div className="flex flex-wrap gap-4 mt-6">
                         {/* Facebook */}

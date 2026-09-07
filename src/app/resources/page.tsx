@@ -56,31 +56,33 @@ export default function ResourcesPage() {
 
  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
- const downloadResource = useCallback(async (resource: Resource) => {
- if (downloadingId) return;
- setDownloadingId(resource.id);
- try {
- const url = resource.file_url?.toLowerCase() || '';
- if (url.includes('cloudinary')) {
- const sep = resource.file_url!.includes('?') ? '&' : '?';
- window.open(`${resource.file_url}${sep}fl_attachment=true`, '_blank');
- } else {
- const blob = await downloadResourceFile(resource.id);
- if (!blob) return;
- const objectUrl = URL.createObjectURL(blob);
- const a = document.createElement('a');
- a.href = objectUrl;
- const ext = resource.file_url?.split('.').pop() || '';
- a.download = `${resource.title.replace(/\s+/g, '_')}.${ext}`;
- document.body.appendChild(a);
- a.click();
- document.body.removeChild(a);
- URL.revokeObjectURL(objectUrl);
- }
- } finally {
- setDownloadingId(null);
- }
- }, [downloadingId]);
+    const downloadResource = useCallback(async (resource: Resource) => {
+        if (downloadingId) return;
+        setDownloadingId(resource.id);
+        try {
+            const blob = await downloadResourceFile(resource.id);
+            if (!blob) return;
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = objectUrl;
+            
+            // Try to use the extension from the URL if available, but the backend 
+            // Content-Disposition header usually handles the filename natively in modern browsers.
+            // For programmatic <a> downloads, we provide a fallback name.
+            const ext = resource.file_url?.split('.').pop() || '';
+            const finalExt = (ext && ext.length <= 4) ? `.${ext}` : '';
+            a.download = `${resource.title.replace(/\s+/g, '_')}${finalExt}`;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(objectUrl);
+        } catch (error) {
+            console.error('Download failed:', error);
+        } finally {
+            setDownloadingId(null);
+        }
+    }, [downloadingId]);
 
  const typeIcons: Record<string, React.ReactNode> = {
  pdf: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,

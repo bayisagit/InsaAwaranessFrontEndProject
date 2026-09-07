@@ -596,8 +596,8 @@ export async function apiFetch<T = any>(
         const method = options.method || 'GET';
         const headers = new Headers(options.headers || {});
 
-        // Auto-add JSON content type if not provided and it has a body
-        if (options.body && !headers.has('Content-Type')) {
+        // Auto-add JSON content type if not provided, it has a body, and it's not FormData
+        if (options.body && !headers.has('Content-Type') && !(options.body instanceof FormData)) {
             headers.set('Content-Type', 'application/json');
         }
 
@@ -1595,3 +1595,46 @@ export const updateAllowedEmailDomain = (id: string, payload: Partial<AllowedEma
 
 export const deleteAllowedEmailDomain = (id: string) =>
     apiFetch<{ detail: string }>(`/api/auth/email-domains/${id}/`, { method: 'DELETE' });
+
+// ──────────────────────────────────────────────────────────
+// CMS Settings (SiteSettings)
+// ──────────────────────────────────────────────────────────
+
+export interface SiteSetting {
+    id: string;
+    key: string;
+    category: string;
+    value: any;
+    image?: string;
+    is_active: boolean;
+    updated_by?: string;
+    updated_at: string;
+}
+
+/** Fetch public, cached site settings */
+export const getPublicSettings = () =>
+    apiFetch<Record<string, any>>('/api/v1/cms-settings/', { cache: 'no-store' });
+
+/** Fetch all settings for the admin dashboard */
+export const getAdminSettings = () =>
+    apiFetch<SiteSetting[]>('/api/v1/superadmin/cms-settings/');
+
+export const getAdminSetting = (key: string) =>
+    apiFetch<SiteSetting>(`/api/v1/superadmin/cms-settings/${key}/`);
+
+export const updateAdminSetting = (key: string, payload: Partial<SiteSetting> | FormData) => {
+    const isFormData = payload instanceof FormData;
+    return apiFetch<SiteSetting>(`/api/v1/superadmin/cms-settings/${key}/`, {
+        method: 'PATCH',
+        body: isFormData ? (payload as any) : JSON.stringify(payload),
+    });
+};
+
+export const createAdminSetting = (payload: Partial<SiteSetting> | FormData) => {
+    const isFormData = payload instanceof FormData;
+    return apiFetch<SiteSetting>(`/api/v1/superadmin/cms-settings/`, {
+        method: 'POST',
+        body: isFormData ? (payload as any) : JSON.stringify(payload),
+    });
+};
+

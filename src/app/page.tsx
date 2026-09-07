@@ -4,10 +4,28 @@ import { Button } from '@/components/Button';
 import { AboutSection } from '@/components/sections/AboutSection';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { useTranslations } from 'next-intl';
+import { getPublicSettings } from '@/lib/api';
+import { getLocale } from 'next-intl/server';
 
-export default function Home() {
-  const t = useTranslations('landing');
-  const tCommon = useTranslations('common');
+export default async function Home() {
+  const t = await useTranslations('landing');
+  const tCommon = await useTranslations('common');
+  const locale = await getLocale();
+  
+  // Fetch CMS Settings safely
+  let cms: Record<string, any> = {};
+  try {
+    const res = await getPublicSettings();
+    if (res.data) cms = res.data;
+  } catch (err) {
+    console.error("Failed to fetch CMS settings", err);
+  }
+
+  // Helper to fallback to next-intl if CMS is missing
+  const getCmsValue = (key: string, fallbackKey: string) => {
+    return cms[key]?.[locale] || t(fallbackKey);
+  };
+
   return (
     <div className="w-full flex-col flex bg-card">
       {/* Hero Section */}
@@ -23,13 +41,17 @@ export default function Home() {
         </span>
 
         <h1 className="relative z-10 mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-6xl max-w-3xl">
-          {t.rich('heroTitle', {
-            highlight: (chunks) => <span className="text-primary">{chunks}</span>
-          })}
+          {cms['hero_title']?.[locale] ? (
+            <span>{cms['hero_title'][locale]}</span>
+          ) : (
+            t.rich('heroTitle', {
+              highlight: (chunks) => <span className="text-primary">{chunks}</span>
+            })
+          )}
         </h1>
 
         <p className="relative z-10 mt-6 text-lg leading-8 text-gray-300 max-w-2xl">
-          {t('heroSubtitle')}
+          {getCmsValue('hero_subtitle', 'heroSubtitle')}
         </p>
 
         <div className="relative z-10 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
