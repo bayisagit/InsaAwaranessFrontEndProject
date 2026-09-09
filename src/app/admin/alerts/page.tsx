@@ -258,36 +258,43 @@ export default function AdminAlertsPage() {
  {alerts.length === 0 ? (
  <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No alerts yet.</td></tr>
  ) : alerts.map(a => (
- <tr key={a.id} className="hover:bg-muted transition-colors">
- <td className="px-6 py-4">
- <div className="flex flex-col gap-1">
- <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest w-fit ${a.severity === 'high' ? 'bg-red-50 text-red-700' :
- a.severity === 'medium' ? 'bg-orange-50 text-orange-700' :
- 'bg-blue-50 text-blue-700'
- }`}>
- {a.severity}
- </span>
- <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest w-fit ${a.status === 'published' ? 'bg-green-50 text-green-700' : 'bg-muted/50 text-muted-foreground'
- }`}>
- {a.status}
- </span>
- </div>
- </td>
- <td className="px-6 py-4">
- <div className="font-medium text-foreground">{a.title}</div>
- <div className="text-muted-foreground truncate max-w-sm">{a.message}</div>
- </td>
- <td className="px-6 py-4 text-xs whitespace-nowrap">
- {a.published_at ? new Date(a.published_at).toLocaleDateString() : 'Not published'}
- </td>
- <td className="px-6 py-4 text-right whitespace-nowrap">
- {a.status !== 'published' && (
- <button onClick={() => handlePublish(a.id)} className="text-green-600 hover:text-green-800 font-medium mr-3 transition-colors cursor-pointer">Publish</button>
- )}
- <button onClick={() => openModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
- <button onClick={() => handleDelete(a.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer">Delete</button>
- </td>
- </tr>
+  <tr key={a.id} className="hover:bg-muted/50 transition-colors">
+  <td className="px-6 py-4 whitespace-nowrap">
+  <div className="flex flex-col gap-1.5 items-start">
+  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider border whitespace-nowrap ${
+    a.severity === 'high' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' :
+    a.severity === 'medium' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' :
+    'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
+  }`}>
+  {a.severity}
+  </span>
+  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium border whitespace-nowrap ${
+    a.status === 'published' 
+      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+      : 'bg-muted/60 text-muted-foreground border-border'
+  }`}>
+  <span className={`w-1.5 h-1.5 rounded-full ${a.status === 'published' ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
+  {a.status}
+  </span>
+  </div>
+  </td>
+  <td className="px-6 py-4">
+  <div className="font-semibold text-foreground">{a.title}</div>
+  <div className="text-muted-foreground text-xs line-clamp-1 max-w-sm mt-0.5">{a.message}</div>
+  </td>
+  <td className="px-6 py-4 text-xs whitespace-nowrap text-muted-foreground">
+  {a.published_at ? new Date(a.published_at).toLocaleDateString() : 'Not published'}
+  </td>
+  <td className="px-6 py-4 text-right whitespace-nowrap">
+  <div className="flex items-center justify-end gap-2">
+  {a.status !== 'published' && (
+  <button onClick={() => handlePublish(a.id)} className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Publish</button>
+  )}
+  <button onClick={() => openModal(a)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Edit</button>
+  <button onClick={() => handleDelete(a.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Delete</button>
+  </div>
+  </td>
+  </tr>
  ))}
  </tbody>
  </table>

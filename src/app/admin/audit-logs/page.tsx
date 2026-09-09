@@ -71,11 +71,11 @@ export default function AuditLogsPage() {
 
     const actionBadge = (action: string) => {
         const styles: Record<string, string> = {
-            create: 'bg-green-50 text-green-700',
-            update: 'bg-blue-50 text-blue-700',
-            delete: 'bg-red-50 text-red-700',
+            create: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+            update: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+            delete: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
         };
-        return styles[action] || 'bg-muted/50 text-foreground';
+        return styles[action] || 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20';
     };
 
     if (isLoading) return <div className="flex justify-center items-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
@@ -152,8 +152,8 @@ export default function AuditLogsPage() {
                                         <td className="px-6 py-4 font-medium text-foreground">
                                             {log.actor_email || <span className="text-muted-foreground italic">system</span>}
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${actionBadge(log.action)}`}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${actionBadge(log.action)}`}>
                                                 {log.action}
                                             </span>
                                         </td>

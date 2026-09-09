@@ -23,10 +23,10 @@ interface UserData { id: string; email: string; first_name: string; last_name: s
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card disabled:opacity-75 disabled:bg-muted/50 disabled:cursor-not-allowed";
 const STATUS_COLORS: Record<string, string> = {
- published: 'bg-green-50 text-green-700',
- draft: 'bg-yellow-50 text-yellow-700',
- submitted: 'bg-blue-50 text-blue-700',
- archived: 'bg-muted/50 text-muted-foreground',
+ published: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
+ draft: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+ submitted: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20',
+ archived: 'bg-muted text-muted-foreground border border-border',
 };
 
 export default function AdminCoursesPage() {
@@ -618,50 +618,50 @@ export default function AdminCoursesPage() {
  <td className="px-4 py-3 text-xs text-muted-foreground">
  {c.organization ? (orgs.find(o => o.id === c.organization)?.name || c.organization) : '—'}
  </td>
- <td className="px-4 py-3">
- <div className="flex flex-col gap-1 items-start">
- <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider ${STATUS_COLORS[c.status] || 'bg-muted/50 text-muted-foreground'}`}>
- {c.status || 'draft'}
- </span>
- {(c as any).payment_type === 'paid' && (
- <span className="text-[10px] font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded flex items-center gap-1 border border-yellow-200 shadow-sm">
- <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
- {(c as any).is_unlocked ? 'PAID' : `${(c as any).currency || 'ETB'} ${(c as any).course_price}`}
- </span>
- )}
- </div>
- </td>
- <td className="px-4 py-3 text-right">
- <div className="flex flex-wrap items-center justify-end gap-2 min-w-fit">
- {user?.role === 'org_admin' && (c as any).payment_type === 'paid' && !(c as any).is_unlocked && (
- <Link href={`/dashboard/courses/${c.id}/payment`} className="px-3 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 border border-yellow-200 rounded-lg text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1">
- <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
- Unlock Course
- </Link>
- )}
- {canManage && (
- <button onClick={() => openModal(c)} className="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('edit')}</button>
- )}
- {c.status === 'draft' && user.role === 'course_provider' && (
- <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('submit')}</button>
- )}
- {c.status === 'submitted' && user.role === 'course_provider' && (
- <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('withdraw')}</button>
- )}
- {c.status === 'submitted' && isSuperAdmin && (
- <>
- <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('approve')}</button>
- <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('reject')}</button>
- </>
- )}
- {isSuperAdmin && (
- <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('provider')}</button>
- )}
- {canManage && (
- <button onClick={() => handleDelete(c.id)} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('delete')}</button>
- )}
- </div>
- </td>
+ <td className="px-4 py-3 whitespace-nowrap">
+  <div className="flex flex-col gap-1 items-start">
+  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border whitespace-nowrap ${STATUS_COLORS[c.status] || 'bg-muted text-muted-foreground border-border'}`}>
+  {c.status || 'draft'}
+  </span>
+  {(c as any).payment_type === 'paid' && (
+  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 whitespace-nowrap">
+  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+  {(c as any).is_unlocked ? 'PAID' : `${(c as any).currency || 'ETB'} ${(c as any).course_price}`}
+  </span>
+  )}
+  </div>
+  </td>
+  <td className="px-4 py-3 text-right whitespace-nowrap">
+  <div className="flex flex-wrap items-center justify-end gap-1.5 min-w-fit">
+  {user?.role === 'org_admin' && (c as any).payment_type === 'paid' && !(c as any).is_unlocked && (
+  <Link href={`/dashboard/courses/${c.id}/payment`} className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1">
+  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+  Unlock Course
+  </Link>
+  )}
+  {canManage && (
+  <button onClick={() => openModal(c)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('edit')}</button>
+  )}
+  {c.status === 'draft' && user.role === 'course_provider' && (
+  <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('submit')}</button>
+  )}
+  {c.status === 'submitted' && user.role === 'course_provider' && (
+  <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('withdraw')}</button>
+  )}
+  {c.status === 'submitted' && isSuperAdmin && (
+  <>
+  <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('approve')}</button>
+  <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('reject')}</button>
+  </>
+  )}
+  {isSuperAdmin && (
+  <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2.5 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('provider')}</button>
+  )}
+  {canManage && (
+  <button onClick={() => handleDelete(c.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('delete')}</button>
+  )}
+  </div>
+  </td>
  </tr>
  ))}
  </tbody>

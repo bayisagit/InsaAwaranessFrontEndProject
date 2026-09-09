@@ -289,20 +289,23 @@ export default function AdminCampaignsPage() {
  <td className="px-6 py-4 text-xs">
  {new Date(c.start_date).toLocaleDateString()}
  </td>
- <td className="px-6 py-4">
- <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${c.status === 'live' ? 'bg-green-50 text-green-700' :
- c.status === 'scheduled' ? 'bg-blue-50 text-blue-700' :
- c.status === 'cancelled' ? 'bg-red-50 text-red-700' :
- 'bg-muted/50 text-muted-foreground'
- }`}>
- {c.status}
- </span>
- </td>
- <td className="px-6 py-4 text-right whitespace-nowrap">
- <button onClick={() => openModal(c)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
- <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer">Delete</button>
- </td>
- </tr>
+  <td className="px-6 py-4 whitespace-nowrap">
+  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border whitespace-nowrap ${
+    c.status === 'live' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' :
+    c.status === 'scheduled' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' :
+    c.status === 'cancelled' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' :
+    'bg-muted text-muted-foreground border-border'
+  }`}>
+  {c.status}
+  </span>
+  </td>
+  <td className="px-6 py-4 text-right whitespace-nowrap">
+  <div className="flex items-center justify-end gap-2">
+  <button onClick={() => openModal(c)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Edit</button>
+  <button onClick={() => handleDelete(c.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Delete</button>
+  </div>
+  </td>
+  </tr>
  ))}
  </tbody>
  </table>

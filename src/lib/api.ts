@@ -341,11 +341,13 @@ export interface AssessmentAnswer {
     id: string;
     attempt: string;
     question: string;
+    question_details?: AssessmentQuestion;
     response_text: string;
     response_json: Record<string, any> | null;
     is_correct: boolean | null; // null = manual grading pending
     requires_manual_grading: boolean;
     score: number;
+    feedback?: string;
     graded_by: string | null;
     graded_at: string | null;
     created_at: string;
@@ -355,7 +357,13 @@ export interface AssessmentAnswer {
 export interface AssessmentAttempt {
     id: string;
     assessment: string;
+    assessment_title?: string;
+    assessment_parent_type?: string;
+    passing_score?: number;
+    course_id?: string | null;
+    course_title?: string | null;
     user: string;
+    user_details?: User;
     attempt_number: number;
     status: 'started' | 'in_progress' | 'submitted' | 'graded' | 'needs_review';
     score: number;       // percentage 0–100
@@ -367,8 +375,19 @@ export interface AssessmentAttempt {
     submitted_at: string | null;
     graded_at: string | null;
     answers: AssessmentAnswer[];
+    needs_manual_review?: boolean;
     created_at: string;
     updated_at: string;
+}
+
+export interface ManualGradeItem {
+    answer_id: string;
+    score: number;
+    feedback?: string;
+}
+
+export interface ManualGradeSubmissionPayload {
+    grades: ManualGradeItem[];
 }
 
 
@@ -1272,6 +1291,23 @@ export const submitAssessment = (id: string, answers?: Record<string, any>) =>
 /** Plain array of current user's attempts, newest first */
 export const getAssessmentAttempts = (id: string) =>
     apiFetch<AssessmentAttempt[]>(`/api/v1/assessments/${id}/attempts/`);
+
+/** Provider/Admin: Query all attempts across courses with filters */
+export const getAllAssessmentAttempts = (params?: Record<string, any>) => {
+    const qs = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return apiFetch<{ count: number; results: AssessmentAttempt[] }>(`/api/v1/assessment-attempts/${qs}`);
+};
+
+/** Provider/Admin: Get full details of an assessment attempt including answers */
+export const getAssessmentAttemptDetail = (id: string) =>
+    apiFetch<AssessmentAttempt>(`/api/v1/assessment-attempts/${id}/`);
+
+/** Provider/Admin: Submit manual grades and feedback for an assessment attempt */
+export const gradeAssessmentAttempt = (id: string, data: ManualGradeSubmissionPayload) =>
+    apiFetch<AssessmentAttempt>(`/api/v1/assessment-attempts/${id}/grade/`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
 
 // ── Assessment Questions ──────────────────────────────────────
 

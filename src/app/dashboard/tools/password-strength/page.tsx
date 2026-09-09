@@ -124,17 +124,17 @@ export default function DashboardPasswordStrengthPage() {
                     </div>
                 </div>
 
-                <div className="mt-12 bg-secondary rounded-2xl p-8 text-black/70 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+                <div className="mt-12 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 rounded-2xl p-8 text-white relative overflow-hidden border border-slate-800 shadow-xl">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none"></div>
                     <div className="relative z-10">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <span className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-sm italic">!</span>
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                            <span className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold text-blue-400">!</span>
                             Best Practices
                         </h3>
-                        <ul className="space-y-3 text-black/70 text-sm">
+                        <ul className="space-y-3 text-slate-300 text-sm">
                             <li className="flex gap-3">
                                 <span className="text-primary font-bold">01</span>
-                                Use a passphrase rather than a single word (e.g., "Mym0useEat5Ch33se!").
+                                Use a passphrase rather than a single word (e.g., &quot;Mym0useEat5Ch33se!&quot;).
                             </li>
                             <li className="flex gap-3">
                                 <span className="text-primary font-bold">02</span>

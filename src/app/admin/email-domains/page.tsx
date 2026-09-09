@@ -175,32 +175,37 @@ export default function EmailDomainsAdminPage() {
                                         <td className="px-6 py-4 font-medium text-foreground">
                                             @{domain.domain}
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium border uppercase ${
-                                                domain.is_active ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${
+                                                domain.is_active 
+                                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+                                                    : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
                                             }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${domain.is_active ? 'bg-emerald-500' : 'bg-rose-500'}`} />
                                                 {domain.is_active ? 'Active' : 'Disabled'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-xs whitespace-nowrap text-muted-foreground">
                                             {new Date(domain.created_at).toLocaleDateString()}
                                         </td>
-                                        <td className="px-6 py-4 text-right space-x-3">
-                                            <button
-                                                onClick={() => handleToggleStatus(domain)}
-                                                className="text-primary hover:underline font-medium text-sm"
-                                            >
-                                                {domain.is_active ? 'Disable' : 'Enable'}
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setDomainToDelete(domain.id);
-                                                    setIsDeleteModalOpen(true);
-                                                }}
-                                                className="text-red-600 hover:underline font-medium text-sm"
-                                            >
-                                                Delete
-                                            </button>
+                                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleToggleStatus(domain)}
+                                                    className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                                                >
+                                                    {domain.is_active ? 'Disable' : 'Enable'}
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setDomainToDelete(domain.id);
+                                                        setIsDeleteModalOpen(true);
+                                                    }}
+                                                    className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

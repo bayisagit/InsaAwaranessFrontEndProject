@@ -300,10 +300,27 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
   <div key={ans.id} className={`p-4 rounded-xl border ${isPending ? 'border-yellow-200 dark:border-yellow-900/50 bg-yellow-50 dark:bg-yellow-950/30' : ans.is_correct ? 'border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/30' : 'border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30'}`}>
   <div className="flex justify-between items-start gap-3">
   <p className="text-sm font-semibold text-foreground flex-1"><LinkifyText text={q.prompt} /></p>
-  <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400' : ans.is_correct ? 'bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-400' : 'bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-400'}`}>
-  {isPending ? '⏳ Pending' : ans.is_correct ? `✓ +${ans.score}pts` : '✗ 0pts'}
+  <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400' : ans.score > 0 ? 'bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-400' : 'bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-400'}`}>
+  {isPending ? '⏳ Pending Review' : `${ans.score} / ${q.points} pts`}
   </span>
   </div>
+
+  {['short_answer', 'essay'].includes(q.type) && ans.response_text && (
+    <div className="mt-2.5 p-3 rounded-lg bg-card border border-border text-xs">
+      <span className="text-muted-foreground font-semibold block mb-1">Your Submission:</span>
+      <p className="text-foreground whitespace-pre-wrap">{ans.response_text}</p>
+    </div>
+  )}
+
+  {ans.feedback && (
+    <div className="mt-2.5 p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs text-foreground">
+      <span className="font-semibold text-primary flex items-center gap-1 mb-1">
+        <span>💬</span> Instructor Feedback:
+      </span>
+      <p className="whitespace-pre-wrap">{ans.feedback}</p>
+    </div>
+  )}
+
   {!isPending && !ans.is_correct && q.explanation && (
   <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-xl dark:text-red-300 dark:bg-red-900/30"><LinkifyText text={q.explanation} /></p>
   )}

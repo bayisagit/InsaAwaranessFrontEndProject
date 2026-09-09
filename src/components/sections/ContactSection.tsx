@@ -7,6 +7,7 @@ import { Input } from '@/components/Input';
 import { PageHero } from '@/components/PageHero';
 import { useTranslations } from 'next-intl';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { toast } from 'react-hot-toast';
 import { createContactMessage } from '@/lib/api';
 
 interface ContactSectionProps {
@@ -30,7 +31,9 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!captchaToken) {
-            setErrorMsg("Please complete the CAPTCHA verification.");
+            const err = "Please complete the CAPTCHA verification.";
+            setErrorMsg(err);
+            toast.error(err);
             return;
         }
 
@@ -47,15 +50,18 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                 message,
                 cf_turnstile_response: captchaToken
             });
-            setSuccessMsg("Your message has been sent successfully. We will get back to you shortly.");
+            const msg = "Your message has been sent successfully. We will get back to you shortly.";
+            setSuccessMsg(msg);
+            toast.success(msg);
             // Reset form
             setFirstName('');
             setLastName('');
             setWorkEmail('');
             setMessage('');
-            // Reset turnstile is handled by re-rendering or user action if necessary
         } catch (error: any) {
-            setErrorMsg(error.message || "Failed to send message. Please try again.");
+            const err = error.message || "Failed to send message. Please try again.";
+            setErrorMsg(err);
+            toast.error(err);
         } finally {
             setIsSubmitting(false);
         }
@@ -84,7 +90,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                             </a>
                         </div>
 
-                        <div className="bg-muted rounded-2xl p-8 border border-orange-100 text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
+                        <div className="bg-muted rounded-2xl p-8 border border-orange-500/20 dark:border-orange-500/30 text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
                             <div className="text-orange-600 text-3xl mb-4">&#9742;</div>
                             <h4 className="font-semibold text-foreground mb-2">{t('emergencyHotline')}</h4>
                             <p className="text-sm text-muted-foreground mb-3">{t('emergencyHotlineDesc')}</p>
@@ -138,7 +144,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                     </a>
                                 </div>
                             </div>
-                            <div className="flex items-start gap-4 p-4 bg-orange-50 border border-orange-100 rounded-xl">
+                            <div className="flex items-start gap-4 p-4 bg-orange-500/10 border border-orange-500/20 dark:border-orange-500/30 rounded-xl">
                                 <div className="text-orange-600 mt-1">&#9742;</div>
                                 <div>
                                     <h4 className="font-semibold text-foreground">{t('emergencyHotline')}</h4>
@@ -207,20 +213,20 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                         <p className="text-muted-foreground text-sm mb-8">{t('sendMessageDesc')}</p>
 
                         {successMsg && (
-                            <div className="mb-6 p-4 bg-green-50/50 border border-green-200 text-green-700 rounded-lg text-sm flex items-start gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                            <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 rounded-xl text-sm flex items-start gap-3 shadow-sm dark:shadow-emerald-950/30">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                <span>{successMsg}</span>
+                                <span className="font-medium leading-relaxed">{successMsg}</span>
                             </div>
                         )}
 
                         {errorMsg && (
-                            <div className="mb-6 p-4 bg-red-50/50 border border-red-200 text-red-700 rounded-lg text-sm flex items-start gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                            <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 text-rose-800 dark:text-rose-200 rounded-xl text-sm flex items-start gap-3 shadow-sm dark:shadow-rose-950/30">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                 </svg>
-                                <span>{errorMsg}</span>
+                                <span className="font-medium leading-relaxed">{errorMsg}</span>
                             </div>
                         )}
 
@@ -236,7 +242,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                 <label className="block text-sm font-medium text-foreground mb-1">{t('subjectCategory')} <span className="text-primary">*</span></label>
                                 <div className="relative">
                                     <select 
-                                        className="block w-full rounded-lg border border-border py-3 pl-3 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary appearance-none bg-card"
+                                        className="block w-full rounded-lg border border-border py-3 pl-3 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary appearance-none bg-card text-foreground"
                                         value={subjectCategory}
                                         onChange={e => setSubjectCategory(e.target.value)}
                                         disabled={isSubmitting}
@@ -258,7 +264,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                     rows={5}
                                     required
                                     placeholder={t('messagePlaceholder')}
-                                    className="block w-full rounded-lg border border-border py-3 px-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                                    className="block w-full rounded-lg border border-border py-3 px-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none bg-card text-foreground placeholder:text-muted-foreground"
                                     value={message}
                                     onChange={e => setMessage(e.target.value)}
                                     disabled={isSubmitting}

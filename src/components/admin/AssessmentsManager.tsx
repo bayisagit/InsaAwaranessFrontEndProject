@@ -499,25 +499,34 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
  <tr key={a.id} className="hover:bg-muted transition-colors">
  <td className="px-6 py-4 font-semibold text-foreground">{a.title || <span className="text-muted-foreground italic">Untitled</span>}</td>
  {!lockedLessonId && !lockedModuleId && (
- <td className="px-6 py-4">
- <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${a.parent_type === 'course_exam' ? 'bg-purple-50 text-purple-700' : a.parent_type === 'module_quiz' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
+ <td className="px-6 py-4 whitespace-nowrap">
+ <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border whitespace-nowrap ${
+   a.parent_type === 'course_exam' 
+     ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' 
+     : a.parent_type === 'module_quiz' 
+     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+     : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
+ }`}>
  {PARENT_LABELS[a.parent_type as ParentType]?.label ?? a.parent_type}
  </span>
  </td>
  )}
  <td className="px-6 py-4 text-center">
- <span className="px-2 py-1 rounded bg-orange-50 text-orange-600 font-bold text-xs">{a.questions?.length ?? 0}</span>
+ <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-bold text-xs">{a.questions?.length ?? 0}</span>
  </td>
  <td className="px-6 py-4 text-center font-medium text-foreground">{a.passing_score}%</td>
  <td className="px-6 py-4 text-center text-muted-foreground">{a.time_limit_minutes > 0 ? `${a.time_limit_minutes} min` : '∞'}</td>
- <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
- <Link href={lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments/${a.id}/questions` : `/admin/assessments/${a.id}/questions`} className="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-xs font-bold transition-colors inline-block">Questions</Link>
+ <td className="px-6 py-4 text-right whitespace-nowrap">
+ <div className="flex items-center justify-end gap-2">
+ <Link href={`/admin/grading?assessmentId=${a.id}`} className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 rounded-lg text-xs font-semibold transition-colors inline-block">Submissions</Link>
+ <Link href={lockedCourseId ? `/admin/courses/${lockedCourseId}/assessments/${a.id}/questions` : `/admin/assessments/${a.id}/questions`} className="px-2.5 py-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 rounded-lg text-xs font-semibold transition-colors inline-block">Questions</Link>
  {canManage && (
- <button onClick={() => openEdit(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors inline-block cursor-pointer">Edit</button>
+ <button onClick={() => openEdit(a)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors inline-block cursor-pointer">Edit</button>
  )}
  {canManage && (
- <button onClick={() => handleDelete(a)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors inline-block cursor-pointer">Delete</button>
+ <button onClick={() => handleDelete(a)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors inline-block cursor-pointer">Delete</button>
  )}
+ </div>
  </td>
  </tr>
  ))}

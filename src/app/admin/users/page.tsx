@@ -23,6 +23,40 @@ interface UserData {
  date_joined?: string;
 }
 
+const getRoleBadgeStyle = (role: string) => {
+  switch (role) {
+    case 'super_admin':
+      return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
+    case 'org_admin':
+      return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20';
+    case 'course_provider':
+      return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+    case 'member':
+      return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20';
+    case 'public_user':
+      return 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20';
+    default:
+      return 'bg-slate-500/10 text-slate-600 dark:text-slate-300 border-slate-500/20';
+  }
+};
+
+const getRoleLabel = (role: string) => {
+  switch (role) {
+    case 'super_admin':
+      return 'Super Admin';
+    case 'org_admin':
+      return 'Org Admin';
+    case 'course_provider':
+      return 'Course Provider';
+    case 'member':
+      return 'Member';
+    case 'public_user':
+      return 'Public User';
+    default:
+      return (role || 'User').replace('_', ' ');
+  }
+};
+
 export default function AdminUsersPage() {
  const { user, isAuthenticated, isLoading } = useAuth();
  const t = useTranslations('adminUsers');
@@ -437,28 +471,33 @@ export default function AdminUsersPage() {
  </tr>
  ) : (
  users.filter(u => u.id !== user?.id && (!roleFilter || u.role === roleFilter)).map((u) => (
- <tr key={u.id} className="hover:bg-muted transition-colors">
- <td className="px-4 py-3 font-medium text-foreground">
- {u.first_name} {u.last_name}
- </td>
- <td className="px-4 py-3">{u.email}</td>
- <td className="px-4 py-3">
- <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium border border-blue-100 uppercase">
- {u.role ? u.role.replace('_', ' ') : 'USER'}
- </span>
- </td>
- <td className="px-4 py-3">
- <span className={`px-2 py-1 rounded-full text-xs font-medium border ${u.is_active ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
- {u.is_active ? t('active') : t('inactive')}
- </span>
- </td>
- <td className="px-4 py-3 text-right">
- <div className="flex flex-wrap items-center justify-end gap-2 min-w-fit">
- <button onClick={() => openModal(u)} className="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('edit')}</button>
- <button onClick={() => handleDeleteUser(u.id)} className="px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">{t('delete')}</button>
- </div>
- </td>
- </tr>
+  <tr key={u.id} className="hover:bg-muted/50 transition-colors">
+  <td className="px-4 py-3.5 font-medium text-foreground whitespace-nowrap">
+  {u.first_name} {u.last_name}
+  </td>
+  <td className="px-4 py-3.5 text-foreground/80">{u.email}</td>
+  <td className="px-4 py-3.5 whitespace-nowrap">
+  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap tracking-wide capitalize ${getRoleBadgeStyle(u.role)}`}>
+  {getRoleLabel(u.role)}
+  </span>
+  </td>
+  <td className="px-4 py-3.5 whitespace-nowrap">
+  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${
+    u.is_active 
+      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+      : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+  }`}>
+  <span className={`w-1.5 h-1.5 rounded-full ${u.is_active ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+  {u.is_active ? t('active') : t('inactive')}
+  </span>
+  </td>
+  <td className="px-4 py-3.5 text-right whitespace-nowrap">
+  <div className="flex flex-wrap items-center justify-end gap-2 min-w-fit">
+  <button onClick={() => openModal(u)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('edit')}</button>
+  <button onClick={() => handleDeleteUser(u.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('delete')}</button>
+  </div>
+  </td>
+  </tr>
  ))
  )}
  </tbody>

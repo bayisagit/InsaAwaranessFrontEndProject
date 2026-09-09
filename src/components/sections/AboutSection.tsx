@@ -191,29 +191,30 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
             </section>
 
             {/* Bottom CTA */}
-            <section className="relative py-24 bg-secondary px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
-                {/* Subtle gradient overlay to ensure contrast against background */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60 pointer-events-none" />
+            <section className="relative mt-20 py-20 px-6 sm:px-10 lg:px-14 rounded-3xl overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-2xl border border-slate-800 text-center">
+                {/* Luminous atmospheric accents */}
+                <div className="absolute -top-24 -left-24 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
                 
                 <div className="relative z-10 max-w-3xl mx-auto">
-                <h2 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl drop-shadow-md">
-                    {t('ctaReadyTitle')}
-                </h2>
-                <p className="mt-6 text-xl text-gray-100 max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
-                    {t('ctaReadyDesc')}
-                </p>
-                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/signup" aria-label="Create a free account">
-                    <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                        {tCommon('createFreeAccount')}
-                    </Button>
-                    </Link>
-                    <Link href="/courses" aria-label="Explore cybersecurity resources">
-                    <Button variant="outline" size="lg" className="w-full sm:w-auto text-white bg-white/10 border-white/30 hover:bg-white/25 hover:border-white/60 font-bold shadow-lg shadow-black/10 dark:shadow-none hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-sm">
-                        {tCommon('exploreCourses')}
-                    </Button>
-                    </Link>
-                </div>
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
+                        {t('ctaReadyTitle')}
+                    </h2>
+                    <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                        {t('ctaReadyDesc')}
+                    </p>
+                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <Link href="/signup" aria-label="Create a free account">
+                            <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold px-8 shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                                {tCommon('createFreeAccount')}
+                            </Button>
+                        </Link>
+                        <Link href="/courses" aria-label="Explore cybersecurity resources">
+                            <Button size="lg" className="w-full sm:w-auto font-bold px-8 text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/50 shadow-lg shadow-black/20 hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-md">
+                                {tCommon('exploreCourses')}
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </section>
         </div>

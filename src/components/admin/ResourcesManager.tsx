@@ -471,28 +471,34 @@ export function ResourcesManager({ lockedCourseId }: ResourcesManagerProps) {
  </td>
  <td className="px-6 py-4 text-muted-foreground capitalize">{r.category}</td>
  <td className="px-6 py-4 truncate max-w-[150px]">{getOrgName(r.organization)}</td>
- <td className="px-6 py-4">
- <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${r.status === 'published' ? 'bg-green-50 text-green-600' : r.status === 'submitted' ? 'bg-blue-50 text-blue-600' : r.status === 'archived' ? 'bg-muted/50 text-muted-foreground' : 'bg-yellow-50 text-yellow-600'
- }`}>
- {r.status}
- </span>
- </td>
- <td className="px-6 py-4 text-right whitespace-nowrap">
- {r.status === 'draft' && user?.role === 'course_provider' && (
- <button onClick={() => handleSubmitConfirm(r.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-xs font-bold transition-colors mr-2 cursor-pointer">Submit</button>
- )}
- {r.status === 'submitted' && user?.role === 'course_provider' && (
- <button onClick={() => handleWithdrawConfirm(r.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 rounded-lg text-xs font-bold transition-colors mr-2 cursor-pointer">Withdraw</button>
- )}
- {r.status === 'submitted' && user?.role === 'super_admin' && (
- <>
- <button onClick={() => handleApprove(r.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-lg text-xs font-bold transition-colors mr-2 cursor-pointer">Approve</button>
- <button onClick={() => openRejectModal(r.id)} disabled={isActionLoading} className="px-2 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors mr-2 cursor-pointer">Reject</button>
- </>
- )}
- <button onClick={() => openModal(r)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
- <button onClick={() => handleDelete(r.id)} className="ml-2 text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer">Delete</button>
- </td>
+ <td className="px-6 py-4 whitespace-nowrap">
+  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border whitespace-nowrap ${
+    r.status === 'published' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' : 
+    r.status === 'submitted' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' : 
+    r.status === 'archived' ? 'bg-muted text-muted-foreground border-border' : 
+    'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+  }`}>
+  {r.status}
+  </span>
+  </td>
+  <td className="px-6 py-4 text-right whitespace-nowrap">
+  <div className="flex items-center justify-end gap-2">
+  {r.status === 'draft' && user?.role === 'course_provider' && (
+  <button onClick={() => handleSubmitConfirm(r.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Submit</button>
+  )}
+  {r.status === 'submitted' && user?.role === 'course_provider' && (
+  <button onClick={() => handleWithdrawConfirm(r.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Withdraw</button>
+  )}
+  {r.status === 'submitted' && user?.role === 'super_admin' && (
+  <>
+  <button onClick={() => handleApprove(r.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Approve</button>
+  <button onClick={() => openRejectModal(r.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Reject</button>
+  </>
+  )}
+  <button onClick={() => openModal(r)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Edit</button>
+  <button onClick={() => handleDelete(r.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Delete</button>
+  </div>
+  </td>
  </tr>
  ))}
  </tbody>

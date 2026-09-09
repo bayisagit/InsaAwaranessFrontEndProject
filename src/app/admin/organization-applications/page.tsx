@@ -205,9 +205,10 @@ export default function AdminOrgApplicationsPage() {
  {new Date(app.created_at).toLocaleDateString()}
  </td>
  <td className="px-6 py-4 text-right whitespace-nowrap">
+ <div className="flex items-center justify-end gap-2">
  <button
  onClick={() => { setSelectedApp(app); setIsDetailOpen(true); }}
- className="text-muted-foreground hover:text-foreground font-medium mr-3 transition-colors text-sm cursor-pointer"
+ className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
  >
  View
  </button>
@@ -216,19 +217,20 @@ export default function AdminOrgApplicationsPage() {
  <button
  onClick={() => handleApprove(app)}
  disabled={actionLoading === app.id}
- className="text-green-600 hover:text-green-800 font-semibold mr-3 transition-colors text-sm disabled:opacity-50 cursor-pointer"
+ className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
  >
  {actionLoading === app.id ? '…' : 'Approve'}
  </button>
  <button
  onClick={() => { setRejectTargetId(app.id); setIsRejectConfirmOpen(true); }}
  disabled={!!actionLoading}
- className="text-red-500 hover:text-red-700 font-semibold transition-colors text-sm disabled:opacity-50 cursor-pointer"
+ className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
  >
  Reject
  </button>
  </>
  )}
+ </div>
  </td>
  </tr>
  ))}

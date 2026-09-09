@@ -396,14 +396,16 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
  </td>
  {!lockedCourseId && <td className="px-6 py-4 text-muted-foreground truncate max-w-[250px]">{getCourseName(m.course)}</td>}
  <td className="px-6 py-4 text-center">{m.order}</td>
- <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
- {canManage && (
- <button onClick={() => openModal(m)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
- )}
- {canManage && (
- <button onClick={() => handleDelete(m.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Delete</button>
- )}
- </td>
+  <td className="px-6 py-4 text-right whitespace-nowrap">
+  <div className="flex items-center justify-end gap-2">
+  {canManage && (
+  <button onClick={() => openModal(m)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Edit</button>
+  )}
+  {canManage && (
+  <button onClick={() => handleDelete(m.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Delete</button>
+  )}
+  </div>
+  </td>
  </tr>
  ))}
  </tbody>

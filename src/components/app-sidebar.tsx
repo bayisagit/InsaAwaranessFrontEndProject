@@ -128,6 +128,7 @@ const sidebarConfig: SidebarConfig = {
             { title: "Lessons", url: "/admin/lessons" },
             { title: "Videos", url: "/admin/videos" },
             { title: "Assessments", url: "/admin/assessments" },
+            { title: "Grading & Submissions", url: "/admin/grading" },
           ]
         },
         { 
@@ -215,6 +216,7 @@ const sidebarConfig: SidebarConfig = {
             { title: "Lessons", url: "/admin/lessons" },
             { title: "Videos", url: "/admin/videos" },
             { title: "Assessments", url: "/admin/assessments" },
+            { title: "Grading & Submissions", url: "/admin/grading" },
           ]
         },
         { 

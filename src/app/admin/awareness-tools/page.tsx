@@ -256,36 +256,39 @@ export default function AdminAwarenessToolsPage() {
  <td className="px-6 py-4">
  <p className="text-sm text-muted-foreground line-clamp-1">{tool.description}</p>
  </td>
- <td className="px-6 py-4">
- <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${tool.status === 'enabled' ? 'bg-green-100 text-green-800' : 'bg-muted/50 text-foreground'
- }`}>
- {tool.status}
+ <td className="px-6 py-4 whitespace-nowrap">
+ <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${
+    tool.status === 'enabled' 
+      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+      : 'bg-muted/60 text-muted-foreground border-border'
+  }`}>
+    <span className={`w-1.5 h-1.5 rounded-full ${tool.status === 'enabled' ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
+    {tool.status}
  </span>
  </td>
  <td className="px-6 py-4 text-center">
  <p className="text-sm font-semibold text-foreground">{tool.usage_count || 0}</p>
  </td>
- <td className="px-6 py-4 text-right">
- <div className="flex flex-wrap justify-end gap-2 min-w-fit">
+ <td className="px-6 py-4 text-right whitespace-nowrap">
+ <div className="flex items-center justify-end gap-2">
  <button
- onClick={() => handleToggleStatus(tool)}
- className="p-2 text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors cursor-pointer"
- title={tool.status === 'enabled' ? 'Disable' : 'Enable'}
- >
- {tool.status === 'enabled' ? '🚫' : '✅'}
- </button>
- <button
- onClick={() => handleOpenModal(tool)}
- className="p-2 text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors cursor-pointer"
- >
- ✏️
- </button>
- <button
- onClick={() => { setSelectedTool(tool); setIsDeleteModalOpen(true); }}
- className="p-2 text-muted-foreground hover:text-red-600 transition-colors cursor-pointer"
- >
- 🗑️
- </button>
+    onClick={() => handleToggleStatus(tool)}
+    className="px-2.5 py-1 bg-muted/60 hover:bg-muted text-foreground rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+  >
+    {tool.status === 'enabled' ? 'Disable' : 'Enable'}
+  </button>
+  <button
+    onClick={() => handleOpenModal(tool)}
+    className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+  >
+    Edit
+  </button>
+  <button
+    onClick={() => { setSelectedTool(tool); setIsDeleteModalOpen(true); }}
+    className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+  >
+    Delete
+  </button>
  </div>
  </td>
  </tr>

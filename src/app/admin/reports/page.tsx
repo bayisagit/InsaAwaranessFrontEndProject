@@ -22,10 +22,10 @@ import { toast } from 'react-hot-toast';
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
 const statusStyles: Record<string, string> = {
- draft: 'bg-muted/50 text-muted-foreground',
- submitted: 'bg-blue-50 text-blue-700',
- approved: 'bg-green-50 text-green-700',
- rejected: 'bg-red-50 text-red-700'
+ draft: 'bg-muted/60 text-muted-foreground border-border',
+ submitted: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+ approved: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+ rejected: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
 };
 
 export default function AdminReportsPage() {
@@ -304,23 +304,25 @@ export default function AdminReportsPage() {
  )}
  </td>
  <td className="px-6 py-4">{getOrgName(r.organization)}</td>
- <td className="px-6 py-4">
- <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${statusStyles[r.status] || 'bg-muted/50 text-muted-foreground'}`}>
- {r.status}
- </span>
- </td>
- <td className="px-6 py-4 text-xs whitespace-nowrap">
- {new Date(r.created_at).toLocaleDateString()}
- </td>
- <td className="px-6 py-4 text-xs whitespace-nowrap">
- {new Date(r.updated_at).toLocaleDateString()}
- </td>
- {canWrite && (
- <td className="px-6 py-4 text-right whitespace-nowrap">
- <button onClick={() => openModal(r)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
- <button onClick={() => setConfirmDelete({ isOpen: true, id: r.id })} className="text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer">Delete</button>
- </td>
- )}
+  <td className="px-6 py-4 whitespace-nowrap">
+  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border whitespace-nowrap ${statusStyles[r.status] || 'bg-muted/60 text-muted-foreground border-border'}`}>
+  {r.status}
+  </span>
+  </td>
+  <td className="px-6 py-4 text-xs whitespace-nowrap text-muted-foreground">
+  {new Date(r.created_at).toLocaleDateString()}
+  </td>
+  <td className="px-6 py-4 text-xs whitespace-nowrap text-muted-foreground">
+  {new Date(r.updated_at).toLocaleDateString()}
+  </td>
+  {canWrite && (
+  <td className="px-6 py-4 text-right whitespace-nowrap">
+  <div className="flex items-center justify-end gap-2">
+  <button onClick={() => openModal(r)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Edit</button>
+  <button onClick={() => setConfirmDelete({ isOpen: true, id: r.id })} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Delete</button>
+  </div>
+  </td>
+  )}
  </tr>
  ))}
  </tbody>

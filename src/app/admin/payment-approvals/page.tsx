@@ -257,41 +257,43 @@ export default function PaymentApprovalsPage() {
  <tr key={a.id} className="hover:bg-muted transition-colors">
  <td className="px-6 py-4 font-medium text-foreground">{getOrgName(a.organization)}</td>
  <td className="px-6 py-4 font-bold text-foreground">{a.amount} ETB</td>
- <td className="px-6 py-4 text-center">
- <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${a.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' :
- a.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-100' :
- 'bg-yellow-50 text-yellow-700 border-yellow-100'
+ <td className="px-6 py-4 text-center whitespace-nowrap">
+ <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap uppercase tracking-wider ${
+ a.status === 'approved' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' :
+ a.status === 'rejected' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' :
+ 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
  }`}>
+ <span className={`w-1.5 h-1.5 rounded-full ${
+ a.status === 'approved' ? 'bg-emerald-500' :
+ a.status === 'rejected' ? 'bg-rose-500' :
+ 'bg-amber-500'
+ }`} />
  {a.status}
  </span>
  </td>
  <td className="px-6 py-4 text-xs text-muted-foreground">{a.created_by ? a.created_by.substring(0, 8) + '...' : '—'}</td>
  <td className="px-6 py-4 text-xs text-muted-foreground">{a.reviewed_by ? a.reviewed_by.substring(0, 8) + '...' : '—'}</td>
- <td className="px-6 py-4 text-xs">{new Date(a.created_at).toLocaleDateString()}</td>
- <td className="px-6 py-4 text-right whitespace-nowrap">
- <div className="flex flex-wrap justify-end gap-1.5 min-w-fit">
- {isSuperAdmin && (
- <>
- {a.status === 'pending' && (
- <>
- <button onClick={() => handleStatusUpdate(a.id, 'approved')} className="px-2.5 py-1 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700 transition-colors uppercase tracking-wider cursor-pointer">Approve</button>
- <button onClick={() => handleStatusUpdate(a.id, 'rejected')} className="px-2.5 py-1 bg-red-600 text-white rounded-lg text-[10px] font-bold hover:bg-red-700 transition-colors uppercase tracking-wider cursor-pointer">Reject</button>
- </>
- )}
- <button onClick={() => openEditModal(a)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
- <button onClick={() => setDeleteTarget({ isOpen: true, id: a.id })} className="text-red-500 hover:text-red-700 font-medium text-xs transition-colors cursor-pointer">Delete</button>
- </>
- )}
- {!isSuperAdmin && a.status === 'pending' && (
- <span className="text-muted-foreground text-xs italic">Awaiting review</span>
- )}
- {!isSuperAdmin && a.status !== 'pending' && (
- <span className="text-muted-foreground text-xs italic">
- {a.status === 'approved' ? 'Approved' : 'Rejected'}
- </span>
- )}
- </div>
- </td>
+ <td className="px-6 py-4 text-xs whitespace-nowrap text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</td>
+  <td className="px-6 py-4 text-right whitespace-nowrap">
+  <div className="flex items-center justify-end gap-2">
+  {isSuperAdmin ? (
+  <>
+  {a.status === 'pending' && (
+  <>
+  <button onClick={() => handleStatusUpdate(a.id, 'approved')} className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Approve</button>
+  <button onClick={() => handleStatusUpdate(a.id, 'rejected')} className="px-2.5 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Reject</button>
+  </>
+  )}
+  <button onClick={() => openEditModal(a)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Edit</button>
+  <button onClick={() => setDeleteTarget({ isOpen: true, id: a.id })} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Delete</button>
+  </>
+  ) : (
+  <span className="text-muted-foreground text-xs italic">
+  {a.status === 'pending' ? 'Awaiting review' : a.status === 'approved' ? 'Approved' : 'Rejected'}
+  </span>
+  )}
+  </div>
+  </td>
  </tr>
  ))}
  </tbody>

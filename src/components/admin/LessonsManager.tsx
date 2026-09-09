@@ -665,24 +665,25 @@ export function LessonsManager({ lockedModuleId, lockedCourseId }: LessonsManage
  </Link>
  </td>
  {!lockedModuleId && <td className="px-6 py-4 text-muted-foreground border-l border-border truncate max-w-[200px]">{getModuleName(l.module)}</td>}
- <td className="px-6 py-4">
- <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${l.content_type === 'video' ? 'bg-blue-50 text-blue-600' :
- l.content_type === 'article' ? 'bg-green-50 text-green-600' :
- l.content_type === 'assessment' ? 'bg-purple-50 text-purple-600' :
- 'bg-muted text-muted-foreground'
+ <td className="px-6 py-4 whitespace-nowrap">
+ <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border whitespace-nowrap ${
+ l.content_type === 'video' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' :
+ l.content_type === 'article' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' :
+ l.content_type === 'assessment' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' :
+ 'bg-muted/60 text-muted-foreground border-border'
  }`}>
  {l.content_type}
  </span>
  </td>
- <td className="px-6 py-4 uppercase text-xs">{l.language}</td>
+ <td className="px-6 py-4 uppercase text-xs font-medium text-foreground">{l.language}</td>
  <td className="px-6 py-4 text-center">{l.order}</td>
  <td className="px-6 py-4 text-right whitespace-nowrap">
  <div className="flex items-center justify-end gap-2">
  {(user?.role === 'course_provider' || user?.role === 'super_admin') && (
- <button onClick={() => handleEdit(l)} className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Edit</button>
+ <button onClick={() => handleEdit(l)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Edit</button>
  )}
  {(user?.role === 'super_admin' || user?.role === 'course_provider') && (
- <button onClick={() => handleDelete(l.id)} className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg text-xs font-bold transition-colors cursor-pointer">Delete</button>
+ <button onClick={() => handleDelete(l.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">Delete</button>
  )}
  </div>
  </td>
