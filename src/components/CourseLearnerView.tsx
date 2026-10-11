@@ -84,6 +84,13 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
             const foundEnrollment = results[0] || null;
             setIsEnrolled(!!foundEnrollment);
             setEnrollment(foundEnrollment);
+            if (!foundEnrollment) {
+                router.replace(`/courses/${courseId}`);
+                return;
+            }
+        } else if (!previewMode) {
+            router.replace(`/courses/${courseId}`);
+            return;
         }
 
         // Fetch Exam

@@ -144,6 +144,12 @@ export default function ProfilePage() {
             toast.success(t('profileUpdated'));
             setTimeout(() => setProfileSuccess(''), 5000);
             await fetchProfile();
+            const next = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('next') : null;
+            if (next) {
+                setTimeout(() => {
+                    router.push(next);
+                }, 1000);
+            }
         }
         setIsSavingProfile(false);
     };

@@ -53,10 +53,11 @@ function CallbackContent() {
 
  const mustChange = data.must_change_password || data.user?.must_change_password;
  if (mustChange) {
- router.push('/change-password');
+ window.location.href = '/change-password';
  return;
  }
 
+ let target = '/dashboard';
  if (data.dashboard_route) {
  const routeMap: Record<string, string> = {
  '/dashboard/super-admin': '/admin',
@@ -65,11 +66,12 @@ function CallbackContent() {
  '/dashboard/member': '/dashboard',
  '/dashboard/public': '/dashboard',
  };
- router.push(routeMap[data.dashboard_route] ?? data.dashboard_route);
+ target = routeMap[data.dashboard_route] ?? data.dashboard_route;
  } else {
  const role = data.user?.role;
- router.push(role === 'super_admin' || role === 'org_admin' || role === 'course_provider' ? '/admin' : '/dashboard');
+ target = (role === 'super_admin' || role === 'org_admin' || role === 'course_provider') ? '/admin' : '/dashboard';
  }
+ window.location.href = target;
  } catch {
  setStatus('error');
  setErrorMsg('An unexpected error occurred during sign-in.');

@@ -38,7 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const hasCookie = document.cookie.includes('NEXT_LOCALE=');
                 if (!hasCookie) {
                     document.cookie = `NEXT_LOCALE=${data.preferred_language}; path=/; maxAge=${60 * 60 * 24 * 365}; SameSite=Lax`;
-                    window.location.reload();
                 }
             }
             

@@ -97,6 +97,8 @@ export function CertificatesManager({ lockedCourseId }: CertificatesManagerProps
  <thead className="bg-muted text-foreground uppercase font-semibold text-xs border-b border-border">
  <tr>
  <th className="px-6 py-4">Certificate ID</th>
+ <th className="px-6 py-4">Learner</th>
+ {!lockedCourseId && <th className="px-6 py-4">Course</th>}
  <th className="px-6 py-4">Issued At</th>
  <th className="px-6 py-4 text-center">Status</th>
  <th className="px-6 py-4 text-right">Actions</th>
@@ -105,7 +107,7 @@ export function CertificatesManager({ lockedCourseId }: CertificatesManagerProps
  <tbody className="divide-y divide-border text-muted-foreground">
  {isFetching ? (
  <tr>
- <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+ <td colSpan={lockedCourseId ? 5 : 6} className="px-6 py-8 text-center text-muted-foreground">
  <div className="flex flex-col items-center justify-center gap-2">
  <div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
  Loading certificates...
@@ -114,17 +116,30 @@ export function CertificatesManager({ lockedCourseId }: CertificatesManagerProps
  </tr>
  ) : certificates.length === 0 ? (
  <tr>
- <td colSpan={4} className="px-6 py-12 text-center">
+ <td colSpan={lockedCourseId ? 5 : 6} className="px-6 py-12 text-center">
  <div className="flex flex-col items-center justify-center text-muted-foreground">
  <Award className="size-12 mb-3 text-gray-300" />
  <p className="text-base font-medium text-foreground mb-1">No certificates found</p>
- <p className="text-sm">No certificates have been issued yet.</p>
+ <p className="text-sm">No certificates have been issued for this course yet.</p>
  </div>
  </td>
  </tr>
  ) : certificates.map(cert => (
  <tr key={cert.id} className="hover:bg-muted transition-colors">
- <td className="px-6 py-4 font-mono font-medium text-foreground">{cert.certificate_id}</td>
+ <td className="px-6 py-4 font-mono font-medium text-foreground">
+ <span className="px-2 py-0.5 rounded bg-muted text-xs border border-border">
+ {cert.certificate_id.slice(0, 13)}...
+ </span>
+ </td>
+ <td className="px-6 py-4">
+ <div className="font-medium text-foreground">{cert.user_name || 'Learner'}</div>
+ <div className="text-xs text-muted-foreground">{cert.user_email}</div>
+ </td>
+ {!lockedCourseId && (
+ <td className="px-6 py-4 text-xs font-medium text-foreground max-w-[200px] truncate" title={cert.course_title}>
+ {cert.course_title || '—'}
+ </td>
+ )}
  <td className="px-6 py-4">
  <div className="flex items-center gap-2 text-muted-foreground text-xs">
  <Clock className="size-3" />

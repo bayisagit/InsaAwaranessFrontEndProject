@@ -756,7 +756,7 @@
     "firstName": "ስም",
     "lastName": "የአባት ስም",
     "preferredLanguage": "ተመራጭ ቋንቋ",
-    "termsAndService": "መረጃው ትክክል መሆኑን አረጋግጣለሁ እና ከ{terms} ጋር እስማማለሁ።",
+    "termsAndService": "መረጃው ትክክል መሆኑን አረጋግጣለሁ እና ከ<terms>የአገልግሎት ውል</terms> ጋር እስማማለሁ።",
     "termsOfService": "የአገልግሎት ውል",
     "continueWithGoogle": "በGoogle ቀጥል",
     "continueWithGitHub": "በGitHub ቀጥል",

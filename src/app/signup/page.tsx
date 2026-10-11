@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
@@ -64,28 +64,37 @@ export default function SignupPage() {
     const [isResending, setIsResending] = useState(false);
     const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
-    const { checkAuth } = useAuth();
+    const { user, isAuthenticated, isLoading: isAuthLoading, checkAuth } = useAuth();
     const t = useTranslations('auth');
+
+    useEffect(() => {
+        if (!isAuthLoading && isAuthenticated && user) {
+            const isAnyAdmin = user.role === 'super_admin' || user.role === 'org_admin' || user.role === 'course_provider';
+            window.location.href = isAnyAdmin ? '/admin' : '/dashboard';
+        }
+    }, [isAuthenticated, isAuthLoading, user]);
 
     const handleSocialLogin = (data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }) => {
         setTokens({ access: data.access, refresh: data.refresh });
-        checkAuth().then(() => {
-            const mustChange = data.must_change_password || data.user?.must_change_password;
-            if (mustChange) { router.push('/change-password'); return; }
-            if (data.dashboard_route) {
-                const routeMap: Record<string, string> = {
-                    '/dashboard/super-admin': '/admin',
-                    '/dashboard/organization': '/admin',
-                    '/dashboard/course-provider': '/admin',
-                    '/dashboard/member': '/dashboard',
-                    '/dashboard/public': '/dashboard',
-                };
-                router.push(routeMap[data.dashboard_route] ?? data.dashboard_route);
-            } else {
-                const role = data.user?.role;
-                router.push(role === 'super_admin' || role === 'org_admin' || role === 'course_provider' ? '/admin' : '/dashboard');
-            }
-        });
+        const mustChange = data.must_change_password || data.user?.must_change_password;
+        let target = '/dashboard';
+        if (mustChange) {
+            target = '/change-password';
+        } else if (data.dashboard_route) {
+            const routeMap: Record<string, string> = {
+                '/dashboard/super-admin': '/admin',
+                '/dashboard/organization': '/admin',
+                '/dashboard/course-provider': '/admin',
+                '/dashboard/member': '/dashboard',
+                '/dashboard/public': '/dashboard',
+            };
+            target = routeMap[data.dashboard_route] ?? data.dashboard_route;
+        } else {
+            const role = data.user?.role;
+            target = (role === 'super_admin' || role === 'org_admin' || role === 'course_provider') ? '/admin' : '/dashboard';
+        }
+        checkAuth().catch(() => {});
+        window.location.href = target;
     };
 
     const googleLogin = useGoogleLogin({
@@ -373,7 +382,7 @@ export default function SignupPage() {
                             </div>
                             <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed">
                                 {t.rich('termsAndService', {
-                                    terms: (chunks) => <Link href="/terms" className="font-semibold text-primary hover:underline">{chunks}</Link>
+                                    terms: (chunks) => <Link href="/terms" className="font-semibold text-primary hover:underline">{chunks || t('termsOfService')}</Link>
                                 })}
                             </label>
                         </div>

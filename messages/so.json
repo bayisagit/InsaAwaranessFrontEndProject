@@ -756,7 +756,7 @@
     "firstName": "Magaca Hore",
     "lastName": "Magaca Awoowe",
     "preferredLanguage": "Luqadda La Door Biday",
-    "termsAndService": "Waxaan xaqiijinayaa in xogtani ay sax tahay, waanan oggolahay shuruudaha {terms}.",
+    "termsAndService": "Waxaan xaqiijinayaa in xogtani ay sax tahay, waanan oggolahay shuruudaha <terms>Shuruudaha Adeegga</terms>.",
     "termsOfService": "Shuruudaha Adeegga",
     "continueWithGoogle": "Sii wad Google",
     "continueWithGitHub": "Sii wad GitHub",

@@ -756,7 +756,7 @@
     "firstName": "Jina la Kwanza",
     "lastName": "Jina la Mwisho",
     "preferredLanguage": "Lugha Inayopendelewa",
-    "termsAndService": "Ninathibitisha kuwa habari hiyo ni sahihi na nakubaliana na {terms}.",
+    "termsAndService": "Ninathibitisha kuwa habari hiyo ni sahihi na nakubaliana na <terms>Masharti ya Huduma</terms>.",
     "termsOfService": "Masharti ya Huduma",
     "continueWithGoogle": "Endelea na Google",
     "continueWithGitHub": "Endelea na GitHub",

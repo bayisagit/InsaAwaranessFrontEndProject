@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
  getCourses, createCourse, updateCourse, deleteCourse,
- getOrganizations, assignCourseProvider, assignCourseOrganization,
+ getOrganizations, assignCourseProvider, assignCourseOrganization, duplicateCourse,
  submitCourseForReview, approveCourse, rejectCourse, withdrawCourse,
  apiFetch, Course, Organization
 } from '@/lib/api';
@@ -18,6 +18,27 @@ import { CloudinaryUpload } from '@/components/CloudinaryUpload';
 import { toast } from 'react-hot-toast';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
 import { useTranslations } from 'next-intl';
+import {
+ DropdownMenu,
+ DropdownMenuTrigger,
+ DropdownMenuContent,
+ DropdownMenuItem,
+ DropdownMenuSeparator,
+ DropdownMenuGroup,
+} from '@/components/ui/dropdown-menu';
+import {
+ MoreVertical,
+ Pencil,
+ Building2,
+ UserCheck,
+ Copy,
+ Trash2,
+ ExternalLink,
+ CheckCircle2,
+ XCircle,
+ Send,
+ Undo2,
+} from 'lucide-react';
 
 interface UserData { id: string; email: string; first_name: string; last_name: string; role: string; }
 
@@ -74,7 +95,11 @@ export default function AdminCoursesPage() {
  // Assign Organization modal
  const [isAssignOrgOpen, setIsAssignOrgOpen] = useState(false);
  const [assignOrgCourse, setAssignOrgCourse] = useState<Course | null>(null);
- const [selectedOrg, setSelectedOrg] = useState('');
+ const [selectedOrgs, setSelectedOrgs] = useState<string[]>([]);
+ const [orgSearchQuery, setOrgSearchQuery] = useState('');
+
+ // Duplicate Course modal
+ const [duplicateCourseItem, setDuplicateCourseItem] = useState<Course | null>(null);
 
  // Rejection reason modal
  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -244,13 +269,43 @@ export default function AdminCoursesPage() {
  setIsActionLoading(false);
  };
 
+ const openAssignOrgModal = (course: Course) => {
+ setAssignOrgCourse(course);
+ const existingIds = course.organizations?.map(o => o.id) || (course.organization ? [course.organization] : []);
+ setSelectedOrgs(existingIds);
+ setOrgSearchQuery('');
+ setIsAssignOrgOpen(true);
+ };
+
  const handleAssignOrg = async () => {
  if (!assignOrgCourse) return;
  setIsActionLoading(true);
- const { error: e } = await assignCourseOrganization(assignOrgCourse.id, selectedOrg || null);
+ const { error: e } = await assignCourseOrganization(
+ assignOrgCourse.id,
+ selectedOrgs.length > 0 ? selectedOrgs[0] : null,
+ selectedOrgs
+ );
  if (e) toast.error(e);
- else { toast.success(t('orgAssigned')); fetchCourses(); setIsAssignOrgOpen(false); }
+ else {
+ toast.success(selectedOrgs.length > 0 ? `Course assigned to ${selectedOrgs.length} organization(s)` : 'Course made public (unlinked)');
+ fetchCourses();
+ setIsAssignOrgOpen(false);
+ }
  setIsActionLoading(false);
+ };
+
+ const handleDuplicateConfirm = async () => {
+ if (!duplicateCourseItem) return;
+ setIsActionLoading(true);
+ const { error: e } = await duplicateCourse(duplicateCourseItem.id);
+ if (e) {
+ toast.error(e || 'Failed to duplicate course');
+ } else {
+ toast.success(`Course "${duplicateCourseItem.title}" duplicated successfully!`);
+ fetchCourses();
+ }
+ setIsActionLoading(false);
+ setDuplicateCourseItem(null);
  };
 
  const handleSubmitConfirm = (id: string) => {
@@ -615,8 +670,27 @@ export default function AdminCoursesPage() {
  </td>
  <td className="px-4 py-3 capitalize">{c.level || '—'}</td>
  <td className="px-4 py-3 uppercase text-xs">{c.language || '—'}</td>
- <td className="px-4 py-3 text-xs text-muted-foreground">
- {c.organization ? (orgs.find(o => o.id === c.organization)?.name || c.organization) : '—'}
+ <td className="px-4 py-3 text-xs">
+ {c.organizations && c.organizations.length > 0 ? (
+ <div className="flex flex-wrap gap-1 max-w-[220px]">
+ {c.organizations.slice(0, 2).map(o => (
+ <span key={o.id} className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[11px] font-medium border border-blue-500/20 truncate max-w-[130px]" title={o.name}>
+ {o.name}
+ </span>
+ ))}
+ {c.organizations.length > 2 && (
+ <span className="px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold" title={c.organizations.slice(2).map(o => o.name).join(', ')}>
+ +{c.organizations.length - 2} more
+ </span>
+ )}
+ </div>
+ ) : c.organization ? (
+ <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[11px] font-medium border border-blue-500/20">
+ {orgs.find(o => o.id === c.organization)?.name || 'Linked'}
+ </span>
+ ) : (
+ <span className="text-muted-foreground italic text-xs">Public / All</span>
+ )}
  </td>
  <td className="px-4 py-3 whitespace-nowrap">
   <div className="flex flex-col gap-1 items-start">
@@ -632,34 +706,128 @@ export default function AdminCoursesPage() {
   </div>
   </td>
   <td className="px-4 py-3 text-right whitespace-nowrap">
-  <div className="flex flex-wrap items-center justify-end gap-1.5 min-w-fit">
+  <div className="flex items-center justify-end gap-2">
   {user?.role === 'org_admin' && (c as any).payment_type === 'paid' && !(c as any).is_unlocked && (
-  <Link href={`/dashboard/courses/${c.id}/payment`} className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1">
+  <Link href={`/dashboard/courses/${c.id}/payment`} className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 rounded-lg text-xs font-medium transition-colors inline-flex items-center gap-1">
   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-  Unlock Course
+  Unlock
   </Link>
   )}
-  {canManage && (
-  <button onClick={() => openModal(c)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('edit')}</button>
-  )}
-  {c.status === 'draft' && user.role === 'course_provider' && (
-  <button onClick={() => handleSubmitConfirm(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('submit')}</button>
-  )}
-  {c.status === 'submitted' && user.role === 'course_provider' && (
-  <button onClick={() => handleWithdrawConfirm(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('withdraw')}</button>
-  )}
+
+  {/* Quick Review actions for superadmin */}
   {c.status === 'submitted' && isSuperAdmin && (
   <>
-  <button onClick={() => handleApprove(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('approve')}</button>
-  <button onClick={() => openRejectModal(c.id)} disabled={isActionLoading} className="px-2.5 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('reject')}</button>
+  <button
+  onClick={() => handleApprove(c.id)}
+  disabled={isActionLoading}
+  className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+  title={t('approve')}
+  >
+  <CheckCircle2 className="w-3.5 h-3.5" />
+  {t('approve')}
+  </button>
+  <button
+  onClick={() => openRejectModal(c.id)}
+  disabled={isActionLoading}
+  className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+  title={t('reject')}
+  >
+  <XCircle className="w-3.5 h-3.5" />
+  {t('reject')}
+  </button>
   </>
   )}
+
+  {/* Provider submit/withdraw quick action */}
+  {c.status === 'draft' && user.role === 'course_provider' && (
+  <button
+  onClick={() => handleSubmitConfirm(c.id)}
+  disabled={isActionLoading}
+  className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+  >
+  <Send className="w-3.5 h-3.5" />
+  {t('submit')}
+  </button>
+  )}
+  {c.status === 'submitted' && user.role === 'course_provider' && (
+  <button
+  onClick={() => handleWithdrawConfirm(c.id)}
+  disabled={isActionLoading}
+  className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+  >
+  <Undo2 className="w-3.5 h-3.5" />
+  {t('withdraw')}
+  </button>
+  )}
+
+  {/* Quick Workspace link button */}
+  <Link
+  href={`/admin/courses/${c.id}`}
+  className="px-2.5 py-1 text-xs font-medium text-foreground bg-muted/60 hover:bg-muted border border-border rounded-lg transition-colors inline-flex items-center gap-1"
+  title="Open Course Workspace"
+  >
+  <span>Manage</span>
+  <ExternalLink className="w-3 h-3 text-muted-foreground" />
+  </Link>
+
+  {/* Unified Dropdown Menu for More Actions */}
+  <DropdownMenu>
+  <DropdownMenuTrigger className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border/70 hover:border-border transition-all cursor-pointer outline-none focus:ring-1 focus:ring-primary flex items-center justify-center" aria-label="More actions">
+  <MoreVertical className="w-4 h-4" />
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end" className="w-48 bg-card border border-border shadow-lg rounded-xl p-1 z-50">
+  <DropdownMenuGroup>
+  {canManage && (
+  <DropdownMenuItem
+  onClick={() => openModal(c)}
+  className="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-lg text-foreground hover:bg-muted cursor-pointer transition-colors"
+  >
+  <Pencil className="w-3.5 h-3.5 text-primary" />
+  <span>{t('edit')} Details</span>
+  </DropdownMenuItem>
+  )}
   {isSuperAdmin && (
-  <button onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }} className="px-2.5 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('provider')}</button>
+  <DropdownMenuItem
+  onClick={() => openAssignOrgModal(c)}
+  className="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-lg text-foreground hover:bg-muted cursor-pointer transition-colors"
+  >
+  <Building2 className="w-3.5 h-3.5 text-blue-500" />
+  <span>Organizations</span>
+  </DropdownMenuItem>
+  )}
+  {isSuperAdmin && (
+  <DropdownMenuItem
+  onClick={() => { setAssignProviderCourse(c); setSelectedProvider(c.course_provider || ''); setIsAssignProviderOpen(true); }}
+  className="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-lg text-foreground hover:bg-muted cursor-pointer transition-colors"
+  >
+  <UserCheck className="w-3.5 h-3.5 text-purple-500" />
+  <span>{t('provider')}</span>
+  </DropdownMenuItem>
   )}
   {canManage && (
-  <button onClick={() => handleDelete(c.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('delete')}</button>
+  <DropdownMenuItem
+  onClick={() => setDuplicateCourseItem(c)}
+  className="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-lg text-foreground hover:bg-muted cursor-pointer transition-colors"
+  >
+  <Copy className="w-3.5 h-3.5 text-emerald-500" />
+  <span>Duplicate Course</span>
+  </DropdownMenuItem>
   )}
+  </DropdownMenuGroup>
+  {canManage && (
+  <>
+  <DropdownMenuSeparator className="my-1 border-t border-border" />
+  <DropdownMenuItem
+  onClick={() => handleDelete(c.id)}
+  className="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-lg text-rose-600 hover:bg-rose-500/10 cursor-pointer transition-colors"
+  >
+  <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+  <span>{t('delete')}</span>
+  </DropdownMenuItem>
+  </>
+  )}
+  </DropdownMenuContent>
+  </DropdownMenu>
   </div>
   </td>
  </tr>
@@ -783,19 +951,123 @@ export default function AdminCoursesPage() {
  </Modal>
 
  {/* Assign Organization Modal */}
- <Modal isOpen={isAssignOrgOpen} onClose={() => setIsAssignOrgOpen(false)} title={t('assignOrganization')}>
+ <Modal isOpen={isAssignOrgOpen} onClose={() => setIsAssignOrgOpen(false)} title="Assign Organizations">
  <div className="space-y-4">
- <p className="text-sm text-muted-foreground">{t('linkOrgFor')} <strong>{assignOrgCourse?.title}</strong></p>
- <select className={SELECT_CLS} value={selectedOrg} onChange={e => setSelectedOrg(e.target.value)}>
- <option value="">{t('unlinkNone')}</option>
- {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
- </select>
+ <div>
+ <p className="text-sm text-muted-foreground">
+ Choose which organizations have access to <strong>{assignOrgCourse?.title}</strong>.
+ </p>
+ <p className="text-xs text-muted-foreground mt-1">
+ Tip: Uncheck all organizations to make this course <strong>Public</strong> (available to anyone).
+ </p>
+ </div>
+
+ {/* Search and Quick Filters */}
+ <div className="flex items-center gap-2">
+ <div className="relative flex-1">
+ <input
+ type="text"
+ placeholder="Search organizations..."
+ value={orgSearchQuery}
+ onChange={e => setOrgSearchQuery(e.target.value)}
+ className="w-full pl-9 pr-3 py-2 text-sm bg-card border border-border rounded-lg text-foreground focus:ring-1 focus:ring-primary focus:outline-none"
+ />
+ <svg className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+ </svg>
+ </div>
+ <button
+ type="button"
+ onClick={() => setSelectedOrgs(orgs.map(o => o.id))}
+ className="px-2.5 py-2 text-xs font-medium text-primary hover:bg-primary/10 rounded-lg transition-colors border border-primary/20 whitespace-nowrap"
+ >
+ Select All
+ </button>
+ <button
+ type="button"
+ onClick={() => setSelectedOrgs([])}
+ className="px-2.5 py-2 text-xs font-medium text-muted-foreground hover:bg-muted rounded-lg transition-colors border border-border whitespace-nowrap"
+ >
+ Clear (Public)
+ </button>
+ </div>
+
+ {/* Selected counter banner */}
+ <div className="flex items-center justify-between text-xs px-3 py-1.5 rounded-lg bg-muted/60 border border-border">
+ <span className="text-muted-foreground">
+ {selectedOrgs.length === 0 ? (
+ <span className="font-medium text-emerald-600 dark:text-emerald-400">Public (No organization restrictions)</span>
+ ) : (
+ <span>Selected: <strong className="text-foreground">{selectedOrgs.length}</strong> organization{selectedOrgs.length > 1 ? 's' : ''}</span>
+ )}
+ </span>
+ </div>
+
+ {/* Organizations Checkbox List */}
+ <div className="max-h-60 overflow-y-auto space-y-1.5 border border-border rounded-xl p-2 bg-muted/20">
+ {orgs
+ .filter(o => o.name.toLowerCase().includes(orgSearchQuery.toLowerCase()))
+ .map(o => {
+ const isChecked = selectedOrgs.includes(o.id);
+ return (
+ <label
+ key={o.id}
+ className={`flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-all border text-sm ${
+ isChecked
+ ? 'bg-primary/10 border-primary/30 text-foreground font-medium'
+ : 'bg-card border-border hover:bg-muted/50 text-muted-foreground'
+ }`}
+ >
+ <div className="flex items-center gap-3">
+ <input
+ type="checkbox"
+ checked={isChecked}
+ onChange={() => {
+ if (isChecked) {
+ setSelectedOrgs(selectedOrgs.filter(id => id !== o.id));
+ } else {
+ setSelectedOrgs([...selectedOrgs, o.id]);
+ }
+ }}
+ className="w-4 h-4 rounded text-primary focus:ring-primary border-border cursor-pointer"
+ />
+ <span>{o.name}</span>
+ </div>
+ {isChecked && (
+ <span className="text-[11px] font-semibold text-primary px-2 py-0.5 rounded-full bg-primary/15">
+ Assigned
+ </span>
+ )}
+ </label>
+ );
+ })}
+ {orgs.filter(o => o.name.toLowerCase().includes(orgSearchQuery.toLowerCase())).length === 0 && (
+ <div className="text-center py-6 text-sm text-muted-foreground">
+ No organizations found matching "{orgSearchQuery}"
+ </div>
+ )}
+ </div>
+
  <div className="flex flex-wrap justify-end gap-3 pt-2 min-w-fit">
  <Button variant="outline" onClick={() => setIsAssignOrgOpen(false)}>{t('cancel')}</Button>
- <Button variant="primary" onClick={handleAssignOrg} disabled={isActionLoading}>{isActionLoading ? t('saving') : t('save')}</Button>
+ <Button variant="primary" onClick={handleAssignOrg} disabled={isActionLoading}>
+ {isActionLoading ? t('saving') : 'Save Assignments'}
+ </Button>
  </div>
  </div>
  </Modal>
+
+ {/* Duplicate Course Confirm Modal */}
+ <ConfirmModal
+ isOpen={!!duplicateCourseItem}
+ onClose={() => setDuplicateCourseItem(null)}
+ onConfirm={handleDuplicateConfirm}
+ title="Duplicate Course"
+ message={`Are you sure you want to duplicate "${duplicateCourseItem?.title}"? All modules, lessons, quizzes, and exams will be duplicated into a new draft course.`}
+ confirmText="Duplicate Course"
+ variant="info"
+ isLoading={isActionLoading}
+ />
 
  <ConfirmModal
  isOpen={!!submitConfirmId}

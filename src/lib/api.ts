@@ -158,6 +158,10 @@ export interface Certificate {
     certificate_id: string;
     issued_at: string;
     pdf_file: string | null;
+    course_title?: string;
+    course_id?: string;
+    user_email?: string;
+    user_name?: string;
 }
 
 export interface TrainingRequest {
@@ -239,9 +243,12 @@ export interface Course {
     title: string;
     description?: string;
     course_provider?: string;
+    course_provider_name?: string;
+    course_provider_email?: string;
     created_by?: string;
     assigned_by?: string | null;
     organization?: string | null;
+    organizations?: { id: string; name: string }[];
     language: string;
     level?: string;
     is_active?: boolean;
@@ -1095,16 +1102,25 @@ export const deleteLesson = (id: string) =>
 
 
 // Course actions (super_admin only)
-export const assignCourseProvider = (courseId: string, providerId: string) =>
+export const assignCourseProvider = (courseId: string, providerId: string | null) =>
     apiFetch<{ detail: string }>(`/api/v1/courses/${courseId}/assign-provider/`, {
         method: 'POST',
         body: JSON.stringify({ provider_id: providerId })
     });
 
-export const assignCourseOrganization = (courseId: string, organizationId: string | null) =>
+export const assignCourseOrganization = (courseId: string, organizationId?: string | null, organizationIds?: string[]) =>
     apiFetch<{ detail: string }>(`/api/v1/courses/${courseId}/assign-organization/`, {
         method: 'POST',
-        body: JSON.stringify({ organization_id: organizationId })
+        body: JSON.stringify({
+            organization_ids: organizationIds,
+            organization_id: organizationId
+        })
+    });
+
+export const duplicateCourse = (courseId: string, title?: string, organizationIds?: string[]) =>
+    apiFetch<Course>(`/api/v1/courses/${courseId}/duplicate/`, {
+        method: 'POST',
+        body: JSON.stringify({ title, organization_ids: organizationIds })
     });
 
 // Course approval workflow

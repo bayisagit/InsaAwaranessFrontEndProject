@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -13,14 +13,29 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useTranslations } from 'next-intl';
 import { Turnstile } from '@marsidev/react-turnstile';
 
-function handlePostLogin(data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }, router: ReturnType<typeof useRouter>, checkAuth: () => Promise<any>) {
+function handlePostLogin(
+    data: {
+        access: string;
+        refresh: string;
+        user: { role: string; first_name?: string; must_change_password?: boolean };
+        dashboard_route?: string;
+        must_change_password?: boolean;
+    },
+    router: ReturnType<typeof useRouter>,
+    checkAuth: () => Promise<any>
+) {
     setTokens({ access: data.access, refresh: data.refresh });
-    checkAuth().then(() => {
-        const mustChange = data.must_change_password || data.user?.must_change_password;
-        if (mustChange) { router.push('/change-password'); return; }
-        const nextParam = new URLSearchParams(window.location.search).get('next');
-        if (nextParam) { router.push(nextParam); return; }
-        if (data.dashboard_route) {
+
+    const mustChange = data.must_change_password || data.user?.must_change_password;
+    let target = '/dashboard';
+
+    if (mustChange) {
+        target = '/change-password';
+    } else {
+        const nextParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('next') : null;
+        if (nextParam && !nextParam.startsWith('/login')) {
+            target = nextParam;
+        } else if (data.dashboard_route) {
             const routeMap: Record<string, string> = {
                 '/dashboard/super-admin': '/admin',
                 '/dashboard/organization': '/admin',
@@ -28,12 +43,15 @@ function handlePostLogin(data: { access: string; refresh: string; user: { role: 
                 '/dashboard/member': '/dashboard',
                 '/dashboard/public': '/dashboard',
             };
-            router.push(routeMap[data.dashboard_route] ?? data.dashboard_route);
+            target = routeMap[data.dashboard_route] ?? data.dashboard_route;
         } else {
             const role = data.user?.role;
-            router.push(role === 'super_admin' || role === 'org_admin' || role === 'course_provider' ? '/admin' : '/dashboard');
+            target = (role === 'super_admin' || role === 'org_admin' || role === 'course_provider') ? '/admin' : '/dashboard';
         }
-    });
+    }
+
+    checkAuth().catch(() => {});
+    window.location.href = target;
 }
 
 export default function LoginPage() {
@@ -44,8 +62,31 @@ export default function LoginPage() {
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
-    const { checkAuth } = useAuth();
+    const { user, isAuthenticated, isLoading: isAuthLoading, checkAuth } = useAuth();
     const t = useTranslations('auth');
+
+    useEffect(() => {
+        if (!isAuthLoading && isAuthenticated && user) {
+            const nextParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('next') : null;
+            if (nextParam && !nextParam.startsWith('/login')) {
+                window.location.href = nextParam;
+                return;
+            }
+            const isAnyAdmin = user.role === 'super_admin' || user.role === 'org_admin' || user.role === 'course_provider';
+            window.location.href = isAnyAdmin ? '/admin' : '/dashboard';
+        }
+    }, [isAuthenticated, isAuthLoading, user]);
+
+    if (isAuthLoading || isAuthenticated) {
+        return (
+            <div className="min-h-[70vh] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <p className="text-sm text-muted-foreground">{t('redirecting') || 'Redirecting to dashboard...'}</p>
+                </div>
+            </div>
+        );
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -11,13 +11,27 @@ import { Modal } from '@/components/Modal';
 import { LinkifyText } from '@/components/LinkifyText';
 
 interface ModuleItem { id: string; title: string; description?: string; order?: number; }
-interface Course { id: string; title: string; description?: string; difficulty?: string; level?: string; language?: string; status?: string; thumbnail_url?: string; modules?: ModuleItem[]; }
+interface Course {
+    id: string;
+    title: string;
+    description?: string;
+    difficulty?: string;
+    level?: string;
+    language?: string;
+    status?: string;
+    thumbnail_url?: string;
+    modules?: ModuleItem[];
+    payment_type?: string;
+    course_price?: string | number;
+    currency?: string;
+    is_unlocked?: boolean;
+}
 interface Enrollment { id: string; user: string; course: string; progress: number; status: string; }
 
 export default function CourseDetailPage() {
     const { id } = useParams<{ id: string }>();
     const router = useRouter();
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
     const [course, setCourse] = useState<Course | null>(null);
     const [modules, setModules] = useState<ModuleItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -30,24 +44,16 @@ export default function CourseDetailPage() {
     const [certificate, setCertificate] = useState<Certificate | null>(null);
     const [showProfileModal, setShowProfileModal] = useState(false);
 
-
     useEffect(() => {
-        if (id) {
-            // If the user is authenticated, redirect them directly to the learner workspace
-            // so they never study or view courses on the public page.
-            if (isAuthenticated) {
-                router.replace(`/dashboard/courses/${id}`);
-            } else {
-                fetchCourseData();
-            }
-        }
-    }, [id, isAuthenticated, router]);
+        if (!id || isAuthLoading) return;
+        fetchCourseData();
+    }, [id, isAuthenticated, isAuthLoading, user?.id]);
 
     const fetchCourseData = async () => {
         setIsLoading(true);
         const [courseRes, enrollRes] = await Promise.all([
             apiFetch(`/api/v1/courses/${id}/`),
-            isAuthenticated ? apiFetch(`/api/v1/enrollments/?course=${id}&user=${user!.id}`) : Promise.resolve({ data: null })
+            isAuthenticated && user?.id ? apiFetch(`/api/v1/enrollments/?course=${id}&user=${user.id}`) : Promise.resolve({ data: null })
         ]);
 
         if (courseRes.error) {
@@ -65,6 +71,12 @@ export default function CourseDetailPage() {
             setIsEnrolled(!!foundEnrollment);
             setEnrollment(foundEnrollment);
 
+            // If user is already enrolled in this course, redirect directly to the learning workspace
+            if (foundEnrollment) {
+                router.replace(`/dashboard/courses/${id}`);
+                return;
+            }
+
             if (foundEnrollment?.status === 'completed') {
                 getCertificates({ enrollment: foundEnrollment.id }).then(certRes => {
                     const certs = certRes.data?.results ?? [];
@@ -76,12 +88,10 @@ export default function CourseDetailPage() {
         setIsLoading(false);
     };
 
-
     const handleDownloadCertificate = async () => {
         if (!certificate?.certificate_id) return;
         window.open(`/verify/${certificate.certificate_id}`, '_blank');
     };
-
 
     const handleEnroll = async () => {
         if (!isAuthenticated) {
@@ -89,9 +99,8 @@ export default function CourseDetailPage() {
             return;
         }
 
-        // Enforce demographic profile completion before enrollment (crucial for analytics)
-        if (!user?.nationality || !user?.employment_status || !user?.gender || !user?.age_range) {
-            setShowProfileModal(true);
+        if (course?.payment_type === 'paid' && !course?.is_unlocked) {
+            router.push(`/dashboard/courses/${id}/payment`);
             return;
         }
 
@@ -113,12 +122,14 @@ export default function CourseDetailPage() {
 
         if (e || (status !== 200 && status !== 201)) {
             setEnrollError(e || 'Enrollment failed. You may already be enrolled.');
+            setIsEnrolling(false);
         } else {
             setEnrollSuccess('You have been successfully enrolled!');
             setIsEnrolled(true);
             setEnrollment(data as Enrollment);
+            setIsEnrolling(false);
+            router.push(`/dashboard/courses/${id}`);
         }
-        setIsEnrolling(false);
     };
 
 
@@ -149,8 +160,8 @@ export default function CourseDetailPage() {
             {/* Hero */}
             <div className="bg-card border-b border-border">
                 <div className="max-w-5xl mx-auto px-6 lg:px-12 py-10">
-                    <Link href="/courses" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 mb-6 inline-flex items-center gap-1 transition-colors">
-                        ← Back to Training
+                    <Link href={isAuthenticated ? "/dashboard/catalog" : "/courses"} className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 mb-6 inline-flex items-center gap-1 transition-colors">
+                        ← {isAuthenticated ? "Back to Course Catalog" : "Back to Training"}
                     </Link>
 
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 mt-2">
@@ -181,6 +192,11 @@ export default function CourseDetailPage() {
                                             {course.difficulty}
                                         </span>
                                     )}
+                                    {course.payment_type === 'paid' && (
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase bg-yellow-500/10 text-yellow-600 dark:text-yellow-500 border border-yellow-500/20">
+                                            {course.currency || 'ETB'} {course.course_price}
+                                        </span>
+                                    )}
                                 </div>
                                 <h1 className="text-3xl lg:text-4xl font-extrabold text-foreground leading-tight max-w-2xl">{course.title}</h1>
                                 {course.description && (
@@ -198,9 +214,9 @@ export default function CourseDetailPage() {
                                             {enrollSuccess || 'You are enrolled in this course'}
                                         </div>
                                         <div className="flex flex-col sm:flex-row gap-3">
-                                            <Link href={`/courses/${id}/exam`} className="flex-1">
-                                                <Button variant="primary" className="w-full bg-indigo-600 hover:bg-indigo-700 border-indigo-600">
-                                                    Take Certificate Exam
+                                            <Link href={`/dashboard/courses/${id}`} className="flex-1">
+                                                <Button variant="primary" className="w-full">
+                                                    Continue Learning
                                                 </Button>
                                             </Link>
                                             {enrollment?.status === 'completed' && (
@@ -214,7 +230,11 @@ export default function CourseDetailPage() {
                                     <div className="max-w-md">
                                         {enrollError && <p className="text-xs text-red-600 mb-2">{enrollError}</p>}
                                         <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="w-full py-4 text-lg rounded-xl shadow-lg shadow-black/10 dark:shadow-none shadow-primary/20 cursor-pointer transition-colors duration-200">
-                                            {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
+                                            {course.payment_type === 'paid' && !course.is_unlocked
+                                                ? 'Unlock Course'
+                                                : isEnrolling
+                                                    ? 'Enrolling...'
+                                                    : 'Enroll Now'}
                                             {!isEnrolling && <ArrowRight className="ml-2 size-5 inline" />}
                                         </Button>
                                     </div>
@@ -265,7 +285,11 @@ export default function CourseDetailPage() {
                             Enroll in this course to access all modules, lessons, and assessment materials.
                         </p>
                         <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="px-10 py-4 text-lg shadow-xl shadow-primary/20 cursor-pointer transition-colors duration-200">
-                            {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
+                            {course.payment_type === 'paid' && !course.is_unlocked
+                                ? 'Unlock Course'
+                                : isEnrolling
+                                    ? 'Enrolling...'
+                                    : 'Enroll Now'}
                         </Button>
                     </div>
                 </div>
@@ -334,7 +358,7 @@ export default function CourseDetailPage() {
                             variant="primary"
                             onClick={() => {
                                 setShowProfileModal(false);
-                                router.push('/profile');
+                                router.push(`/profile?next=${encodeURIComponent(`/courses/${id}`)}`);
                             }}
                             className="w-full py-3"
                         >

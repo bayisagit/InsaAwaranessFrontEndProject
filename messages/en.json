@@ -756,7 +756,7 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "preferredLanguage": "Preferred Language",
-    "termsAndService": "I affirm that the information is accurate and agree to the {terms}.",
+    "termsAndService": "I affirm that the information is accurate and agree to the <terms>Terms of Service</terms>.",
     "termsOfService": "Terms of Service",
     "continueWithGoogle": "Continue with Google",
     "continueWithGitHub": "Continue with GitHub",
