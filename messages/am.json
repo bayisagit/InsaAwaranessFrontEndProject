@@ -824,7 +824,8 @@
     "nationalDefenseDesc": "ለወሳኝ መሠረተ ልማታችን የጋራ የሳይበር ጠንካራነት አስተዋጽኦ ያድርጉ።",
     "verifiedAlerts": "የተረጋገጡ ማንቂያዎች",
     "verifiedAlertsDesc": "ስለ ማስገር ዘመቻዎች እና የራንሰምዌር ስጋቶች ኦፊሴላዊ ማስጠንቀቂያዎችን ይቀበሉ።",
-    "alreadyHaveCyberSafeId": "አስቀድመው የሳይበር ሴፍ መለያ አለዎት?"
+    "alreadyHaveCyberSafeId": "አስቀድመው የሳይበር ሴፍ መለያ አለዎት?",
+    "redirecting": "በማዘዋወር ላይ..."
   },
   "footer": {
     "platform": "መድረክ",

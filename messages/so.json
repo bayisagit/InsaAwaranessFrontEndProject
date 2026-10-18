@@ -824,7 +824,8 @@
     "nationalDefenseDesc": "Ka qayb qaado ilaalinta internet-ka qaranka.",
     "verifiedAlerts": "Digniinaha la Xaqiijiyay",
     "verifiedAlertsDesc": "Hel ogeysiis rasmi ah oo ku saabsan khataraha internet-ka.",
-    "alreadyHaveCyberSafeId": "Ma haysataa CyberSafe ID hore?"
+    "alreadyHaveCyberSafeId": "Ma haysataa CyberSafe ID hore?",
+    "redirecting": "Dib u toosinta..."
   },
   "footer": {
     "platform": "Barnaamij",

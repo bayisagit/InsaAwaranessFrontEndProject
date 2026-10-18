@@ -824,7 +824,8 @@
     "nationalDefenseDesc": "Contribute to the collective cyber resilience of our critical infrastructure.",
     "verifiedAlerts": "Verified Alerts",
     "verifiedAlertsDesc": "Receive official warnings about phishing campaigns and ransomware.",
-    "alreadyHaveCyberSafeId": "Already have a CyberSafe ID?"
+    "alreadyHaveCyberSafeId": "Already have a CyberSafe ID?",
+    "redirecting": "Redirecting..."
   },
   "footer": {
     "platform": "Platform",

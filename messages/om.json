@@ -824,7 +824,8 @@
     "nationalDefenseDesc": "Nageenya bu'uura misoomaa keenyaaf gumaachi.",
     "verifiedAlerts": "Akeekkachiisa Mirkanaa'e",
     "verifiedAlertsDesc": "Akeekkachiisa sirrii argadhu.",
-    "alreadyHaveCyberSafeId": "ID CyberSafe duraanuu qabdaa?"
+    "alreadyHaveCyberSafeId": "ID CyberSafe duraanuu qabdaa?",
+    "redirecting": "Kallattii jijjiiraa jira..."
   },
   "footer": {
     "platform": "Pilaatfoormii",

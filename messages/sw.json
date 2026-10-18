@@ -824,7 +824,8 @@
     "nationalDefenseDesc": "Changia katika ustahimilivu wa mtandao wa miundombinu yetu muhimu.",
     "verifiedAlerts": "Tahadhari Zilizothibitishwa",
     "verifiedAlertsDesc": "Pokea maonyo rasmi kuhusu kampeni za hadaa.",
-    "alreadyHaveCyberSafeId": "Tayari una Kitambulisho cha CyberSafe?"
+    "alreadyHaveCyberSafeId": "Tayari una Kitambulisho cha CyberSafe?",
+    "redirecting": "Inaelekeza upya..."
   },
   "footer": {
     "platform": "Jukwaa",
