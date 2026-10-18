@@ -97,6 +97,11 @@ export function ModulesManager({ lockedCourseId }: { lockedCourseId?: string }) 
  }, [lockedCourseId]);
 
  const fetchCourses = async () => {
+ if (lockedCourseId) {
+ const { data } = await apiFetch(`/api/v1/courses/${lockedCourseId}/`);
+ if (data) setCourses([data]);
+ return;
+ }
  const { data } = await apiFetch('/api/v1/courses/?page_size=100');
  if (data?.results) setCourses(data.results);
  else if (Array.isArray(data)) setCourses(data);

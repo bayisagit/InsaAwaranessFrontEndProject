@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, SidebarFooter } from '@/components/ui/sidebar';
 import { BookOpen, Layers, FileText, CheckSquare, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert, User, LogOut, BarChart3, PieChart, Eye } from 'lucide-react';
 import Link from 'next/link';
@@ -37,10 +37,60 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
     const [lessonName, setLessonName] = useState<string | null>(null);
     const [lessonId, setLessonId] = useState<string | null>(null);
 
+    const lastCourseIdRef = useRef<string | null>(null);
+    const lastCourseTitleRef = useRef<string>('');
+    const lastModuleIdRef = useRef<string | null>(null);
+    const lastModuleNameRef = useRef<string | null>(null);
+    const lastLessonIdRef = useRef<string | null>(null);
+    const lastLessonNameRef = useRef<string | null>(null);
+
     // Resolve hierarchy based on current URL
     const paramCourseId = params.courseId as string | undefined;
     const paramModuleId = params.moduleId as string | undefined;
     const paramLessonId = params.lessonId as string | undefined;
+
+    const ensureCourseTitle = async (cId: string) => {
+        if (lastCourseIdRef.current === cId && lastCourseTitleRef.current) {
+            setCourseName(lastCourseTitleRef.current);
+            return;
+        }
+        const { data } = await apiFetch(`/api/v1/courses/${cId}/`);
+        if (data?.title) {
+            lastCourseIdRef.current = cId;
+            lastCourseTitleRef.current = data.title;
+            setCourseName(data.title);
+        }
+    };
+
+    const ensureModuleTitle = async (mId: string) => {
+        if (lastModuleIdRef.current === mId && lastModuleNameRef.current) {
+            setModuleName(lastModuleNameRef.current);
+            return null;
+        }
+        const { data } = await getModule(mId);
+        if (data) {
+            lastModuleIdRef.current = mId;
+            lastModuleNameRef.current = data.title;
+            setModuleName(data.title);
+            return data;
+        }
+        return null;
+    };
+
+    const ensureLessonTitle = async (lId: string) => {
+        if (lastLessonIdRef.current === lId && lastLessonNameRef.current) {
+            setLessonName(lastLessonNameRef.current);
+            return null;
+        }
+        const { data } = await getLesson(lId);
+        if (data) {
+            lastLessonIdRef.current = lId;
+            lastLessonNameRef.current = data.title;
+            setLessonName(data.title);
+            return data;
+        }
+        return null;
+    };
 
     useEffect(() => {
         const resolveContext = async () => {
@@ -53,90 +103,53 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                 if (cId !== 'create') {
                     resolvedCourseId = cId;
                     setCourseId(resolvedCourseId);
-                    const { data } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
-                    if (data?.title) setCourseName(data.title);
+                    await ensureCourseTitle(resolvedCourseId);
                 }
 
-                if (paramModuleId) {
-                    const mId = paramModuleId;
-                    if (mId !== 'create') {
-                        resolvedModuleId = mId;
-                        const { data: moduleData } = await getModule(mId);
-                        if (moduleData) {
-                            setModuleName(moduleData.title);
-                            setModuleId(mId);
-                            resolvedCourseId = moduleData.course;
-                            setCourseId(resolvedCourseId);
-                            const { data: courseData } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
-                            if (courseData?.title) setCourseName(courseData.title);
-                        }
-                    }
+                if (paramModuleId && paramModuleId !== 'create') {
+                    resolvedModuleId = paramModuleId;
+                    setModuleId(resolvedModuleId);
+                    await ensureModuleTitle(resolvedModuleId);
+                } else if (!paramModuleId) {
+                    setModuleId(null);
+                    setModuleName(null);
+                    lastModuleIdRef.current = null;
+                    lastModuleNameRef.current = null;
                 }
 
-                if (paramModuleId && paramLessonId) {
-                    const lId = paramLessonId;
-                    if (lId !== 'create') {
-                        resolvedLessonId = lId;
-                        const { data: lessonData } = await getLesson(lId);
-                        if (lessonData) {
-                            setLessonName(lessonData.title);
-                            setLessonId(lId);
-                        }
-                    }
-                } else if (paramLessonId && !paramModuleId) {
-                    const lId = paramLessonId;
-                    if (lId !== 'create') {
-                        resolvedLessonId = lId;
-                        const { data: lessonData } = await getLesson(lId);
-                        if (lessonData) {
-                            setLessonName(lessonData.title);
-                            setLessonId(lId);
-                            const { data: moduleData } = await getModule(lessonData.module);
-                            if (moduleData) {
-                                setModuleName(moduleData.title);
-                                setModuleId(lessonData.module);
-                                resolvedCourseId = moduleData.course;
-                                setCourseId(resolvedCourseId);
-                                const { data: courseData } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
-                                if (courseData?.title) setCourseName(courseData.title);
-                            }
-                        }
-                    }
+                if (paramLessonId && paramLessonId !== 'create') {
+                    resolvedLessonId = paramLessonId;
+                    setLessonId(resolvedLessonId);
+                    await ensureLessonTitle(resolvedLessonId);
+                } else if (!paramLessonId) {
+                    setLessonId(null);
+                    setLessonName(null);
+                    lastLessonIdRef.current = null;
+                    lastLessonNameRef.current = null;
                 }
-
-                if (!paramModuleId) setModuleId(null);
-                if (!paramLessonId) setLessonId(null);
-            } else if (pathname.startsWith('/admin/modules/') && paramModuleId) {
-                const mId = paramModuleId;
-                if (mId !== 'create') {
-                    resolvedModuleId = mId;
-                    const { data: moduleData } = await getModule(mId);
-                    if (moduleData) {
-                        setModuleName(moduleData.title);
-                        setModuleId(mId);
-                        resolvedCourseId = moduleData.course;
-                        setCourseId(resolvedCourseId);
-                        const { data } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
-                        if (data?.title) setCourseName(data.title);
-                    }
+            } else if (pathname.startsWith('/admin/modules/') && paramModuleId && paramModuleId !== 'create') {
+                resolvedModuleId = paramModuleId;
+                setModuleId(resolvedModuleId);
+                const moduleData = await ensureModuleTitle(resolvedModuleId);
+                const courseIdToFetch = moduleData?.course || lastCourseIdRef.current;
+                if (courseIdToFetch) {
+                    setCourseId(courseIdToFetch);
+                    await ensureCourseTitle(courseIdToFetch);
                 }
-            } else if (pathname.startsWith('/admin/lessons/') && paramLessonId) {
-                const lId = paramLessonId;
-                if (lId !== 'create') {
-                    resolvedLessonId = lId;
-                    const { data: lessonData } = await getLesson(lId);
-                    if (lessonData) {
-                        setLessonName(lessonData.title);
-                        setLessonId(lId);
-                        const { data: moduleData } = await getModule(lessonData.module);
-                        if (moduleData) {
-                            setModuleName(moduleData.title);
-                            setModuleId(lessonData.module);
-                            resolvedCourseId = moduleData.course;
-                            setCourseId(resolvedCourseId);
-                            const { data } = await apiFetch(`/api/v1/courses/${resolvedCourseId}/`);
-                            if (data?.title) setCourseName(data.title);
-                        }
+                setLessonId(null);
+                setLessonName(null);
+            } else if (pathname.startsWith('/admin/lessons/') && paramLessonId && paramLessonId !== 'create') {
+                resolvedLessonId = paramLessonId;
+                setLessonId(resolvedLessonId);
+                const lessonData = await ensureLessonTitle(resolvedLessonId);
+                const modId = lessonData?.module || lastModuleIdRef.current;
+                if (modId) {
+                    setModuleId(modId);
+                    const moduleData = await ensureModuleTitle(modId);
+                    const courseIdToFetch = moduleData?.course || lastCourseIdRef.current;
+                    if (courseIdToFetch) {
+                        setCourseId(courseIdToFetch);
+                        await ensureCourseTitle(courseIdToFetch);
                     }
                 }
             }

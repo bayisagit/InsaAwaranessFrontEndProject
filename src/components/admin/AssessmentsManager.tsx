@@ -99,9 +99,10 @@ export function AssessmentsManager({ lockedLessonId, lockedModuleId, lockedCours
  }, [page, filterType, lockedLessonId, lockedModuleId, lockedCourseId]);
 
  const fetchCourses = useCallback(async () => {
+ if (lockedCourseId) return;
  const { data } = await getCourses({ page_size: 100 });
  setCourses(data?.results ?? []);
- }, []);
+ }, [lockedCourseId]);
 
  useEffect(() => {
  if (!isLoading) {

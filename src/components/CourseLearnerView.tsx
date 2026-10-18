@@ -58,11 +58,12 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
 
     const fetchCourseData = async (silent = false) => {
         if (!silent) setIsLoading(true);
-        const courseRes = await apiFetch(`/api/v1/courses/${courseId}/`);
-        let enrollRes: any = { data: null };
-        if (!previewMode) {
-            enrollRes = await apiFetch(`/api/v1/enrollments/?course=${courseId}&user=${user?.id}`);
-        }
+        const [courseRes, enrollRes] = await Promise.all([
+            apiFetch(`/api/v1/courses/${courseId}/`),
+            !previewMode && user?.id
+                ? apiFetch(`/api/v1/enrollments/?course=${courseId}&user=${user.id}`)
+                : Promise.resolve({ data: null } as any)
+        ]);
 
         if (courseRes.data) {
             setCourse(courseRes.data);
@@ -79,7 +80,7 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
 
         if (previewMode) {
             setIsEnrolled(true);
-        } else if (enrollRes.data) {
+        } else if (enrollRes?.data) {
             const results = enrollRes.data.results || (Array.isArray(enrollRes.data) ? enrollRes.data : []);
             const foundEnrollment = results[0] || null;
             setIsEnrolled(!!foundEnrollment);
@@ -93,17 +94,15 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
             return;
         }
 
-        // Fetch Exam
+        // Fetch Exam - prioritize exam already included in course detail payload
         try {
-            const listRes = await getAssessments({ course: courseId, parent_type: 'course_exam', page_size: 10 });
-            const results = (listRes.data as any)?.results ?? (Array.isArray(listRes.data) ? listRes.data : []);
-            if (Array.isArray(results) && results.length > 0) {
-                setExam(results[0]);
-            } else if (courseRes.data?.course_exams && Array.isArray(courseRes.data.course_exams) && courseRes.data.course_exams.length > 0) {
-                const examId = courseRes.data.course_exams[0].id;
-                const examRes = await getAssessment(examId);
-                if (examRes.data) {
-                    setExam(examRes.data);
+            if (courseRes.data?.course_exams && Array.isArray(courseRes.data.course_exams) && courseRes.data.course_exams.length > 0) {
+                setExam(courseRes.data.course_exams[0]);
+            } else {
+                const listRes = await getAssessments({ course: courseId, parent_type: 'course_exam', page_size: 10 });
+                const results = (listRes.data as any)?.results ?? (Array.isArray(listRes.data) ? listRes.data : []);
+                if (Array.isArray(results) && results.length > 0) {
+                    setExam(results[0]);
                 }
             }
         } catch (e) {

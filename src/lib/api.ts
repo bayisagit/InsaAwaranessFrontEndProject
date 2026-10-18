@@ -612,8 +612,35 @@ export const clearTokens = () => {
     localStorage.removeItem('refresh_token');
 };
 
-// Advanced Fetch Wrapper
+// In-flight GET request deduplication cache to prevent parallel redundant fetches
+const inflightGetRequests = new Map<string, Promise<{ data?: any; error?: string; status: number }>>();
+
 export async function apiFetch<T = any>(
+    endpoint: string,
+    options: RequestInit = {}
+): Promise<{ data?: T; error?: string; status: number }> {
+    const method = options.method || (options.body ? 'POST' : 'GET');
+    const isGet = method === 'GET' && !options.body;
+
+    if (isGet) {
+        const tokens = getTokens();
+        const dedupeKey = `${endpoint}::${tokens?.access || 'anon'}`;
+        const existing = inflightGetRequests.get(dedupeKey);
+        if (existing) {
+            return existing as Promise<{ data?: T; error?: string; status: number }>;
+        }
+        const promise = executeApiFetch<T>(endpoint, options).finally(() => {
+            inflightGetRequests.delete(dedupeKey);
+        });
+        inflightGetRequests.set(dedupeKey, promise);
+        return promise;
+    }
+
+    return executeApiFetch<T>(endpoint, options);
+}
+
+// Advanced Fetch Wrapper
+async function executeApiFetch<T = any>(
     endpoint: string,
     options: RequestInit = {}
 ): Promise<{ data?: T; error?: string; status: number }> {
