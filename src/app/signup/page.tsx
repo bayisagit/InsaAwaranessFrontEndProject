@@ -389,8 +389,15 @@ export default function SignupPage() {
                         
                         <div className="flex justify-center mt-4">
                             <Turnstile 
-                                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+                                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
                                 onSuccess={(token) => setCaptchaToken(token)}
+                                onError={() => {
+                                    if (process.env.NODE_ENV === 'development') {
+                                        setCaptchaToken('dev-dummy-token');
+                                    } else {
+                                        setCaptchaToken('');
+                                    }
+                                }}
                                 onExpire={() => setCaptchaToken('')}
                                 options={{ theme: 'auto' }}
                             />

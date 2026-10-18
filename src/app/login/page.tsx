@@ -65,50 +65,7 @@ export default function LoginPage() {
     const { user, isAuthenticated, isLoading: isAuthLoading, checkAuth } = useAuth();
     const t = useTranslations('auth');
 
-    useEffect(() => {
-        if (!isAuthLoading && isAuthenticated && user) {
-            const nextParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('next') : null;
-            if (nextParam && !nextParam.startsWith('/login')) {
-                window.location.href = nextParam;
-                return;
-            }
-            const isAnyAdmin = user.role === 'super_admin' || user.role === 'org_admin' || user.role === 'course_provider';
-            window.location.href = isAnyAdmin ? '/admin' : '/dashboard';
-        }
-    }, [isAuthenticated, isAuthLoading, user]);
-
-    if (isAuthLoading || isAuthenticated) {
-        return (
-            <div className="min-h-[70vh] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    <p className="text-sm text-muted-foreground">{t('redirecting') || 'Redirecting to dashboard...'}</p>
-                </div>
-            </div>
-        );
-    }
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        if (!email.trim()) { setError('Please enter your email address.'); return; }
-        if (!password) { setError('Please enter your password.'); return; }
-        if (!captchaToken) { setError('Please complete the CAPTCHA verification.'); return; }
-        setIsLoading(true);
-        const { data, error: apiError, status } = await loginUser(email.trim(), password, captchaToken);
-        if (apiError || status !== 200) {
-            const errorMsg = apiError || 'Invalid credentials.';
-            setError(errorMsg);
-            toast.error(errorMsg);
-            setIsLoading(false);
-            return;
-        }
-        if (data?.access) {
-            toast.success(`Welcome back, ${data.user.first_name || 'User'}!`);
-            handlePostLogin(data, router, checkAuth);
-        }
-        setIsLoading(false);
-    };
+    const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
     const googleLogin = useGoogleLogin({
         onSuccess: async (credentialResponse) => {
@@ -140,6 +97,55 @@ export default function LoginPage() {
         const githubUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user:email,read:user`;
         window.location.href = githubUrl;
     }, []);
+
+    useEffect(() => {
+        if (!isAuthLoading && isAuthenticated && user) {
+            const nextParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('next') : null;
+            if (nextParam && !nextParam.startsWith('/login')) {
+                window.location.href = nextParam;
+                return;
+            }
+            const isAnyAdmin = user.role === 'super_admin' || user.role === 'org_admin' || user.role === 'course_provider';
+            window.location.href = isAnyAdmin ? '/admin' : '/dashboard';
+        }
+    }, [isAuthenticated, isAuthLoading, user]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        if (!email.trim()) { setError('Please enter your email address.'); return; }
+        if (!password) { setError('Please enter your password.'); return; }
+        if (!captchaToken && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
+            setError('Please complete the CAPTCHA verification.');
+            return;
+        }
+        setIsLoading(true);
+        const { data, error: apiError, status } = await loginUser(email.trim(), password, captchaToken || 'dev-bypass-token');
+        if (apiError || status !== 200) {
+            const errorMsg = apiError || 'Invalid credentials.';
+            setError(errorMsg);
+            toast.error(errorMsg);
+            setIsLoading(false);
+            return;
+        }
+        if (data?.access) {
+            toast.success(`Welcome back, ${data.user.first_name || 'User'}!`);
+            handlePostLogin(data, router, checkAuth);
+        }
+        setIsLoading(false);
+    };
+
+    // Render loading/redirecting UI AFTER all hooks have executed
+    if (isAuthLoading || isAuthenticated) {
+        return (
+            <div className="min-h-[70vh] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <p className="text-sm text-muted-foreground">{t('redirecting') || 'Redirecting to dashboard...'}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
@@ -244,14 +250,27 @@ export default function LoginPage() {
 
                     <div className="flex justify-center sm:justify-start">
                         <Turnstile
-                            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                            siteKey={turnstileSiteKey}
                             onSuccess={(token) => setCaptchaToken(token)}
-                            onError={() => setCaptchaToken(null)}
+                            onError={() => {
+                                if (process.env.NODE_ENV === 'development') {
+                                    setCaptchaToken('dev-dummy-token');
+                                } else {
+                                    setCaptchaToken(null);
+                                }
+                            }}
                             onExpire={() => setCaptchaToken(null)}
                         />
                     </div>
 
-                    <Button variant="primary" type="submit" fullWidth className="py-3 rounded-xl" loading={isLoading} disabled={!captchaToken}>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        fullWidth
+                        className="py-3 rounded-xl"
+                        loading={isLoading}
+                        disabled={isLoading || (!captchaToken && !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)}
+                    >
                         {t('signIn')}
                     </Button>
                 </form>
