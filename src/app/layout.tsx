@@ -35,6 +35,13 @@ export default async function RootLayout({
   const messages = await getMessages();
   return (
     <html lang={locale} className={cn("font-sans", geist.variable)} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if (typeof window !== 'undefined' && window.location.hostname === '0.0.0.0') { window.location.replace('http://localhost:' + (window.location.port || '3000') + window.location.pathname + window.location.search); }`,
+          }}
+        />
+      </head>
       <body className={`${inter.className} min-h-screen bg-background text-foreground flex flex-col antialiased transition-colors duration-200`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ThemeProvider
