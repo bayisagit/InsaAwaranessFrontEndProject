@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   Assessment, AssessmentQuestion, AssessmentAttempt, AssessmentAnswer,
   getAssessment, getAssessments,
@@ -10,6 +10,7 @@ import { Button } from '@/components/Button';
 import { AssessmentSkeleton } from '@/components/LoadingSkeleton';
 import { LinkifyText } from '@/components/LinkifyText';
 import Link from 'next/link';
+import { GripVertical, ChevronUp, ChevronDown, Link2, X, RotateCcw, Check } from 'lucide-react';
 
 // ─── Props ──────────────────────────────────────────────────────────────────────
 // Accepts either a direct assessmentId or a lessonId / certificateExamId to look up
@@ -47,6 +48,454 @@ function formatAnswerForApi(q: AssessmentQuestion, raw: any): any {
  if (q.type === 'matching') return typeof raw === 'object' && !Array.isArray(raw) ? { pairs: raw } : raw;
  if (q.type === 'ordering') return Array.isArray(raw) ? { order: raw } : raw;
  return raw ?? '';
+}
+
+// ── Ordering Question Component (International Assessment Drag-and-Drop & Up/Down) ─
+interface OrderingQuestionInputProps {
+  question: AssessmentQuestion;
+  value?: string[];
+  onChange: (orderIds: string[]) => void;
+}
+
+function OrderingQuestionInput({ question, value, onChange }: OrderingQuestionInputProps) {
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const items = useMemo(() => question.ordering_items || [], [question.ordering_items]);
+
+  // Compute current order of items based on value or default items list
+  const orderedItems = useMemo(() => {
+    if (Array.isArray(value) && value.length > 0) {
+      const mapped = value
+        .map(id => items.find(i => String(i.id) === String(id)))
+        .filter(Boolean) as typeof items;
+      for (const item of items) {
+        if (!mapped.some(m => String(m.id) === String(item.id))) {
+          mapped.push(item);
+        }
+      }
+      return mapped;
+    }
+    return items;
+  }, [value, items]);
+
+  // Initialize order if not yet set
+  useEffect(() => {
+    if (!value || value.length === 0) {
+      if (items.length > 0) {
+        onChange(items.map(i => String(i.id)));
+      }
+    }
+  }, [value, items, onChange]);
+
+  const handleMove = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= orderedItems.length) return;
+    const next = [...orderedItems];
+    const [moved] = next.splice(index, 1);
+    next.splice(targetIndex, 0, moved);
+    onChange(next.map(i => String(i.id)));
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', String(index));
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggedIdx(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverIdx !== index) {
+      setDragOverIdx(index);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === targetIndex) {
+      setDraggedIdx(null);
+      setDragOverIdx(null);
+      return;
+    }
+    const next = [...orderedItems];
+    const [moved] = next.splice(draggedIdx, 1);
+    next.splice(targetIndex, 0, moved);
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+    onChange(next.map(i => String(i.id)));
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
+
+  const handleReset = () => {
+    onChange(items.map(i => String(i.id)));
+  };
+
+  return (
+    <div className="space-y-3 ml-0 sm:ml-11">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground pb-1">
+        <span>Drag and drop items or use the up/down arrow buttons to arrange them in the correct sequence.</span>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          Reset Order
+        </button>
+      </div>
+
+      <div className="space-y-2.5">
+        {orderedItems.map((item, index) => {
+          const isDragging = draggedIdx === index;
+          const isDragOver = dragOverIdx === index && draggedIdx !== index;
+
+          return (
+            <div
+              key={item.id}
+              draggable
+              onDragStart={e => handleDragStart(e, index)}
+              onDragOver={e => handleDragOver(e, index)}
+              onDrop={e => handleDrop(e, index)}
+              onDragEnd={handleDragEnd}
+              className={`group flex items-center gap-3.5 p-3.5 rounded-xl border transition-all select-none ${
+                isDragging
+                  ? 'opacity-40 border-dashed border-primary bg-primary/5 scale-[0.99]'
+                  : isDragOver
+                  ? 'border-primary ring-2 ring-primary/30 bg-primary/5 -translate-y-0.5'
+                  : 'bg-card border-border hover:border-primary/40 hover:shadow-xs'
+              }`}
+            >
+              {/* Drag Handle */}
+              <div
+                className="cursor-grab active:cursor-grabbing text-muted-foreground/60 group-hover:text-foreground p-1 -ml-1 transition-colors"
+                title="Drag to reorder"
+              >
+                <GripVertical className="w-4 h-4" />
+              </div>
+
+              {/* Order Number Badge */}
+              <div className="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0 border border-primary/20">
+                {index + 1}
+              </div>
+
+              {/* Item Text */}
+              <span className="text-sm font-medium text-foreground flex-1 leading-snug">
+                {item.text}
+              </span>
+
+              {/* Up/Down Controls */}
+              <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
+                <button
+                  type="button"
+                  onClick={() => handleMove(index, 'up')}
+                  disabled={index === 0}
+                  aria-label={`Move "${item.text}" up`}
+                  title="Move up"
+                  className="p-1.5 rounded-lg border border-border/70 text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMove(index, 'down')}
+                  disabled={index === orderedItems.length - 1}
+                  aria-label={`Move "${item.text}" down`}
+                  title="Move down"
+                  className="p-1.5 rounded-lg border border-border/70 text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Matching Question Component (Standard Column A vs Column B Format) ───────────
+interface MatchingQuestionInputProps {
+  question: AssessmentQuestion;
+  value?: Record<string, string>;
+  onChange: (pairs: Record<string, string>) => void;
+}
+
+function MatchingQuestionInput({ question, value = {}, onChange }: MatchingQuestionInputProps) {
+  const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
+  const [selectedRight, setSelectedRight] = useState<string | null>(null);
+  const [dragOverLeft, setDragOverLeft] = useState<string | null>(null);
+
+  const pairs = useMemo(() => question.matching_pairs || [], [question.matching_pairs]);
+  const currentPairs: Record<string, string> = value || {};
+
+  // Deterministic stable shuffle of Column B options based on question ID
+  const columnBOptions = useMemo(() => {
+    if (!pairs.length) return [];
+    const list = pairs.map(p => p.right_text);
+    let seed = 0;
+    for (let i = 0; i < question.id.length; i++) {
+      seed = (seed * 31 + question.id.charCodeAt(i)) & 0xffffffff;
+    }
+    return [...list].sort((a, b) => {
+      const ha = Math.sin(seed + a.length * 13) * 10000;
+      const hb = Math.sin(seed + b.length * 13) * 10000;
+      return (ha - Math.floor(ha)) - (hb - Math.floor(hb));
+    });
+  }, [pairs, question.id]);
+
+  const matchedCount = Object.keys(currentPairs).filter(k => !!currentPairs[k]).length;
+  const totalCount = pairs.length;
+
+  const linkPair = (leftText: string, rightText: string) => {
+    const next = { ...currentPairs };
+    // Remove existing assignment of this right option if already paired elsewhere (1-to-1 standard)
+    for (const key of Object.keys(next)) {
+      if (next[key] === rightText) {
+        delete next[key];
+      }
+    }
+    next[leftText] = rightText;
+    onChange(next);
+    setSelectedLeft(null);
+    setSelectedRight(null);
+  };
+
+  const unlinkPair = (leftText: string) => {
+    const next = { ...currentPairs };
+    delete next[leftText];
+    onChange(next);
+    if (selectedLeft === leftText) setSelectedLeft(null);
+  };
+
+  const clearAll = () => {
+    onChange({});
+    setSelectedLeft(null);
+    setSelectedRight(null);
+  };
+
+  const handleLeftClick = (leftText: string) => {
+    if (selectedRight) {
+      linkPair(leftText, selectedRight);
+    } else if (selectedLeft === leftText) {
+      setSelectedLeft(null);
+    } else {
+      setSelectedLeft(leftText);
+    }
+  };
+
+  const handleRightClick = (rightText: string) => {
+    if (selectedLeft) {
+      linkPair(selectedLeft, rightText);
+    } else if (selectedRight === rightText) {
+      setSelectedRight(null);
+    } else {
+      setSelectedRight(rightText);
+    }
+  };
+
+  const handleDragStartRight = (e: React.DragEvent, rightText: string) => {
+    e.dataTransfer.setData('text/plain', rightText);
+    e.dataTransfer.effectAllowed = 'copyMove';
+  };
+
+  const handleDragOverLeft = (e: React.DragEvent, leftText: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverLeft !== leftText) setDragOverLeft(leftText);
+  };
+
+  const handleDropOnLeft = (e: React.DragEvent, leftText: string) => {
+    e.preventDefault();
+    const rightText = e.dataTransfer.getData('text/plain');
+    if (rightText) {
+      linkPair(leftText, rightText);
+    }
+    setDragOverLeft(null);
+  };
+
+  return (
+    <div className="space-y-4 ml-0 sm:ml-11">
+      {/* Header and counter */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-border/50 text-xs">
+        <div>
+          <p className="text-xs font-semibold text-foreground">Match each item in Column A with its corresponding match in Column B</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">Click an item in Column A, then click its match in Column B (or drag and drop).</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+            matchedCount === totalCount && totalCount > 0
+              ? 'bg-green-500/10 text-green-600 border-green-500/20'
+              : 'bg-muted text-muted-foreground border-border'
+          }`}>
+            {matchedCount === totalCount && totalCount > 0 ? '✓ All Matched' : `${matchedCount} / ${totalCount} matched`}
+          </span>
+          {matchedCount > 0 && (
+            <button
+              type="button"
+              onClick={clearAll}
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Clear Matches
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        {/* Column A */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+            <span>Column A (Premises)</span>
+            {selectedLeft && <span className="text-[11px] text-primary lowercase font-normal animate-pulse">select match in Column B…</span>}
+          </div>
+
+          <div className="space-y-2.5">
+            {pairs.map((pair, idx) => {
+              const matchedChoice = currentPairs[pair.left_text];
+              const isSelected = selectedLeft === pair.left_text;
+              const isDragOver = dragOverLeft === pair.left_text;
+
+              return (
+                <div
+                  key={pair.id || idx}
+                  onDragOver={e => handleDragOverLeft(e, pair.left_text)}
+                  onDragLeave={() => setDragOverLeft(null)}
+                  onDrop={e => handleDropOnLeft(e, pair.left_text)}
+                  className={`p-3.5 rounded-xl border transition-all ${
+                    isSelected
+                      ? 'border-primary ring-2 ring-primary/30 bg-primary/5 shadow-xs'
+                      : isDragOver
+                      ? 'border-primary border-dashed bg-primary/10 ring-2 ring-primary/20 scale-[1.01]'
+                      : matchedChoice
+                      ? 'border-primary/30 bg-card'
+                      : 'border-border bg-card hover:border-primary/30'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center shrink-0">
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      <span className="text-sm font-semibold text-foreground">{pair.left_text}</span>
+                    </div>
+
+                    {!matchedChoice && (
+                      <button
+                        type="button"
+                        onClick={() => handleLeftClick(pair.left_text)}
+                        className={`text-[11px] px-2.5 py-0.5 rounded-md font-medium transition-colors cursor-pointer ${
+                          isSelected
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
+                        }`}
+                      >
+                        {isSelected ? 'Selecting…' : 'Select'}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Matched chip or empty drop slot */}
+                  {matchedChoice ? (
+                    <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-primary/5 border border-primary/20 text-xs">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Link2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="font-medium text-foreground truncate">{matchedChoice}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={e => {
+                          e.stopPropagation();
+                          unlinkPair(pair.left_text);
+                        }}
+                        aria-label={`Unlink match for ${pair.left_text}`}
+                        title="Remove match"
+                        className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0 cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleLeftClick(pair.left_text)}
+                      className={`w-full text-left p-2.5 rounded-lg border border-dashed text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+                        isSelected
+                          ? 'border-primary bg-primary/10 text-primary font-medium animate-pulse'
+                          : 'border-border/80 text-muted-foreground hover:border-primary/50 hover:text-foreground hover:bg-muted/40'
+                      }`}
+                    >
+                      {isSelected ? '👉 Click match in Column B' : '+ Click or drop match here'}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Column B */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+            <span>Column B (Definitions / Options)</span>
+            {selectedRight && <span className="text-[11px] text-primary lowercase font-normal animate-pulse">select premise in Column A…</span>}
+          </div>
+
+          <div className="space-y-2.5">
+            {columnBOptions.map((optText, idx) => {
+              const matchedLeftKey = Object.keys(currentPairs).find(k => currentPairs[k] === optText);
+              const isSelected = selectedRight === optText;
+
+              return (
+                <div
+                  key={idx}
+                  draggable
+                  onDragStart={e => handleDragStartRight(e, optText)}
+                  onClick={() => handleRightClick(optText)}
+                  className={`group p-3.5 rounded-xl border transition-all cursor-pointer select-none ${
+                    isSelected
+                      ? 'border-primary ring-2 ring-primary/30 bg-primary/5 shadow-xs'
+                      : matchedLeftKey
+                      ? 'border-border/60 bg-muted/40 opacity-80 hover:opacity-100'
+                      : 'border-border bg-card hover:border-primary/40 hover:bg-primary/5 shadow-xs'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                      <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 group-hover:text-foreground mt-0.5">
+                        <GripVertical className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-sm font-medium text-foreground leading-snug">{optText}</span>
+                    </div>
+
+                    {matchedLeftKey ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary shrink-0 border border-primary/20">
+                        <Check className="w-3 h-3" />
+                        Matched
+                      </span>
+                    ) : (
+                      <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium shrink-0 transition-colors ${
+                        isSelected ? 'bg-primary text-primary-foreground' : 'text-muted-foreground opacity-0 group-hover:opacity-100 bg-muted'
+                      }`}>
+                        {isSelected ? 'Selected' : 'Match'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, certificateExamId, onComplete, previewMode }: AssessmentViewerProps) {
@@ -189,7 +638,10 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  const finalAnswers: Record<string, any> = {};
  for (const q of assessment.questions) {
- const raw = answers[q.id];
+ let raw = answers[q.id];
+ if (raw === undefined && q.type === 'ordering' && q.ordering_items?.length) {
+ raw = q.ordering_items.map(item => String(item.id));
+ }
  if (raw !== undefined) finalAnswers[q.id] = formatAnswerForApi(q, raw);
  }
 
@@ -309,6 +761,52 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
     <div className="mt-2.5 p-3 rounded-lg bg-card border border-border text-xs">
       <span className="text-muted-foreground font-semibold block mb-1">Your Submission:</span>
       <p className="text-foreground whitespace-pre-wrap">{ans.response_text}</p>
+    </div>
+  )}
+
+  {q.type === 'ordering' && q.ordering_items && (
+    <div className="mt-2.5 p-3 rounded-lg bg-card border border-border text-xs space-y-2">
+      <span className="text-muted-foreground font-semibold block">Your Submitted Sequence:</span>
+      <div className="space-y-1.5">
+        {(() => {
+          const submittedOrder = ans.response_json?.order as string[] | undefined;
+          const itemsToDisplay = submittedOrder && submittedOrder.length > 0
+            ? submittedOrder.map(id => q.ordering_items.find(item => String(item.id) === String(id))).filter(Boolean) as typeof q.ordering_items
+            : q.ordering_items;
+          return itemsToDisplay.map((item, idx) => (
+            <div key={item.id} className="flex items-center gap-2 py-1 px-2.5 rounded bg-muted/60 text-foreground">
+              <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center shrink-0 border border-primary/20">{idx + 1}</span>
+              <span className="flex-1 font-medium">{item.text}</span>
+            </div>
+          ));
+        })()}
+      </div>
+    </div>
+  )}
+
+  {q.type === 'matching' && q.matching_pairs && (
+    <div className="mt-2.5 p-3 rounded-lg bg-card border border-border text-xs space-y-2">
+      <span className="text-muted-foreground font-semibold block">Your Matched Pairs:</span>
+      <div className="space-y-1.5">
+        {(() => {
+          const submittedPairs = (ans.response_json?.pairs || {}) as Record<string, string>;
+          return q.matching_pairs.map(p => {
+            const userMatch = submittedPairs[p.left_text];
+            const isMatchCorrect = userMatch === p.right_text;
+            return (
+              <div key={p.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-1.5 px-2.5 rounded bg-muted/60 text-foreground">
+                <span className="font-semibold text-foreground">{p.left_text}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-muted-foreground hidden sm:inline">→</span>
+                  <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${userMatch ? (isMatchCorrect ? 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-300') : 'text-muted-foreground italic'}`}>
+                    {userMatch || '(No match selected)'}
+                  </span>
+                </div>
+              </div>
+            );
+          });
+        })()}
+      </div>
     </div>
   )}
 
@@ -474,41 +972,20 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  {/* Matching */}
  {currentQ.type === 'matching' && currentQ.matching_pairs && (
- <div className="ml-11 space-y-3">
- <p className="text-xs text-muted-foreground">Match each term to its definition</p>
- {currentQ.matching_pairs.map((pair, i) => {
- const rightOptions = currentQ.matching_pairs!.map(p => p.right_text);
- return (
- <div key={pair.id} className="flex items-center gap-3">
- <div className="flex-1 bg-muted px-4 py-2 rounded-xl border border-border text-sm text-foreground">{pair.left_text}</div>
- <span className="text-muted-foreground">→</span>
- <select className="flex-1 bg-card px-3 py-2 rounded-xl border border-border text-sm focus:ring-2 focus:ring-primary outline-none"
- value={(answers[currentQ.id] as Record<string, string>)?.[pair.left_text] || ''}
- onChange={e => handleMatchingPair(currentQ.id, pair.left_text, e.target.value)}>
- <option value="">Select match…</option>
- {rightOptions.map((opt, j) => <option key={j} value={opt}>{opt}</option>)}
- </select>
- </div>
- );
- })}
- </div>
+   <MatchingQuestionInput
+     question={currentQ}
+     value={(answers[currentQ.id] as Record<string, string>) || {}}
+     onChange={pairs => handleAnswer(currentQ.id, pairs)}
+   />
  )}
 
  {/* Ordering */}
  {currentQ.type === 'ordering' && currentQ.ordering_items && (
- <div className="ml-11 space-y-2">
- <p className="text-xs text-muted-foreground">Arrange the items in the correct order by selecting their position</p>
- {currentQ.ordering_items.slice().sort((a, b) => {
- const ordArr = answers[currentQ.id] as string[] | undefined;
- if (!ordArr) return 0;
- return ordArr.indexOf(a.id) - ordArr.indexOf(b.id);
- }).map((item, i) => (
- <div key={item.id} className="flex items-center gap-3 p-3 bg-muted rounded-xl border border-border">
- <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</span>
- <span className="text-sm text-foreground flex-1">{item.text}</span>
- </div>
- ))}
- </div>
+   <OrderingQuestionInput
+     question={currentQ}
+     value={answers[currentQ.id] as string[] | undefined}
+     onChange={newOrderIds => handleAnswer(currentQ.id, newOrderIds)}
+   />
  )}
  </div>
 
@@ -517,10 +994,19 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  <div className="px-6 pb-6 flex justify-between items-center gap-3">
  <Button variant="outline" onClick={() => navigate(currentIndex - 1)} disabled={currentIndex === 0}>← Previous</Button>
  <div className="flex gap-1">
- {questions.map((_, i) => (
- <button key={i} onClick={() => navigate(i)}
- className={`w-2 h-2 rounded-full transition-all ${i === currentIndex ? 'bg-primary scale-125' : answers[questions[i].id] !== undefined ? 'bg-primary/40' : 'bg-gray-300'}`} />
- ))}
+ {questions.map((qItem, i) => {
+   const raw = answers[qItem.id];
+   const isAnswered = raw !== undefined && raw !== null && (
+     Array.isArray(raw) ? raw.length > 0 :
+     typeof raw === 'object' ? Object.keys(raw).length > 0 :
+     typeof raw === 'string' ? raw.trim().length > 0 :
+     Boolean(raw)
+   );
+   return (
+     <button key={i} onClick={() => navigate(i)}
+       className={`w-2 h-2 rounded-full transition-all ${i === currentIndex ? 'bg-primary scale-125' : isAnswered ? 'bg-primary/40' : 'bg-gray-300'}`} />
+   );
+ })}
  </div>
  {currentIndex < questions.length - 1 ? (
  <Button variant="primary" onClick={() => navigate(currentIndex + 1)}>Next →</Button>

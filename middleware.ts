@@ -17,6 +17,13 @@ function getLocale(request: NextRequest): string {
 }
 
 export function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || '';
+  if (host.startsWith('0.0.0.0')) {
+    const url = request.nextUrl.clone();
+    url.hostname = 'localhost';
+    return NextResponse.redirect(url);
+  }
+
   const { pathname } = request.nextUrl;
 
   const isApiRoute = pathname.startsWith('/api');

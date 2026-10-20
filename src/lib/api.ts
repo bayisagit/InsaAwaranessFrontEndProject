@@ -1,9 +1,31 @@
+export function getApiBaseUrl(): string {
+    // Server-side (Node.js SSR in Docker container or local server)
+    if (typeof window === 'undefined') {
+        return (
+            process.env.INTERNAL_API_URL ||
+            process.env.NEXT_PUBLIC_API_BASE_URL ||
+            process.env.NEXT_PUBLIC_API_URL ||
+            'http://backend:8000'
+        );
+    }
+    // Client-side (Browser)
+    return (
+        process.env.NEXT_PUBLIC_API_BASE_URL ||
+        process.env.NEXT_PUBLIC_API_URL ||
+        (window.location.hostname === 'localhost'
+            ? 'http://localhost:8000'
+            : 'https://insaawaranessbackendproject.onrender.com')
+    );
+}
+
 export const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    (typeof window !== 'undefined' && window.location.hostname === 'localhost'
-        ? 'http://localhost:8000'
-        : 'https://insaawaranessbackendproject.onrender.com');
+    (typeof window === 'undefined'
+        ? (process.env.INTERNAL_API_URL || 'http://backend:8000')
+        : (process.env.NEXT_PUBLIC_API_BASE_URL ||
+           process.env.NEXT_PUBLIC_API_URL ||
+           (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+               ? 'http://localhost:8000'
+               : 'https://insaawaranessbackendproject.onrender.com')));
 // Types
 
 // Login response — matches POST /api/auth/login/ 200 OK
@@ -674,11 +696,12 @@ async function executeApiFetch<T = any>(
             headers,
         };
 
-        let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        const baseUrl = getApiBaseUrl();
+        let response = await fetch(`${baseUrl}${endpoint}`, config);
 
         // Refresh Token Logic
         if (response.status === 401 && tokens?.refresh && endpoint !== '/api/auth/refresh/') {
-            const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh/`, {
+            const refreshResponse = await fetch(`${baseUrl}/api/auth/refresh/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: tokens.refresh }),
@@ -691,7 +714,7 @@ async function executeApiFetch<T = any>(
                 // Retry original request with new access token
                 headers.set('Authorization', `Bearer ${refreshData.access}`);
                 config.headers = headers;
-                response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                response = await fetch(`${baseUrl}${endpoint}`, config);
             } else {
                 // Refresh failed, user needs to login again
                 clearTokens();
@@ -1251,10 +1274,14 @@ export const confirmPasswordReset = (uid: string, token: string, newPassword: st
     });
 
 // Social auth — POST /api/auth/social/google/
-export const loginWithGoogle = (accessToken: string) =>
+export const loginWithGoogle = (tokenOrCredential: string) =>
     apiFetch<LoginResponse>('/api/auth/social/google/', {
         method: 'POST',
-        body: JSON.stringify({ access_token: accessToken }),
+        body: JSON.stringify({
+            access_token: tokenOrCredential,
+            credential: tokenOrCredential,
+            id_token: tokenOrCredential,
+        }),
     });
 
 // Social auth — POST /api/auth/social/github/

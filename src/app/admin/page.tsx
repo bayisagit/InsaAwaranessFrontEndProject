@@ -549,11 +549,13 @@ export default function AdminDashboard() {
                                 { href: '/admin/audit-logs', icon: <ShieldAlert className="size-5 text-red-500 mb-1" />, label: t('auditLogs') },
                                 { href: '/admin/awareness-tools', icon: <ShieldCheck className="size-5 text-teal-500 mb-1" />, label: t('awarenessTools') },
                             ].map(item => (
-                                <Link key={item.href} href={item.href}>
-                                    <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 items-center justify-center hover:border-primary hover:bg-primary/5 w-full">
-                                        {item.icon}
-                                        <span className="text-xs">{item.label}</span>
-                                    </Button>
+                                <Link key={item.href} href={item.href} className="cursor-pointer block">
+                                    <div className="h-auto py-4 px-2 flex flex-col gap-2 items-center justify-center rounded-xl border border-border bg-card hover:border-primary/60 hover:bg-primary/5 hover:shadow-md hover:-translate-y-1 transition-all duration-200 ease-in-out cursor-pointer w-full group select-none">
+                                        <div className="group-hover:scale-110 transition-transform duration-200">
+                                            {item.icon}
+                                        </div>
+                                        <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors text-center">{item.label}</span>
+                                    </div>
                                 </Link>
                             ))}
                         </div>

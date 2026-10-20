@@ -5,6 +5,31 @@ import { AboutSection } from '@/components/sections/AboutSection';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getPublicSettings } from '@/lib/api';
+import { ShieldAlert, FileCheck, Layers, Package } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
+
+function renderHeroTitle(title: string) {
+  if (!title.includes('<highlight>')) {
+    return <span>{title}</span>;
+  }
+  const parts = title.split(/(<highlight>[\s\S]*?<\/highlight>)/g);
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith('<highlight>') && part.endsWith('</highlight>')) {
+          const content = part.slice(11, -12);
+          return (
+            <span key={index} className="text-primary">
+              {content}
+            </span>
+          );
+        }
+        return <React.Fragment key={index}>{part}</React.Fragment>;
+      })}
+    </>
+  );
+}
 
 export default async function Home() {
   const t = await getTranslations('landing');
@@ -41,7 +66,7 @@ export default async function Home() {
 
         <h1 className="relative z-10 mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-6xl max-w-3xl">
           {cms['hero_title']?.[locale] ? (
-            <span>{cms['hero_title'][locale]}</span>
+            renderHeroTitle(cms['hero_title'][locale])
           ) : (
             t.rich('heroTitle', {
               highlight: (chunks) => <span className="text-primary">{chunks}</span>
@@ -159,22 +184,73 @@ export default async function Home() {
           </div>
 
           <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+            {/* 1. Incident Response Playbooks */}
+            <Link 
+              href="/resources?category=Incident+Response" 
+              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-200 shrink-0">
+                  <ShieldAlert className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                  {tCommon('learnMore')} &rarr;
+                </span>
+              </div>
               <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{t('incidentPlaybooks')}</h4>
               <p className="text-sm text-muted-foreground line-clamp-2">{t('incidentPlaybooksDesc')}</p>
-            </div>
-            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+            </Link>
+
+            {/* 2. Compliance Frameworks */}
+            <Link 
+              href="/resources?category=Compliance" 
+              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 shrink-0">
+                  <FileCheck className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                  {tCommon('learnMore')} &rarr;
+                </span>
+              </div>
               <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{t('complianceFrameworks')}</h4>
               <p className="text-sm text-muted-foreground line-clamp-2">{t('complianceFrameworksDesc')}</p>
-            </div>
-            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+            </Link>
+
+            {/* 3. Threat Modeling Templates */}
+            <Link 
+              href="/resources?category=Threat+Modeling" 
+              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-200 shrink-0">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                  {tCommon('learnMore')} &rarr;
+                </span>
+              </div>
               <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{t('threatModeling')}</h4>
               <p className="text-sm text-muted-foreground line-clamp-2">{t('threatModelingDesc')}</p>
-            </div>
-            <div className="bg-muted rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/30 transition-all group cursor-pointer">
+            </Link>
+
+            {/* 4. Security Awareness Kits */}
+            <Link 
+              href="/resources?category=Security+Awareness" 
+              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-200 shrink-0">
+                  <Package className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                  {tCommon('learnMore')} &rarr;
+                </span>
+              </div>
               <h4 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{t('securityKits')}</h4>
               <p className="text-sm text-muted-foreground line-clamp-2">{t('securityKitsDesc')}</p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -186,7 +262,7 @@ export default async function Home() {
             <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
               <span className="w-1.5 h-6 bg-primary rounded-full"></span> {t('recentThreatAlerts')}
             </h2>
-            <Link href="/dashboard" className="text-sm font-semibold text-muted-foreground hover:text-foreground" aria-label="View all threat alerts">
+            <Link href="/alerts" className="text-sm font-semibold text-muted-foreground hover:text-foreground" aria-label="View all threat alerts">
               {t('viewAllAlerts')} &rarr;
             </Link>
           </div>
@@ -199,7 +275,7 @@ export default async function Home() {
               </div>
               <h4 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">{t('alertRansomware')}</h4>
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{t('alertRansomwareDesc')}</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-foreground underline group-hover:text-primary transition-colors" aria-label="Read details about Global Ransomware Campaign alert">
+              <Link href="/alerts" className="text-xs font-semibold text-foreground underline group-hover:text-primary transition-colors" aria-label="Read details about Global Ransomware Campaign alert">
                 {t('readDetails')} &rarr;
               </Link>
             </div>
@@ -211,7 +287,7 @@ export default async function Home() {
               </div>
               <h4 className="font-semibold text-foreground mb-2">{t('alertPhishing')}</h4>
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{t('alertPhishingDesc')}</p>
-              <Link href="/dashboard" className="text-xs font-semibold text-foreground underline" aria-label="Read details about Tax Season Phishing alert">
+              <Link href="/alerts" className="text-xs font-semibold text-foreground underline" aria-label="Read details about Tax Season Phishing alert">
                 {t('readDetails')} &rarr;
               </Link>
             </div>
