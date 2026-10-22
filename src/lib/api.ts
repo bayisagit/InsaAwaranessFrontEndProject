@@ -494,13 +494,90 @@ export interface NotificationData {
 export interface AuditLog {
     id: string;
     actor: string | null;
-    actor_email: string | null;
+    actor_name?: string | null;
+    actor_email?: string | null;
+    actor_role?: string | null;
+    actor_avatar?: string | null;
+    target_user?: string | null;
+    target_user_name?: string | null;
+    target_user_email?: string | null;
+    target_user_role?: string | null;
     action: string;
+    category: string;
+    category_display?: string;
+    description: string;
+    effective_description?: string;
+    status: 'success' | 'warning' | 'error';
     app_label: string;
     model: string;
     object_id: string;
     changes: Record<string, any>;
+    ip_address?: string | null;
+    user_agent?: string;
+    device_info?: string;
+    location?: string;
+    metadata?: Record<string, any>;
     created_at: string;
+    created_at_formatted?: string;
+    time_ago?: string;
+}
+
+export interface AuditLogStats {
+    total: number;
+    success: number;
+    warning: number;
+    error: number;
+    categories: Record<string, number>;
+}
+
+export interface UserAdminDetail {
+    id: string;
+    short_id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+    role_display?: string;
+    is_active: boolean;
+    date_joined: string;
+    date_joined_formatted?: string;
+    signup_method: string;
+    signup_method_display?: string;
+    email_verified: boolean;
+    must_change_password: boolean;
+    preferred_language: string;
+    organization_id?: string | null;
+    organization_name?: string | null;
+    profile_photo?: string | null;
+    background_profile?: {
+        phone_number?: string;
+        nationality?: string;
+        nationality_display?: string;
+        region?: string;
+        region_display?: string;
+        gender?: string;
+        gender_display?: string;
+        education_level?: string;
+        education_level_display?: string;
+        profession?: string;
+        profession_display?: string;
+        employment_status?: string;
+        employment_status_display?: string;
+    } | null;
+    stats: {
+        courses_enrolled: number;
+        courses_completed: number;
+        assessments_taken: number;
+        total_activities: number;
+    };
+    last_login_metadata?: {
+        timestamp: string;
+        timestamp_formatted: string;
+        ip_address: string;
+        device_info: string;
+        location: string;
+        auth_method: string;
+    } | null;
 }
 
 // Lesson Progress — matches GET /api/v1/lesson-progress/
@@ -1266,12 +1343,29 @@ export const requestPasswordReset = (email: string, cf_turnstile_response?: stri
         body: JSON.stringify({ email, cf_turnstile_response }),
     });
 
-// Password reset confirm — POST /api/auth/password-reset/confirm/
-export const confirmPasswordReset = (uid: string, token: string, newPassword: string) =>
-    apiFetch<{ detail: string }>('/api/auth/password-reset/confirm/', {
+// Password reset verify 6-digit code — POST /api/auth/password-reset/verify-code/
+export const verifyPasswordResetCode = (email: string, code: string) =>
+    apiFetch<{ detail: string; valid: boolean }>('/api/auth/password-reset/verify-code/', {
         method: 'POST',
-        body: JSON.stringify({ uid, token, new_password: newPassword }),
+        body: JSON.stringify({ email, code }),
     });
+
+// Password reset confirm — POST /api/auth/password-reset/confirm/
+export const confirmPasswordReset = (
+    uidOrEmail: string,
+    tokenOrCode: string,
+    newPassword: string
+) => {
+    const isCode = /^\d{6}$/.test(tokenOrCode.trim()) || uidOrEmail.includes('@');
+    const payload = isCode
+        ? { email: uidOrEmail, code: tokenOrCode, new_password: newPassword }
+        : { uid: uidOrEmail, token: tokenOrCode, new_password: newPassword };
+    return apiFetch<{ detail: string }>('/api/auth/password-reset/confirm/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+};
+
 
 // Social auth — POST /api/auth/social/google/
 export const loginWithGoogle = (tokenOrCredential: string) =>
@@ -1579,6 +1673,24 @@ export const getAuditLogs = (params?: Record<string, any>) => {
 export const getAuditLog = (id: string) =>
     apiFetch<AuditLog>(`/api/v1/audit-logs/${id}/`);
 
+export const getAuditLogStats = (userId?: string) => {
+    const query = userId ? `?user_id=${encodeURIComponent(userId)}` : '';
+    return apiFetch<AuditLogStats>(`/api/v1/audit-logs/stats/${query}`);
+};
+
+export const getUserAdminDetail = (id: string) =>
+    apiFetch<UserAdminDetail>(`/api/auth/users/${id}/details/`);
+
+export const toggleUserStatus = (id: string) =>
+    apiFetch<{ detail: string; is_active: boolean }>(`/api/auth/users/${id}/toggle-status/`, {
+        method: 'POST',
+    });
+
+export const resetUserPasswordAdmin = (id: string) =>
+    apiFetch<{ detail: string; temporary_password?: string }>(`/api/auth/users/${id}/reset-password/`, {
+        method: 'POST',
+    });
+
 // ──────────────────────────────────────────────────────────
 // Analytics Dashboard
 // ──────────────────────────────────────────────────────────
@@ -1611,10 +1723,21 @@ export const getCourseEnrollmentDemographics = (courseId: string) =>
 // ──────────────────────────────────────────────────────────
 // Email Verification
 // ──────────────────────────────────────────────────────────
-export const verifyEmail = (uid: string, token: string) =>
-    apiFetch<{ detail: string }>('/api/auth/verify-email/', {
+export const verifyEmail = (uidOrEmail: string, tokenOrCode: string) => {
+    const isCode = /^\d{6}$/.test(tokenOrCode.trim()) || uidOrEmail.includes('@');
+    const payload = isCode
+        ? { email: uidOrEmail, code: tokenOrCode, otp: tokenOrCode }
+        : { uid: uidOrEmail, token: tokenOrCode };
+    return apiFetch<{ detail: string }>('/api/auth/verify-email/', {
         method: 'POST',
-        body: JSON.stringify({ uid, token }),
+        body: JSON.stringify(payload),
+    });
+};
+
+export const verifyEmailOTP = (email: string, code: string) =>
+    apiFetch<{ detail: string }>('/api/auth/verify-otp/', {
+        method: 'POST',
+        body: JSON.stringify({ email, code, otp: code }),
     });
 
 export const resendVerificationEmail = (email: string) =>
@@ -1622,6 +1745,7 @@ export const resendVerificationEmail = (email: string) =>
         method: 'POST',
         body: JSON.stringify({ email }),
     });
+
 
 // ──────────────────────────────────────────────────────────
 // Notifications — convenience wrappers

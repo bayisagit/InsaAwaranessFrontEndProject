@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { registerUser, loginWithGoogle, setTokens, resendVerificationEmail } from '@/lib/api';
+import { OtpInput } from '@/components/OtpInput';
+import { registerUser, loginWithGoogle, setTokens, resendVerificationEmail, verifyEmailOTP } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { useGoogleLogin, GoogleLogin } from '@react-oauth/google';
@@ -54,6 +55,10 @@ export default function SignupPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [registeredEmail, setRegisteredEmail] = useState('');
+    const [otpCode, setOtpCode] = useState('');
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
+    const [countdown, setCountdown] = useState(60);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [preferredLanguage, setPreferredLanguage] = useState('en');
@@ -198,57 +203,160 @@ export default function SignupPage() {
         }
 
         setRegisteredEmail(email.trim());
-        toast.success(t('emailRegistered'));
+        setCountdown(60);
+        setOtpCode('');
+        toast.success('Registration successful! Please check your email for the 6-digit code.');
+    };
+
+    useEffect(() => {
+        if (!registeredEmail || countdown <= 0) return;
+        const timer = setInterval(() => {
+            setCountdown((prev) => prev - 1);
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [registeredEmail, countdown]);
+
+    const handleVerifyOtp = async (codeToVerify?: string) => {
+        const code = (codeToVerify || otpCode).trim();
+        if (code.length !== 6) {
+            toast.error('Please enter all 6 digits of the verification code.');
+            return;
+        }
+
+        setIsVerifying(true);
+        const { error: e } = await verifyEmailOTP(registeredEmail, code);
+        setIsVerifying(false);
+
+        if (e) {
+            toast.error(e);
+        } else {
+            toast.success('Email verified successfully!');
+            setIsVerified(true);
+            setTimeout(() => {
+                router.push('/login');
+            }, 1800);
+        }
     };
 
     const handleResend = async () => {
         setIsResending(true);
         const { error: e } = await resendVerificationEmail(registeredEmail);
-        if (e) toast.error(e);
-        else toast.success('Verification email resent.');
         setIsResending(false);
+        if (e) {
+            toast.error(e);
+        } else {
+            toast.success('New verification code sent to your email.');
+            setCountdown(60);
+            setOtpCode('');
+        }
     };
 
     if (registeredEmail) {
         return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
-                <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
-                    <div className="flex justify-center mb-6">
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                            <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
+            <div className="min-h-[85vh] flex flex-col items-center justify-center px-4 py-16 bg-muted">
+                <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-3xl shadow-sm border border-border text-center">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-2">
+                        {isVerified ? 'Email Verified!' : 'Enter security code'}
+                    </h1>
+                    <p className="text-sm text-muted-foreground mb-6">
+                        {isVerified
+                            ? 'Your account is active. Redirecting to sign in...'
+                            : `We sent a 6-digit code to ${registeredEmail}`}
+                    </p>
+
+                    {isVerified ? (
+                        <div className="space-y-6 py-4">
+                            <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto">
+                                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <Button
+                                variant="secondary"
+                                fullWidth
+                                className="py-3 rounded-xl font-bold cursor-pointer"
+                                onClick={() => router.push('/login')}
+                            >
+                                Continue to Sign In &rarr;
+                            </Button>
                         </div>
-                    </div>
-                    <h1 className="text-2xl font-bold text-foreground mb-3">{t('verifyEmail')}</h1>
-                    <p className="text-sm text-muted-foreground mb-2">
-                        {t('verifyEmailSent')}
-                    </p>
-                    <p className="text-sm font-bold text-foreground bg-muted px-4 py-2 rounded-xl mb-6 border border-border">
-                        {registeredEmail}
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
-                        Click the link in the email to activate your account. Your account will remain inactive until you verify.
-                    </p>
-                    <button
-                        onClick={handleResend}
-                        disabled={isResending}
-                        className="text-sm font-semibold text-primary hover:underline disabled:opacity-50 cursor-pointer transition-colors duration-200"
-                    >
-                        {isResending ? t('resending') : t('resendVerification')}
-                    </button>
-                    <div className="mt-8 pt-6 border-t border-border">
-                        <p className="text-sm text-muted-foreground">
-                            {t('alreadyVerified')}{' '}
-                            <Link href="/login" className="font-semibold text-primary hover:underline">
-                                {t('signIn')}
-                            </Link>
-                        </p>
-                    </div>
+                    ) : (
+                        <>
+                            {/* Alert Banner matching Screenshot 2 */}
+                            <div className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 p-3.5 rounded-2xl text-xs sm:text-sm border border-emerald-200 dark:border-emerald-800 mb-6 flex items-center gap-2.5 text-left">
+                                <div className="w-5 h-5 rounded-full border-2 border-emerald-600 dark:border-emerald-400 flex items-center justify-center shrink-0">
+                                    <svg className="w-3 h-3 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <span className="font-medium">A 6-digit verification code has been sent to your email.</span>
+                            </div>
+
+                            <div className="text-left mb-1">
+                                <label className="text-xs font-semibold text-muted-foreground block text-center mb-1">
+                                    6-Digit Verification Code
+                                </label>
+                                <OtpInput
+                                    value={otpCode}
+                                    onChange={setOtpCode}
+                                    onComplete={(code) => handleVerifyOtp(code)}
+                                    disabled={isVerifying}
+                                />
+                            </div>
+
+                            <Button
+                                variant="secondary"
+                                fullWidth
+                                className="py-3.5 rounded-xl font-bold mt-4 cursor-pointer"
+                                disabled={otpCode.length !== 6 || isVerifying}
+                                onClick={() => handleVerifyOtp(otpCode)}
+                            >
+                                {isVerifying ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                        </svg>
+                                        Verifying Code...
+                                    </span>
+                                ) : (
+                                    'Continue \u2192'
+                                )}
+                            </Button>
+
+                            {/* Footer links matching Screenshot 2 */}
+                            <div className="flex items-center justify-between text-xs sm:text-sm pt-5 mt-4 border-t border-border">
+                                <button
+                                    type="button"
+                                    onClick={() => { setRegisteredEmail(''); setOtpCode(''); }}
+                                    className="text-muted-foreground hover:text-foreground font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                                >
+                                    &larr; Change email
+                                </button>
+
+                                {countdown > 0 ? (
+                                    <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                                        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                        Resend in {countdown}s
+                                    </span>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={handleResend}
+                                        disabled={isResending}
+                                        className="text-primary font-bold hover:underline cursor-pointer"
+                                    >
+                                        {isResending ? 'Resending...' : 'Resend code'}
+                                    </button>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         );
     }
+
 
     return (
         <div className="flex min-h-screen bg-card">

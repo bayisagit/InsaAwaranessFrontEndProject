@@ -471,11 +471,34 @@ export default function AdminUsersPage() {
  </tr>
  ) : (
  users.filter(u => u.id !== user?.id && (!roleFilter || u.role === roleFilter)).map((u) => (
-  <tr key={u.id} className="hover:bg-muted/50 transition-colors">
+  <tr 
+    key={u.id} 
+    onClick={() => {
+      if (user?.role === 'super_admin') {
+        router.push(`/admin/users/${u.id}`);
+      }
+    }}
+    className={`transition-colors ${user?.role === 'super_admin' ? 'cursor-pointer hover:bg-primary/[0.04] dark:hover:bg-primary/[0.06]' : 'hover:bg-muted/50'}`}
+    title={user?.role === 'super_admin' ? 'Click to view user activity & audit logs' : undefined}
+  >
   <td className="px-4 py-3.5 font-medium text-foreground whitespace-nowrap">
-  {u.first_name} {u.last_name}
+    <div className="flex items-center gap-2.5">
+      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs uppercase shrink-0">
+        {(u.first_name?.[0] || u.email[0] || 'U')}
+      </div>
+      <div>
+        <span className={`font-semibold ${user?.role === 'super_admin' ? 'text-primary hover:underline' : 'text-foreground'}`}>
+          {u.first_name} {u.last_name}
+        </span>
+        {user?.role === 'super_admin' && (
+          <span className="block text-[11px] text-muted-foreground font-mono">
+            #{u.id.slice(0, 8)}
+          </span>
+        )}
+      </div>
+    </div>
   </td>
-  <td className="px-4 py-3.5 text-foreground/80">{u.email}</td>
+  <td className="px-4 py-3.5 text-foreground/80 font-mono text-xs">{u.email}</td>
   <td className="px-4 py-3.5 whitespace-nowrap">
   <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap tracking-wide capitalize ${getRoleBadgeStyle(u.role)}`}>
   {getRoleLabel(u.role)}
@@ -491,10 +514,40 @@ export default function AdminUsersPage() {
   {u.is_active ? t('active') : t('inactive')}
   </span>
   </td>
-  <td className="px-4 py-3.5 text-right whitespace-nowrap">
+  <td className="px-4 py-3.5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
   <div className="flex flex-wrap items-center justify-end gap-2 min-w-fit">
-  <button onClick={() => openModal(u)} className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('edit')}</button>
-  <button onClick={() => handleDeleteUser(u.id)} className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer">{t('delete')}</button>
+  {user?.role === 'super_admin' && (
+    <button 
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(`/admin/users/${u.id}`);
+      }} 
+      className="px-2.5 py-1 bg-muted hover:bg-muted/80 text-foreground border border-border rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+    >
+      Activity
+    </button>
+  )}
+  <button 
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
+      openModal(u);
+    }} 
+    className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+  >
+    {t('edit')}
+  </button>
+  <button 
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
+      handleDeleteUser(u.id);
+    }} 
+    className="px-2.5 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+  >
+    {t('delete')}
+  </button>
   </div>
   </td>
   </tr>
