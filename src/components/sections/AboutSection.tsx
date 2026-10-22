@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { useTranslations } from 'next-intl';
+import { GraduationCap, Building2, Landmark, CheckCircle2, ArrowRight, ShieldCheck, BookOpen, AlertTriangle } from 'lucide-react';
 
 interface AboutSectionProps {
     variant?: 'full' | 'home';
@@ -104,7 +105,7 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
                 <div className="space-y-6">
                     <div className="flex items-start gap-4 p-6 rounded-2xl bg-red-500/5 dark:bg-red-500/10 border border-red-500/20">
                         <div className="w-10 h-10 rounded-full bg-red-500/10 text-primary flex items-center justify-center shrink-0">
-                            &#128737;
+                            <ShieldCheck className="w-5 h-5 text-primary" />
                         </div>
                         <div>
                             <h4 className="font-semibold text-foreground mb-1">{t('proactiveDefense')}</h4>
@@ -114,7 +115,7 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
 
                     <div className="flex items-start gap-4 p-6 rounded-2xl bg-muted border border-border">
                         <div className="w-10 h-10 rounded-full bg-muted-foreground/10 text-muted-foreground flex items-center justify-center shrink-0">
-                            &#128218;
+                            <BookOpen className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <div>
                             <h4 className="font-semibold text-foreground mb-1">{t('nationalEducation')}</h4>
@@ -124,7 +125,7 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
 
                     <div className="flex items-start gap-4 p-6 rounded-2xl bg-red-500/5 dark:bg-red-500/10 border border-red-500/20">
                         <div className="w-10 h-10 rounded-full bg-red-500/10 text-primary flex items-center justify-center shrink-0">
-                            &#9888;
+                            <AlertTriangle className="w-5 h-5 text-primary" />
                         </div>
                         <div>
                             <h4 className="font-semibold text-foreground mb-1">{t('unifiedResponse')}</h4>
@@ -138,52 +139,137 @@ export function AboutSection({ variant = 'full' }: AboutSectionProps) {
             <section className="py-24 bg-muted px-6 lg:px-8 border-t border-border">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-4">{t('whoWeServe')}</h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                            {t('whoWeServeBadge')}
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-4">
+                            {t('whoWeServe')}
+                        </h2>
+                        <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                             {t('whoWeServeDesc')}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="bg-card rounded-2xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none text-center flex flex-col h-full">
-                            <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-6">
-                                &#128106;
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                        {/* 1. Citizens, Students & Families */}
+                        <div className="bg-card rounded-2xl p-8 border border-border hover:border-blue-500/40 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full group text-left">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                    <GraduationCap className="w-7 h-7" />
+                                </div>
+                                <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20">
+                                    {t('citizensFamiliesBadge')}
+                                </span>
                             </div>
-                            <h3 className="text-xl font-semibold text-foreground mb-3">{t('citizensFamilies')}</h3>
-                            <p className="text-muted-foreground text-sm flex-1 mb-8">
+
+                            <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                                {t('citizensFamilies')}
+                            </h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                                 {t('citizensFamiliesDesc')}
                             </p>
-                            <Link href="/courses" className="text-primary font-semibold text-sm hover:underline mt-auto">
-                                {t('viewCitizenPortal')} &rarr;
+
+                            <div className="space-y-2.5 pt-4 border-t border-border/60 mb-8 flex-1">
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                    <span>{t('citizensPill1')}</span>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                    <span>{t('citizensPill2')}</span>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                    <span>{t('citizensPill3')}</span>
+                                </div>
+                            </div>
+
+                            <Link href="/courses" className="mt-auto group/btn inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-blue-500/10 hover:bg-blue-600 text-blue-600 hover:text-white dark:text-blue-400 text-sm font-semibold border border-blue-500/20 transition-all duration-200">
+                                <span>{t('viewCitizenPortal')}</span>
+                                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                             </Link>
                         </div>
 
-                        <div className="bg-card rounded-2xl p-8 border-2 border-primary shadow-md shadow-black/10 dark:shadow-none text-center flex flex-col h-full relative">
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                        {/* 2. Enterprises & Organizations */}
+                        <div className="bg-card rounded-2xl p-8 border-2 border-primary shadow-lg shadow-primary/10 hover:shadow-2xl hover:shadow-primary/15 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative group text-left">
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full shadow-md shadow-primary/30">
                                 {t('primaryFocus')}
                             </div>
-                            <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 text-primary flex items-center justify-center mb-6 mt-2">
-                                &#128188;
+
+                            <div className="flex items-center justify-between mb-6 mt-1">
+                                <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary border border-primary/25 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                    <Building2 className="w-7 h-7" />
+                                </div>
+                                <span className="text-[11px] font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                                    {t('smallBusinessesBadge')}
+                                </span>
                             </div>
-                            <h3 className="text-xl font-semibold text-foreground mb-3">{t('smallBusinesses')}</h3>
-                            <p className="text-muted-foreground text-sm flex-1 mb-8">
+
+                            <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                                {t('smallBusinesses')}
+                            </h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                                 {t('smallBusinessesDesc')}
                             </p>
-                            <Link href="/resources" className="text-primary font-semibold text-sm hover:underline mt-auto">
-                                {t('exploreToolkits')} &rarr;
+
+                            <div className="space-y-2.5 pt-4 border-t border-border/60 mb-8 flex-1">
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                    <span>{t('businessPill1')}</span>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                    <span>{t('businessPill2')}</span>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                    <span>{t('businessPill3')}</span>
+                                </div>
+                            </div>
+
+                            <Link href="/resources" className="mt-auto group/btn inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-semibold shadow-md shadow-primary/25 hover:shadow-lg transition-all duration-200">
+                                <span>{t('exploreToolkits')}</span>
+                                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                             </Link>
                         </div>
 
-                        <div className="bg-card rounded-2xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none text-center flex flex-col h-full">
-                            <div className="w-16 h-16 mx-auto rounded-2xl bg-green-50 text-green-500 flex items-center justify-center mb-6">
-                                &#127963;
+                        {/* 3. Government & Critical Infrastructure */}
+                        <div className="bg-card rounded-2xl p-8 border border-border hover:border-emerald-500/40 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full group text-left">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                    <Landmark className="w-7 h-7" />
+                                </div>
+                                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                                    {t('governmentAgenciesBadge')}
+                                </span>
                             </div>
-                            <h3 className="text-xl font-semibold text-foreground mb-3">{t('governmentAgencies')}</h3>
-                            <p className="text-muted-foreground text-sm flex-1 mb-8">
+
+                            <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                                {t('governmentAgencies')}
+                            </h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                                 {t('governmentAgenciesDesc')}
                             </p>
-                            <Link href="/resources" className="text-primary font-semibold text-sm hover:underline mt-auto">
-                                {t('agencyLogin')} &rarr;
+
+                            <div className="space-y-2.5 pt-4 border-t border-border/60 mb-8 flex-1">
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                                    <span>{t('govPill1')}</span>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                                    <span>{t('govPill2')}</span>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs font-medium text-foreground/80">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                                    <span>{t('govPill3')}</span>
+                                </div>
+                            </div>
+
+                            <Link href="/alerts" className="mt-auto group/btn inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-emerald-500/10 hover:bg-emerald-600 text-emerald-600 hover:text-white dark:text-emerald-400 text-sm font-semibold border border-emerald-500/20 transition-all duration-200">
+                                <span>{t('agencyLogin')}</span>
+                                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                             </Link>
                         </div>
                     </div>

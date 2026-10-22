@@ -28,6 +28,8 @@ import {
   Check,
   Calendar,
   Shield,
+  ShieldCheck,
+  Bot,
   User as UserIcon,
   Clock,
   RefreshCw,
@@ -723,7 +725,14 @@ export default function UserDetailPage() {
               <div className="space-y-3">
                 {logs.map((log) => {
                   const isExpanded = !!expandedLogIds[log.id];
-                  const actorDisplay = log.actor_name || (log.actor_email ? log.actor_email.split('@')[0] : 'System');
+                  const isSystem =
+                    !log.actor ||
+                    log.actor_role === 'system' ||
+                    log.actor_name?.toLowerCase() === 'system' ||
+                    log.actor_email?.toLowerCase() === 'system';
+                  const actorDisplay = isSystem
+                    ? 'System Automation'
+                    : log.actor_name || (log.actor_email ? log.actor_email.split('@')[0] : 'System');
                   const categoryTag = (log.category || 'ADMIN').toUpperCase();
                   const isSuccess = log.status === 'success';
                   const isWarning = log.status === 'warning';
@@ -739,33 +748,72 @@ export default function UserDetailPage() {
                         onClick={() => toggleLogExpansion(log.id)}
                         className="p-4 sm:p-5 flex items-start justify-between gap-4 cursor-pointer hover:bg-muted/30 transition-colors"
                       >
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          {/* Left Avatar / Icon with colored indicator */}
+                        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                          {/* Left Avatar / System / Admin Icon */}
                           <div className="relative shrink-0 mt-0.5">
                             {log.actor_avatar ? (
-                              <img src={log.actor_avatar} alt={actorDisplay} className="w-9 h-9 rounded-xl object-cover" />
+                              <img
+                                src={log.actor_avatar}
+                                alt={actorDisplay}
+                                className="w-10 h-10 rounded-xl object-cover border border-border"
+                              />
+                            ) : isSystem ? (
+                              <div
+                                className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-2xs"
+                                title="System Automated Task"
+                              >
+                                <Bot className="w-5 h-5" />
+                              </div>
+                            ) : log.actor_role === 'super_admin' || log.actor_role === 'org_admin' ? (
+                              <div
+                                className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-2xs"
+                                title={log.actor_role === 'super_admin' ? 'Super Administrator' : 'Organization Admin'}
+                              >
+                                <ShieldCheck className="w-5 h-5" />
+                              </div>
                             ) : (
-                              <div className="w-9 h-9 rounded-xl bg-muted border border-border flex items-center justify-center font-bold text-xs uppercase text-foreground">
-                                {actorDisplay[0]}
+                              <div
+                                className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center font-bold text-xs uppercase text-blue-600 dark:text-blue-400 shadow-2xs"
+                                title={actorDisplay}
+                              >
+                                {actorDisplay[0]?.toUpperCase() || 'U'}
                               </div>
                             )}
+
+                            {/* Outcome status dot on avatar corner with tooltip */}
                             <span
                               className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full ring-2 ring-card ${
                                 isSuccess ? 'bg-emerald-500' : isWarning ? 'bg-amber-500' : 'bg-rose-500'
                               }`}
+                              title={`Status: ${log.status || 'success'}`}
                             />
                           </div>
 
                           {/* Event Text & Details */}
-                          <div className="space-y-1">
-                            {/* Actor & Category Badge */}
+                          <div className="space-y-1.5 flex-1 min-w-0">
+                            {/* Actor, Role/System Badge, Category Badge & Explicit Status Pill */}
                             <div className="flex flex-wrap items-center gap-2">
-                              <span
-                                className={`w-2 h-2 rounded-full ${
-                                  isSuccess ? 'bg-emerald-500' : isWarning ? 'bg-amber-500' : 'bg-rose-500'
-                                }`}
-                              />
-                              <span className="text-sm font-bold text-foreground">{actorDisplay}</span>
+                              <span className="text-sm font-bold text-foreground truncate max-w-[220px]">
+                                {actorDisplay}
+                              </span>
+
+                              {/* Actor Type / Role Badge */}
+                              {isSystem ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                                  <Bot className="w-2.5 h-2.5" />
+                                  Automated
+                                </span>
+                              ) : log.actor_role ? (
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getRoleBadgeStyle(
+                                    log.actor_role
+                                  )}`}
+                                >
+                                  {log.actor_role.replace('_', ' ')}
+                                </span>
+                              ) : null}
+
+                              {/* Category Badge */}
                               <span
                                 className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getCategoryBadgeStyle(
                                   log.category
@@ -773,9 +821,29 @@ export default function UserDetailPage() {
                               >
                                 {categoryTag}
                               </span>
+
+                              {/* Explicit Status Pill (Replaces redundant 2nd raw green dot) */}
+                              <span
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${
+                                  isSuccess
+                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                                    : isWarning
+                                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                                    : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                                }`}
+                              >
+                                {isSuccess ? (
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                                ) : isWarning ? (
+                                  <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0" />
+                                ) : (
+                                  <XCircle className="w-3 h-3 text-rose-500 shrink-0" />
+                                )}
+                                <span className="capitalize">{log.status || 'success'}</span>
+                              </span>
                             </div>
 
-                            {/* Main Action Description (Bold Title matching screenshot) */}
+                            {/* Main Action Description */}
                             <p className="text-sm font-semibold text-foreground/90">
                               {log.effective_description || log.description || log.action}
                             </p>
@@ -783,13 +851,26 @@ export default function UserDetailPage() {
                             {/* Details Line */}
                             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                               {log.ip_address && (
-                                <span className="font-mono">IP: {log.ip_address}</span>
+                                <span className="font-mono flex items-center gap-1">
+                                  <Globe className="w-3 h-3 text-muted-foreground/70" />
+                                  IP: {log.ip_address}
+                                </span>
                               )}
                               {log.device_info && (
-                                <span>• {log.device_info}</span>
+                                <span className="flex items-center gap-1">
+                                  <Laptop className="w-3 h-3 text-muted-foreground/70" />
+                                  {log.device_info}
+                                </span>
                               )}
-                              <span>• {log.location || 'Unknown Location'}</span>
-                              <span className="text-muted-foreground/80">• {log.time_ago || 'Recently'}</span>
+                              <span>
+                                • {log.location && log.location !== 'Unknown' && log.location !== 'Unknown Location'
+                                  ? log.location
+                                  : 'Internal / Server'}
+                              </span>
+                              <span className="text-muted-foreground/80 flex items-center gap-1">
+                                <Clock className="w-3 h-3 text-muted-foreground/70" />
+                                {log.time_ago || 'Recently'}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -805,21 +886,37 @@ export default function UserDetailPage() {
                         </div>
                       </div>
 
-                      {/* Expandable Details Container (Matching Screenshot Details) */}
+                      {/* Expandable Details Container */}
                       {isExpanded && (
                         <div className="px-5 pb-5 pt-1 border-t border-border/60 bg-muted/15 space-y-4">
                           {/* Mini user info badge */}
                           <div className="p-3 bg-card border border-border rounded-xl flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs uppercase">
-                                {actorDisplay[0]}
-                              </div>
+                              {log.actor_avatar ? (
+                                <img
+                                  src={log.actor_avatar}
+                                  alt={actorDisplay}
+                                  className="w-8 h-8 rounded-lg object-cover border border-border"
+                                />
+                              ) : isSystem ? (
+                                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+                                  <Bot className="w-4 h-4" />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-xs uppercase">
+                                  {actorDisplay[0]?.toUpperCase() || 'U'}
+                                </div>
+                              )}
                               <div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xs font-bold text-foreground">{actorDisplay}</span>
-                                  {log.actor_role && (
-                                    <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-muted text-muted-foreground uppercase">
-                                      {log.actor_role}
+                                  {isSystem ? (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 uppercase">
+                                      Automated Engine
+                                    </span>
+                                  ) : log.actor_role && (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-muted text-muted-foreground uppercase">
+                                      {log.actor_role.replace('_', ' ')}
                                     </span>
                                   )}
                                 </div>
@@ -829,7 +926,7 @@ export default function UserDetailPage() {
                               </div>
                             </div>
                             <span
-                              className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold border ${
                                 isSuccess
                                   ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
                                   : isWarning
@@ -837,7 +934,14 @@ export default function UserDetailPage() {
                                   : 'bg-rose-500/10 text-rose-600 border-rose-500/20'
                               }`}
                             >
-                              Status: {log.status}
+                              {isSuccess ? (
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                              ) : isWarning ? (
+                                <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                              ) : (
+                                <XCircle className="w-3.5 h-3.5 text-rose-500" />
+                              )}
+                              <span>Status: {log.status || 'success'}</span>
                             </span>
                           </div>
 

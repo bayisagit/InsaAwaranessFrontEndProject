@@ -8,6 +8,7 @@ import type { AuditLog } from '@/lib/api';
 import { Input } from '@/components/Input';
 import { PageHeader } from '@/components/PageHeader';
 import { Pagination } from '@/components/Pagination';
+import { Bot } from 'lucide-react';
 
 export default function AuditLogsPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -150,7 +151,14 @@ export default function AuditLogsPage() {
                                             {formatDate(log.created_at)}
                                         </td>
                                         <td className="px-6 py-4 font-medium text-foreground">
-                                            {log.actor_email || <span className="text-muted-foreground italic">system</span>}
+                                            {log.actor_email ? (
+                                                <span>{log.actor_email}</span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                                                    <Bot className="w-3.5 h-3.5" />
+                                                    System Automation
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${actionBadge(log.action)}`}>
