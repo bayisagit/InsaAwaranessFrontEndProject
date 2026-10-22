@@ -38,6 +38,8 @@ import {
   ChevronUp,
   Globe,
   Laptop,
+  LogIn,
+  LogOut,
   CheckCircle2,
   AlertCircle,
   XCircle,
@@ -318,6 +320,80 @@ export default function UserDetailPage() {
       default:
         return 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20';
     }
+  };
+
+  // Human-friendly Event Action Title
+  const getEventActionTitle = (action: string, category?: string) => {
+    const act = (action || '').toLowerCase().trim();
+    if (act === 'login' || act === 'user_login' || act === 'sign_in') {
+      return 'User Signed In (Login)';
+    }
+    if (act === 'logout' || act === 'user_logout' || act === 'sign_out') {
+      return 'User Signed Out (Logout)';
+    }
+    if (act === 'password_change' || act === 'change_password') {
+      return 'Account Password Changed';
+    }
+    if (act === 'password_reset' || act === 'reset_password') {
+      return 'Password Reset Code Requested';
+    }
+    if (act === 'password_reset_confirmed' || act === 'reset_password_confirm') {
+      return 'Password Reset Confirmed';
+    }
+    if (act === 'verify_email' || act === 'email_verify' || act === 'verify-email') {
+      return 'Email Address Verified';
+    }
+    if (act === 'create' || act === 'user_create') {
+      return 'Account / Resource Created';
+    }
+    if (act === 'update' || act === 'user_update' || act === 'profile_update') {
+      return 'Profile / Account Updated';
+    }
+    if (act === 'delete' || act === 'user_delete') {
+      return 'Resource / Account Deleted';
+    }
+    if (act === 'enroll' || act === 'course_enroll') {
+      return 'Enrolled in Course';
+    }
+    if (act === 'lesson_complete' || act === 'complete_lesson') {
+      return 'Course Lesson Completed';
+    }
+    if (act === 'assessment_submit' || act === 'exam_submit') {
+      return 'Assessment Completed & Graded';
+    }
+    if (act === 'certificate_issued') {
+      return 'Verifiable Certificate Issued';
+    }
+    return act
+      ? act.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+      : 'System Activity Event';
+  };
+
+  // Event Action Icon helper
+  const getEventActionIcon = (action: string) => {
+    const act = (action || '').toLowerCase().trim();
+    if (act === 'login' || act === 'user_login' || act === 'sign_in') {
+      return <LogIn className="w-4 h-4 text-emerald-500" />;
+    }
+    if (act === 'logout' || act === 'user_logout' || act === 'sign_out') {
+      return <LogOut className="w-4 h-4 text-slate-500 dark:text-slate-400" />;
+    }
+    if (act.includes('password')) {
+      return <KeyRound className="w-4 h-4 text-primary" />;
+    }
+    if (act.includes('enroll') || act.includes('course') || act.includes('lesson')) {
+      return <BookOpen className="w-4 h-4 text-blue-500" />;
+    }
+    if (act.includes('assessment') || act.includes('exam') || act.includes('cert')) {
+      return <Award className="w-4 h-4 text-purple-500" />;
+    }
+    if (act === 'delete') {
+      return <Trash2 className="w-4 h-4 text-rose-500" />;
+    }
+    if (act === 'create') {
+      return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
+    }
+    return <Activity className="w-4 h-4 text-primary" />;
   };
 
   if (isLoading || isFetchingUser) {
@@ -845,7 +921,7 @@ export default function UserDetailPage() {
 
                             {/* Main Action Description */}
                             <p className="text-sm font-semibold text-foreground/90">
-                              {log.effective_description || log.description || log.action}
+                              {log.effective_description || getEventActionTitle(log.action, log.category)}
                             </p>
 
                             {/* Details Line */}
@@ -945,6 +1021,42 @@ export default function UserDetailPage() {
                             </span>
                           </div>
 
+                          {/* Dedicated EVENT DETAIL & ACTION Card */}
+                          <div className="bg-card border border-border rounded-xl p-4 shadow-2xs">
+                            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                              <span className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase flex items-center gap-1.5">
+                                {getEventActionIcon(log.action)}
+                                Event Detail & Action
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-muted text-foreground border border-border">
+                                  Action: {log.action}
+                                </span>
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getCategoryBadgeStyle(
+                                    log.category
+                                  )}`}
+                                >
+                                  {categoryTag}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-base font-bold text-foreground flex items-center gap-2">
+                              <span>{getEventActionTitle(log.action, log.category)}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                              {log.effective_description || log.description || `Event '${log.action}' was successfully recorded for this account.`}
+                            </p>
+                            {log.metadata?.auth_method && (
+                              <div className="mt-2.5 pt-2.5 border-t border-border/50 flex items-center gap-2 text-xs text-muted-foreground">
+                                <span className="font-semibold text-foreground">Authentication Method:</span>
+                                <span className="px-2 py-0.5 rounded bg-muted font-mono capitalize text-[11px] text-foreground">
+                                  {log.metadata.auth_method === 'email' ? 'Email & Password' : log.metadata.auth_method}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
                           {/* Key-Value Box Grid (Matching Screenshot Box Structure) */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                             {/* EVENT ID Box */}
@@ -969,7 +1081,7 @@ export default function UserDetailPage() {
                                 IP & Location
                               </div>
                               <div className="text-foreground font-medium">
-                                {log.ip_address || 'No IP recorded'} ({log.location || 'Unknown Location'})
+                                {log.ip_address || 'No IP recorded'} ({log.location && log.location !== 'Unknown' && log.location !== 'Unknown Location' ? log.location : 'Internal / Server'})
                               </div>
                             </div>
 
