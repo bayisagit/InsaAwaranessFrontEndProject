@@ -60,6 +60,15 @@ export default function DashboardSelfAssessmentPage() {
  } else {
  setScore(nextScore);
  setIsFinished(true);
+ try {
+ const maxScore = questions.length * 3;
+ if ((nextScore / maxScore) >= 0.7) {
+ const cur = JSON.parse(localStorage.getItem("insa_completed_tools") || "[]");
+ if (!cur.includes("self-assessment")) {
+ localStorage.setItem("insa_completed_tools", JSON.stringify([...cur, "self-assessment"]));
+ }
+ }
+ } catch {}
  }
  };
 

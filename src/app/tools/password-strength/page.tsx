@@ -36,6 +36,15 @@ export default function PasswordStrengthPage() {
             'Excellent! This password is very hard to crack.'
         ];
 
+        if (s >= 4) {
+            try {
+                const cur = JSON.parse(localStorage.getItem("insa_completed_tools") || "[]");
+                if (!cur.includes("password-strength")) {
+                    localStorage.setItem("insa_completed_tools", JSON.stringify([...cur, "password-strength"]));
+                }
+            } catch {}
+        }
+
         setStrength({
             score: s,
             label: labels[s] || labels[0],

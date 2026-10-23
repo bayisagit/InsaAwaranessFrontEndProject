@@ -63,6 +63,12 @@ export default function DashboardPhishingSimulationPage() {
  setShowResult(false);
  } else {
  setIsFinished(true);
+ try {
+ const cur = JSON.parse(localStorage.getItem("insa_completed_tools") || "[]");
+ if (!cur.includes("phishing")) {
+ localStorage.setItem("insa_completed_tools", JSON.stringify([...cur, "phishing"]));
+ }
+ } catch {}
  }
  };
 
@@ -70,7 +76,10 @@ export default function DashboardPhishingSimulationPage() {
  return (
  <div className="min-h-screen bg-muted flex items-center justify-center p-6">
  <div className="max-w-md w-full bg-card rounded-3xl shadow-xl border border-border p-10 text-center">
- <div className="text-6xl mb-6">{score === scenarios.length ? '🏆' : '📊'}</div>
+ <div className="text-6xl mb-4">{score === scenarios.length ? '🏆' : '🎯'}</div>
+ <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold border border-amber-500/20 mb-4">
+ <span>★ Badge Unlocked: Phishing Hunter (+150 XP)</span>
+ </div>
  <h2 className="text-3xl font-extrabold text-foreground mb-2">Simulation Complete</h2>
  <p className="text-muted-foreground mb-8">You identified {score} out of {scenarios.length} threats correctly.</p>
  <div className="space-y-4">
