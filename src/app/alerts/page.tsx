@@ -1,154 +1,286 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { Skeleton } from '@/components/LoadingSkeleton';
-import { LinkifyText } from '@/components/LinkifyText';
-
-interface Alert {
- id: string;
- title: string;
- message: string;
- severity: 'low' | 'medium' | 'high';
- status: string;
- published_at: string;
-}
+import { AlertCard, AlertItem } from '@/components/alerts/AlertCard';
+import { useAuth } from '@/context/AuthContext';
+import { ShieldCheck, Search, Filter, RefreshCw, Undo2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function AlertsPage() {
- const [alerts, setAlerts] = useState<Alert[]>([]);
- const [isLoading, setIsLoading] = useState(true);
- const [error, setError] = useState('');
- const [filter, setFilter] = useState('all');
+  const { isAuthenticated } = useAuth();
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [severityFilter, setSeverityFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'acknowledged'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
 
- useEffect(() => {
- fetchAlerts();
- }, [filter]);
+  // Load dismissed alert IDs from local storage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('insa_dismissed_alerts');
+      if (stored) {
+        setDismissedIds(JSON.parse(stored));
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, []);
 
- const fetchAlerts = async () => {
- setIsLoading(true);
- const params = new URLSearchParams({ ordering: '-published_at' });
- if (filter !== 'all') params.set('severity', filter);
- const { data, error: e } = await apiFetch(`/api/v1/alerts/?${params.toString()}`);
- if (e) setError(e);
- else if (data?.results) setAlerts(data.results);
- else if (Array.isArray(data)) setAlerts(data);
- setIsLoading(false);
- };
+  useEffect(() => {
+    fetchAlerts();
+  }, [severityFilter]);
 
- const handleAcknowledge = async (id: string) => {
- const { error: e } = await apiFetch(`/api/v1/alerts/${id}/acknowledge/`, { method: 'POST' });
- if (!e) fetchAlerts();
- };
+  const fetchAlerts = async () => {
+    setIsLoading(true);
+    const params = new URLSearchParams({ ordering: '-published_at' });
+    if (severityFilter !== 'all') params.set('severity', severityFilter);
+    const { data, error: e } = await apiFetch(`/api/v1/alerts/?${params.toString()}`);
+    if (e) setError(e);
+    else if (data?.results) setAlerts(data.results);
+    else if (Array.isArray(data)) setAlerts(data);
+    setIsLoading(false);
+  };
 
- const handleViewDetails = (alert: Alert) => {
- // Here we could open a modal or navigate to a detail page
- // For now, let's acknowledge it as viewed
- handleAcknowledge(alert.id);
- };
+  const handleAcknowledge = async (id: string) => {
+    const { error: e } = await apiFetch(`/api/v1/alerts/${id}/acknowledge/`, { method: 'POST' });
+    if (!e) {
+      setAlerts((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, is_acknowledged: true } : item))
+      );
+    }
+  };
 
- const filteredAlerts = alerts;
+  const handleDismiss = (id: string) => {
+    const nextDismissed = [...dismissedIds, id];
+    setDismissedIds(nextDismissed);
+    try {
+      localStorage.setItem('insa_dismissed_alerts', JSON.stringify(nextDismissed));
+    } catch {
+      // Ignore storage errors
+    }
 
- const severityStyles: Record<string, string> = {
- high: 'border-red-500 bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400',
- medium: 'border-orange-500 bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400',
- low: 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400'
- };
+    toast(
+      (t) => (
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-foreground font-medium">Advisory dismissed from view.</span>
+          <button
+            onClick={() => {
+              handleUndoDismiss(id);
+              toast.dismiss(t.id);
+            }}
+            className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline cursor-pointer"
+          >
+            <Undo2 className="w-3.5 h-3.5" />
+            Undo
+          </button>
+        </div>
+      ),
+      { duration: 4000 }
+    );
+  };
 
- return (
- <div className="min-h-screen bg-muted pb-20">
- <section className="bg-card border-b border-border">
- <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 text-center">
- <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-4">
- Cybersecurity Alerts
- </h1>
- <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
- Real-time advisories on active threats and vulnerabilities.
- </p>
- <div className="flex justify-center">
- <div className="flex bg-muted/50 p-1 rounded-xl shadow-inner">
- {['all', 'high', 'medium', 'low'].map((s) => (
- <button
- key={s}
- onClick={() => setFilter(s)}
- className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${filter === s ? 'bg-card text-foreground shadow-sm shadow-black/5 dark:shadow-none' : 'text-muted-foreground hover:text-foreground'}`}
- >
- {s}
- </button>
- ))}
- </div>
- </div>
- </div>
- </section>
+  const handleUndoDismiss = (id: string) => {
+    const nextDismissed = dismissedIds.filter((item) => item !== id);
+    setDismissedIds(nextDismissed);
+    try {
+      localStorage.setItem('insa_dismissed_alerts', JSON.stringify(nextDismissed));
+    } catch {
+      // Ignore
+    }
+  };
 
- <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 mt-12 cursor-pointer">
- {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-8">{error}</div>}
+  const handleRestoreAllDismissed = () => {
+    setDismissedIds([]);
+    try {
+      localStorage.removeItem('insa_dismissed_alerts');
+    } catch {
+      // Ignore
+    }
+    toast.success('All dismissed advisories restored to your feed.');
+  };
 
- {isLoading ? (
- <div className="space-y-4">
- {[1, 2, 3].map(i => (
- <Skeleton key={i} className="h-32 w-full" />
- ))}
- </div>
- ) : filteredAlerts.length === 0 ? (
- <EmptyState
- icon={
- <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
- </svg>
- }
- title="No active alerts found"
- description="Your digital environment is currently stable. Check back later for updates."
- />
- ) : (
- <div className="space-y-6">
- {filteredAlerts.map((alert) => (
- <div
- key={alert.id}
- className={`bg-card rounded-2xl border-l-[6px] shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow ${severityStyles[alert.severity.toLowerCase()] || 'border-border'}`}
- >
- <div className="cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out p-6">
- <div className="flex justify-between items-start mb-3">
- <div className="flex items-center gap-3">
- <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ${severityStyles[alert.severity.toLowerCase()]}`}>
- {alert.severity}
- </span>
- <span className="text-xs text-muted-foreground font-medium">
- {new Date(alert.published_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
- </span>
- </div>
- </div>
- <h3 className="text-lg font-bold text-foreground mb-2">{alert.title}</h3>
- <p className="text-sm text-muted-foreground leading-relaxed mb-4">
- <LinkifyText text={alert.message} />
- </p>
- <div className="flex justify-end pt-4 border-t border-border mt-4">
- <button
- onClick={() => handleViewDetails(alert)}
- className="text-xs font-bold text-primary hover:underline uppercase tracking-widest inline-flex items-center gap-1 cursor-pointer"
- >
- Dismiss / Acknowledge
- <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
- <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
- </svg>
- </button>
- </div>
- </div>
- </div>
- ))}
- </div>
- )}
+  // Filter alerts by dismissal, search term, and acknowledgment status
+  const visibleAlerts = useMemo(() => {
+    return alerts
+      .filter((alert) => !dismissedIds.includes(alert.id))
+      .filter((alert) => {
+        if (statusFilter === 'acknowledged') return !!alert.is_acknowledged;
+        if (statusFilter === 'pending') return !alert.is_acknowledged;
+        return true;
+      })
+      .filter((alert) => {
+        if (!searchTerm.trim()) return true;
+        const q = searchTerm.toLowerCase();
+        return (
+          alert.title?.toLowerCase().includes(q) ||
+          alert.message?.toLowerCase().includes(q) ||
+          alert.organization_name?.toLowerCase().includes(q)
+        );
+      });
+  }, [alerts, dismissedIds, statusFilter, searchTerm]);
 
- <div className="mt-16 bg-card rounded-3xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none text-center">
- <h3 className="font-bold text-foreground mb-2">Want to receive alerts instantly?</h3>
- <p className="text-sm text-muted-foreground mb-6">Enable SMS or Email notifications in your profile to stay ahead of emerging threats.</p>
- <Link href="/profile">
- <Button variant="outline">Update Notification Settings</Button>
- </Link>
- </div>
- </div>
- </div>
- );
+  return (
+    <div className="min-h-screen bg-muted/40 pb-20">
+      {/* Header Banner */}
+      <section className="bg-card border-b border-border shadow-xs">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 text-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 bg-primary/10 text-primary border border-primary/20">
+            <ShieldCheck className="w-4 h-4" />
+            Official Security Advisories
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-3">
+            National Cybersecurity Threat Advisories
+          </h1>
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
+            Verified threat bulletins, vulnerability notices, and actionable defense guidance issued by the Information Network Security Administration (INSA).
+          </p>
+
+          {/* Search & Filter Bar */}
+          <div className="max-w-2xl mx-auto space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search advisories by threat keyword, CVE, or advisory title..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-xs"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Severity Filter Tabs */}
+              <div className="flex bg-muted p-1 rounded-xl shadow-inner text-xs font-bold">
+                {[
+                  { id: 'all', label: 'All Severities' },
+                  { id: 'high', label: 'High' },
+                  { id: 'medium', label: 'Medium' },
+                  { id: 'low', label: 'Low' },
+                ].map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSeverityFilter(s.id)}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      severityFilter === s.id
+                        ? 'bg-card text-foreground shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Status Filter Tabs */}
+              <div className="flex bg-muted p-1 rounded-xl shadow-inner text-xs font-semibold">
+                <button
+                  onClick={() => setStatusFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    statusFilter === 'all'
+                      ? 'bg-card text-foreground shadow-xs font-bold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  All ({alerts.length})
+                </button>
+                <button
+                  onClick={() => setStatusFilter('pending')}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    statusFilter === 'pending'
+                      ? 'bg-card text-foreground shadow-xs font-bold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Unacknowledged
+                </button>
+                <button
+                  onClick={() => setStatusFilter('acknowledged')}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    statusFilter === 'acknowledged'
+                      ? 'bg-card text-foreground shadow-xs font-bold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Acknowledged
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+        {error && (
+          <div role="alert" className="bg-destructive/10 text-destructive p-4 rounded-2xl border border-destructive/20 mb-8 text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Dismissed alerts banner if any are hidden */}
+        {dismissedIds.length > 0 && (
+          <div className="mb-6 p-3 bg-muted border border-border rounded-xl text-xs flex items-center justify-between gap-3">
+            <span className="text-muted-foreground">
+              {dismissedIds.length} {dismissedIds.length === 1 ? 'advisory is' : 'advisories are'} currently hidden from your feed.
+            </span>
+            <button
+              onClick={handleRestoreAllDismissed}
+              className="font-bold text-primary hover:underline cursor-pointer"
+            >
+              Restore All
+            </button>
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-40 w-full rounded-2xl" />
+            ))}
+          </div>
+        ) : visibleAlerts.length === 0 ? (
+          <EmptyState
+            icon={<ShieldCheck className="w-10 h-10 text-emerald-500" />}
+            title="No Active Threat Advisories"
+            description={
+              searchTerm || severityFilter !== 'all' || statusFilter !== 'all'
+                ? 'No advisories match your active filters or search terms.'
+                : 'Your threat environment is currently clear. No active security advisories require attention.'
+            }
+          />
+        ) : (
+          <div className="space-y-6">
+            {visibleAlerts.map((alert) => (
+              <AlertCard
+                key={alert.id}
+                alert={alert}
+                onAcknowledge={handleAcknowledge}
+                onDismiss={handleDismiss}
+                isAuthenticated={isAuthenticated}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Subscribe / Alert Preferences CTA */}
+        <div className="mt-16 bg-card rounded-3xl p-8 border border-border shadow-md shadow-black/5 text-center">
+          <h3 className="text-lg font-bold text-foreground mb-2">Want to receive advisories directly?</h3>
+          <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+            Configure instant security email alerts in your account profile to stay informed about active cyber threats.
+          </p>
+          <Link href="/profile">
+            <Button variant="outline">Update Notification Settings</Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }

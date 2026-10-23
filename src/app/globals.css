@@ -264,3 +264,78 @@ button, nav, [role="button"], [role="tab"] {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 }
+
+/* ==========================================================================
+   Telegram-Style Theme Circular Reveal Animation (View Transitions)
+   ========================================================================== */
+::view-transition-group(root),
+::view-transition-image-pair(root) {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  backface-visibility: hidden;
+  contain: paint;
+}
+
+/* Light -> Dark: New dark layer expands on top */
+.theme-transition-to-dark::view-transition-old(root) {
+  z-index: 1;
+}
+.theme-transition-to-dark::view-transition-new(root) {
+  z-index: 9999;
+  will-change: clip-path;
+  transform: translateZ(0);
+}
+
+/* Dark -> Light: Old dark layer on top shrinks into button, revealing light */
+.theme-transition-to-light::view-transition-old(root) {
+  z-index: 9999;
+  will-change: clip-path;
+  transform: translateZ(0);
+}
+.theme-transition-to-light::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* Theme toggle button & icon morph animation */
+.theme-toggle-btn {
+  view-transition-name: theme-toggle;
+}
+
+@keyframes theme-icon-rotate-out {
+  to {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+}
+
+@keyframes theme-icon-rotate-in {
+  from {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+  }
+}
+
+::view-transition-old(theme-toggle) {
+  animation: 450ms cubic-bezier(0.16, 1, 0.3, 1) both theme-icon-rotate-out;
+}
+
+::view-transition-new(theme-toggle) {
+  animation: 450ms cubic-bezier(0.16, 1, 0.3, 1) both theme-icon-rotate-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-image-pair(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(theme-toggle),
+  ::view-transition-new(theme-toggle) {
+    animation: none !important;
+  }
+}
