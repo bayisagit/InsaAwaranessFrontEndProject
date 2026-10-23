@@ -242,3 +242,25 @@
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
+
+/* Native Mobile App Experience (Flutter / Reactive Mobile App Touch & Feel) */
+html {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+body {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, nav, [role="button"], [role="tab"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}

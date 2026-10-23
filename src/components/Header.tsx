@@ -10,6 +10,7 @@ import { ConfirmModal } from './ConfirmModal';
 import { ThemeToggle } from './theme/ThemeToggle';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useTranslations } from 'next-intl';
+import { PwaInstallButton } from '@/components/pwa/PwaManager';
 
 interface HeaderProps {
  rightAction?: React.ReactNode;
@@ -222,6 +223,7 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  </nav>
 
  <div className="flex items-center gap-3">
+ <PwaInstallButton className="hidden sm:inline-flex" />
  <LanguageSwitcher />
  <ThemeToggle />
  <div className="hidden md:flex items-center gap-4">
@@ -297,6 +299,9 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  </div>
 
  <div className="border-t border-border mt-4 pt-4 px-6 space-y-3">
+ <div className="flex justify-center pb-1">
+ <PwaInstallButton className="w-full justify-center py-2" />
+ </div>
  {isAuthenticated ? (
  <>
  <Link href={isAnyAdmin ? "/admin" : "/dashboard"} onClick={closeMobile} className="block text-center text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors px-5 py-2.5 rounded-full mb-3 cursor-pointer">{t('dashboard')}</Link>

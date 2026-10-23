@@ -23,13 +23,15 @@ import {
   Activity,
   ClipboardList,
   Trash2,
-  MessageSquare
+  MessageSquare,
+  Download
 } from "lucide-react"
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { useTranslations } from 'next-intl';
+import { usePwaInstall } from '@/components/pwa/PwaInstallPrompt';
 
 import {
   Sidebar,
@@ -280,6 +282,7 @@ const sidebarConfig: SidebarConfig = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { isInstallable, triggerInstall } = usePwaInstall();
   const t = useTranslations('sidebar');
   const tCommon = useTranslations('common');
   const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
@@ -418,6 +421,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <span>{t('notifications')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          {isInstallable && (
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={triggerInstall} tooltip="Install App" className="flex items-center gap-3 w-full text-primary hover:text-primary hover:bg-primary/10 cursor-pointer transition-colors duration-200">
+                <Download className="size-4 shrink-0" />
+                <span>Install App</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton onClick={handleLogout} tooltip={t('logout')} className="flex items-center gap-3 w-full text-red-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors duration-200">
               <LogOut className="size-4 shrink-0" />
