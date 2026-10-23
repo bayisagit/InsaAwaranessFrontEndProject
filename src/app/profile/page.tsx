@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
+import { Trophy, Target, ShieldCheck, GraduationCap, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 pl-3 pr-10 truncate text-sm text-foreground shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
 
@@ -85,6 +86,31 @@ export default function ProfilePage() {
     const [passwordError, setPasswordError] = useState('');
 
     const [learningStats, setLearningStats] = useState({ enrolled: 0, completed: 0, averageProgress: 0 });
+    const [unlockedBadges, setUnlockedBadges] = useState<string[]>([]);
+
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem('insa_completed_tools');
+            if (stored) {
+                const tools: string[] = JSON.parse(stored);
+                const earned: string[] = [];
+                if (tools.includes('phishing')) earned.push('phishing-hunter');
+                if (tools.includes('password-strength')) earned.push('password-shield');
+                if (tools.includes('self-assessment')) earned.push('awareness-graduate');
+                setUnlockedBadges(earned);
+            }
+        } catch {
+            // Ignore
+        }
+    }, []);
+
+    const allEarnedBadges = React.useMemo(() => {
+        const list = [...unlockedBadges];
+        if (learningStats.completed > 0 && !list.includes('cyber-sentinel')) {
+            list.push('cyber-sentinel');
+        }
+        return list;
+    }, [unlockedBadges, learningStats.completed]);
 
     const fetchProfile = useCallback(async () => {
         setIsLoadingProfile(true);
@@ -483,6 +509,125 @@ export default function ProfilePage() {
                                 </div>
                             </motion.div>
                         )}
+
+                        {/* Security Badges & Defense Achievements */}
+                        <Card
+                            title="Cyber Defense Badges & XP"
+                            subtitle="Verified milestones earned from security tools, phishing simulations, and assessments"
+                            icon={<Trophy className="w-6 h-6 text-amber-500" />}
+                        >
+                            <div className="space-y-6">
+                                {/* Level & XP Header */}
+                                <div className="p-4 bg-gradient-to-r from-amber-500/10 via-primary/10 to-blue-500/10 rounded-2xl border border-primary/20 flex flex-wrap items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center font-black text-xl shadow-xs">
+                                            <Trophy className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Readiness Rank</div>
+                                            <div className="text-sm font-extrabold text-foreground">
+                                                {allEarnedBadges.length >= 3 ? '🛡️ Cyber Sentinel' : allEarnedBadges.length >= 1 ? '⚡ Cyber Defender' : '🌱 Security Initiate'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Badges Earned</div>
+                                        <div className="text-sm font-black text-primary">{allEarnedBadges.length} of 4 Unlocked</div>
+                                    </div>
+                                </div>
+
+                                {/* Badges List */}
+                                <div className="space-y-3">
+                                    {[
+                                        {
+                                            id: 'phishing-hunter',
+                                            name: 'Phishing Hunter',
+                                            xp: 150,
+                                            icon: Target,
+                                            desc: 'Flag spear-phishing cues & test deceptive emails',
+                                            color: 'text-amber-400',
+                                            bgColor: 'bg-amber-400/10',
+                                            href: '/tools/phishing',
+                                        },
+                                        {
+                                            id: 'password-shield',
+                                            name: 'Password Shield',
+                                            xp: 100,
+                                            icon: ShieldCheck,
+                                            desc: 'Formulate 16+ character high-entropy credentials',
+                                            color: 'text-cyan-400',
+                                            bgColor: 'bg-cyan-400/10',
+                                            href: '/tools/password-strength',
+                                        },
+                                        {
+                                            id: 'awareness-graduate',
+                                            name: 'Awareness Graduate',
+                                            xp: 250,
+                                            icon: GraduationCap,
+                                            desc: 'Pass the 10-point Cyber Hygiene Assessment',
+                                            color: 'text-emerald-400',
+                                            bgColor: 'bg-emerald-400/10',
+                                            href: '/tools/self-assessment',
+                                        },
+                                        {
+                                            id: 'cyber-sentinel',
+                                            name: 'Cyber Sentinel',
+                                            xp: 300,
+                                            icon: Sparkles,
+                                            desc: 'Complete structured awareness training courses',
+                                            color: 'text-purple-400',
+                                            bgColor: 'bg-purple-400/10',
+                                            href: '/courses',
+                                        },
+                                    ].map((b) => {
+                                        const isUnlocked = allEarnedBadges.includes(b.id);
+                                        const Icon = b.icon;
+                                        return (
+                                            <div
+                                                key={b.id}
+                                                className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                                                    isUnlocked
+                                                        ? 'bg-card border-emerald-500/30 shadow-xs'
+                                                        : 'bg-muted/30 border-border'
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${b.bgColor}`}>
+                                                        <Icon className={`w-5 h-5 ${b.color}`} />
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-sm font-bold text-foreground">{b.name}</span>
+                                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                                                                +{b.xp} XP
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[11px] text-muted-foreground">{b.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    {isUnlocked ? (
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                                            <CheckCircle2 className="w-3.5 h-3.5" />
+                                                            Earned
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => router.push(b.href)}
+                                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white transition-all shadow-xs cursor-pointer hover:scale-[1.02]"
+                                                        >
+                                                            <span>Earn</span>
+                                                            <ArrowRight className="w-3 h-3" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </Card>
 
                         {/* Security Card */}
                         <Card
