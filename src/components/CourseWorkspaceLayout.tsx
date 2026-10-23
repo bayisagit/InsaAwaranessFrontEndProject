@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, SidebarFooter } from '@/components/ui/sidebar';
-import { BookOpen, Layers, FileText, CheckSquare, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert, User, LogOut, BarChart3, PieChart, Eye } from 'lucide-react';
+import { BookOpen, Layers, FileText, CheckSquare, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert, User, LogOut, BarChart3, PieChart, Eye, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
 import { apiFetch, getModule, getLesson, getAssessment } from '@/lib/api';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
+import { NotificationBell } from '@/components/NotificationBell';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -247,6 +248,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     </div>
                     
                     <div className="flex items-center gap-3 ml-auto">
+                        <NotificationBell />
                         <DropdownMenu>
                             <DropdownMenuTrigger className="relative h-9 w-9 rounded-full ml-1 outline-none hover:opacity-80 transition-opacity">
                                 <Avatar className="h-9 w-9 border border-border">
@@ -278,6 +280,12 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                                         <Link href="/profile" className="flex flex-row items-center w-full cursor-pointer">
                                             <User className="mr-2 h-4 w-4 text-muted-foreground" />
                                             <span>Profile</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link href="/notifications" className="flex flex-row items-center w-full cursor-pointer">
+                                            <Bell className="mr-2 h-4 w-4 text-muted-foreground" />
+                                            <span>Notifications</span>
                                         </Link>
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>

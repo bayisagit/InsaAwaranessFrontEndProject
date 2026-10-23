@@ -507,6 +507,8 @@ export interface AuditLog {
     category_display?: string;
     description: string;
     effective_description?: string;
+    target_object_repr?: string | null;
+    event_narrative?: string | null;
     status: 'success' | 'warning' | 'error';
     app_label: string;
     model: string;

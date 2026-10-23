@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator } from '@/components/ui/sidebar';
-import { BookOpen, Layers, CheckSquare, Award, ArrowLeft, CheckCircle2, Circle, ChevronDown, GraduationCap, ArrowRight, User, LogOut } from 'lucide-react';
+import { BookOpen, Layers, CheckSquare, Award, ArrowLeft, CheckCircle2, Circle, ChevronDown, GraduationCap, ArrowRight, User, LogOut, Bell } from 'lucide-react';
 import { apiFetch, Course, CourseModule, Enrollment, getAssessments, getAssessment, Assessment } from '@/lib/api';
 import { AssessmentViewer } from '@/components/AssessmentViewer';
 import { useAuth } from '@/context/AuthContext';
@@ -12,6 +12,7 @@ import { VideoPlayer } from '@/components/VideoPlayer';
 import { Button } from '@/components/Button';
 import { LinkifyText } from '@/components/LinkifyText';
 import { WorkspaceSkeleton } from '@/components/LoadingSkeleton';
+import { NotificationBell } from '@/components/NotificationBell';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import DOMPurify from 'isomorphic-dompurify';
 import {
@@ -314,6 +315,7 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                     </div>
 
                     <div className="flex items-center gap-3 ml-auto">
+                        <NotificationBell />
                         <DropdownMenu>
                             <DropdownMenuTrigger className="outline-none">
                                 <Avatar className="h-9 w-9 border border-border hover:ring-2 ring-primary/20 transition-all cursor-pointer">
@@ -339,6 +341,10 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                                     <DropdownMenuItem onClick={() => router.push('/profile')} className="flex items-center w-full cursor-pointer">
                                         <User className="mr-2 h-4 w-4" />
                                         Profile
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => router.push('/notifications')} className="flex items-center w-full cursor-pointer">
+                                        <Bell className="mr-2 h-4 w-4" />
+                                        Notifications
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />

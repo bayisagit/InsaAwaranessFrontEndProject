@@ -76,7 +76,7 @@ export default function AdminOrgApplicationsPage() {
  toast.error(e || 'Failed to approve application.');
  } else {
  toast.success(
- `✅ "${app.name}" approved! Organization ID: ${data?.organization_id?.slice(0, 8)}…`,
+ `✅ "${app.name}" approved! Workspace created and administrator invitation sent.`,
  { duration: 6000 }
  );
  fetchApplications(activeTab, page);

@@ -16,6 +16,7 @@ import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
+import { ToolConfigBuilder } from '@/components/builders/ToolConfigBuilder';
 import Link from 'next/link';
 
 export default function AdminAwarenessToolsPage() {
@@ -34,11 +35,16 @@ export default function AdminAwarenessToolsPage() {
  const [totalCount, setTotalCount] = useState(0);
  const pageSize = 10;
 
- const [formData, setFormData] = useState({
- name: '',
- description: '',
- status: 'enabled' as 'enabled' | 'disabled',
- config: ''
+ const [formData, setFormData] = useState<{
+  name: string;
+  description: string;
+  status: 'enabled' | 'disabled';
+  config: Record<string, any>;
+ }>({
+  name: '',
+  description: '',
+  status: 'enabled',
+  config: {}
  });
 
  useEffect(() => {
@@ -66,63 +72,59 @@ export default function AdminAwarenessToolsPage() {
  };
 
  const handleOpenModal = (tool: AwarenessTool) => {
- setIsCreateExpanded(false);
- setSelectedTool(tool);
- setFormData({
- name: tool.name,
- description: tool.description,
- status: tool.status,
- config: tool.config ? JSON.stringify(tool.config, null, 2) : '{}'
- });
- setIsModalOpen(true);
+  setIsCreateExpanded(false);
+  setSelectedTool(tool);
+  setFormData({
+   name: tool.name,
+   description: tool.description,
+   status: tool.status,
+   config: tool.config || {}
+  });
+  setIsModalOpen(true);
  };
 
  const toggleCreate = () => {
- if (!isCreateExpanded) {
- setSelectedTool(null);
- setFormData({
- name: '',
- description: '',
- status: 'enabled',
- config: '{}'
- });
- setError('');
- }
- setIsCreateExpanded(!isCreateExpanded);
+  if (!isCreateExpanded) {
+   setSelectedTool(null);
+   setFormData({
+    name: '',
+    description: '',
+    status: 'enabled',
+    config: {}
+   });
+   setError('');
+  }
+  setIsCreateExpanded(!isCreateExpanded);
  };
 
  const handleSubmit = async (e: React.FormEvent) => {
- e.preventDefault();
- setIsActionLoading(true);
- setError('');
+  e.preventDefault();
+  setIsActionLoading(true);
+  setError('');
 
- let parsedConfig: Record<string, any> = {};
- try {
- parsedConfig = JSON.parse(formData.config);
- } catch {
- setError('Invalid JSON in configuration field.');
- setIsActionLoading(false);
- return;
- }
+  const payload = {
+   name: formData.name,
+   description: formData.description,
+   status: formData.status,
+   config: typeof formData.config === 'object' ? formData.config : {}
+  };
 
- const payload = { ...formData, config: parsedConfig };
+  const { error: err } = selectedTool
+   ? await updateAwarenessTool(selectedTool.id, payload)
+   : await createAwarenessTool(payload);
 
- const { error: err } = selectedTool
- ? await updateAwarenessTool(selectedTool.id, payload)
- : await createAwarenessTool(payload);
-
- if (err) {
- setError(err);
- setIsActionLoading(false);
- } else {
- if (selectedTool) {
- setIsModalOpen(false);
- } else {
- setIsCreateExpanded(false);
- }
- fetchTools();
- setIsActionLoading(false);
- }
+  if (err) {
+   setError(err);
+   setIsActionLoading(false);
+  } else {
+   if (selectedTool) {
+    setIsModalOpen(false);
+   } else {
+    setIsCreateExpanded(false);
+   }
+   fetchTools();
+   setIsActionLoading(false);
+  }
  };
 
  const handleToggleStatus = async (tool: AwarenessTool) => {
@@ -212,13 +214,13 @@ export default function AdminAwarenessToolsPage() {
  <option value="disabled">Disabled</option>
  </select>
  </div>
- <div>
- <label className="block text-sm font-semibold text-foreground mb-1.5">Configuration (JSON)</label>
- <textarea
- className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[150px]"
- placeholder='{ "key": "value" }'
- value={formData.config}
- onChange={(e) => setFormData({ ...formData, config: e.target.value })}
+ <div className="pt-2">
+ <div className="text-sm font-semibold text-foreground mb-2">Tool Configuration & Interactive Features</div>
+ <ToolConfigBuilder
+  key={isCreateExpanded ? "new-tool-active" : "new-tool-idle"}
+  initialConfig={formData.config}
+  onChange={(newConfig) => setFormData(prev => ({ ...prev, config: newConfig }))}
+  toolName={formData.name}
  />
  </div>
  <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">
@@ -357,13 +359,13 @@ export default function AdminAwarenessToolsPage() {
  <option value="disabled">Disabled</option>
  </select>
  </div>
- <div>
- <label className="block text-sm font-semibold text-foreground mb-1.5">Configuration (JSON)</label>
- <textarea
- className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 min-h-[150px]"
- placeholder='{ "key": "value" }'
- value={formData.config}
- onChange={(e) => setFormData({ ...formData, config: e.target.value })}
+ <div className="pt-2">
+ <div className="text-sm font-semibold text-foreground mb-2">Tool Configuration & Interactive Features</div>
+ <ToolConfigBuilder
+  key={selectedTool?.id || "edit-tool"}
+  initialConfig={formData.config}
+  onChange={(newConfig) => setFormData(prev => ({ ...prev, config: newConfig }))}
+  toolName={formData.name}
  />
  </div>
  <div className="pt-4 flex flex-wrap justify-end gap-3 min-w-fit">

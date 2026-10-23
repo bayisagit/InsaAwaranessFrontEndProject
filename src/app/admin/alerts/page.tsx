@@ -18,7 +18,8 @@ interface Alert {
  status: string;
  notify_email: boolean;
  notify_sms: boolean;
- organization: string;
+ organization: string | null;
+ organization_name?: string | null;
  published_at: string;
 }
 
@@ -132,7 +133,11 @@ export default function AdminAlertsPage() {
  ev.preventDefault(); setActionError(''); setIsActionLoading(true);
  const isEditing = !!selectedAlert;
  const endpoint = `/api/v1/alerts/${isEditing ? `${selectedAlert!.id}/` : ''}`;
- const { error: apiErr, status } = await apiFetch(endpoint, { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(form) });
+ const payload = {
+  ...form,
+  organization: form.organization ? form.organization : null,
+ };
+ const { error: apiErr, status } = await apiFetch(endpoint, { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(payload) });
  if (apiErr || (status !== 200 && status !== 201)) setActionError(apiErr || 'Failed to save.');
  else { 
  fetchAlerts(); 
@@ -206,11 +211,16 @@ export default function AdminAlertsPage() {
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
- <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
- <option value="" className="text-foreground">Select Organization</option>
- {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
+ <label className="block text-sm font-semibold text-foreground mb-1">Target Audience / Organization</label>
+ <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
+ <option value="" className="text-foreground font-semibold">🌐 Public (All Organizations & Public Users)</option>
+ {orgs.length > 0 && (
+ <optgroup label="Specific Organization Only">
+ {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">🏢 {o.name}</option>)}
+ </optgroup>
+ )}
  </select>
+ <p className="text-[11px] text-muted-foreground mt-1">Leave as &quot;Public&quot; to broadcast outside organizations to all users, or select an organization to restrict.</p>
  </div>
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Severity</label>
@@ -250,13 +260,14 @@ export default function AdminAlertsPage() {
  <tr>
  <th className="px-6 py-4">Severity / Status</th>
  <th className="px-6 py-4">Title / Message</th>
+ <th className="px-6 py-4">Audience</th>
  <th className="px-6 py-4">Published</th>
  <th className="px-6 py-4 text-right">Actions</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-border">
  {alerts.length === 0 ? (
- <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No alerts yet.</td></tr>
+ <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">No alerts yet.</td></tr>
  ) : alerts.map(a => (
   <tr key={a.id} className="hover:bg-muted/50 transition-colors">
   <td className="px-6 py-4 whitespace-nowrap">
@@ -281,6 +292,19 @@ export default function AdminAlertsPage() {
   <td className="px-6 py-4">
   <div className="font-semibold text-foreground">{a.title}</div>
   <div className="text-muted-foreground text-xs line-clamp-1 max-w-sm mt-0.5">{a.message}</div>
+  </td>
+  <td className="px-6 py-4 whitespace-nowrap">
+  {a.organization ? (
+  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary text-secondary-foreground border border-border">
+  <span>🏢</span>
+  <span className="max-w-[140px] truncate">{orgs.find(o => o.id === a.organization)?.name || a.organization_name || 'Organization'}</span>
+  </span>
+  ) : (
+  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+  <span>🌐</span>
+  <span>Public (Global)</span>
+  </span>
+  )}
   </td>
   <td className="px-6 py-4 text-xs whitespace-nowrap text-muted-foreground">
   {a.published_at ? new Date(a.published_at).toLocaleDateString() : 'Not published'}
@@ -331,11 +355,16 @@ export default function AdminAlertsPage() {
 
  <div className="grid grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Organization</label>
- <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} required disabled={isActionLoading}>
- <option value="" className="text-foreground">Select Organization</option>
- {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">{o.name}</option>)}
+ <label className="block text-sm font-semibold text-foreground mb-1">Target Audience / Organization</label>
+ <select className={SELECT_CLS} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} disabled={isActionLoading}>
+ <option value="" className="text-foreground font-semibold">🌐 Public (All Organizations & Public Users)</option>
+ {orgs.length > 0 && (
+ <optgroup label="Specific Organization Only">
+ {orgs.map(o => <option key={o.id} value={o.id} className="text-foreground">🏢 {o.name}</option>)}
+ </optgroup>
+ )}
  </select>
+ <p className="text-[11px] text-muted-foreground mt-1">Leave as &quot;Public&quot; to broadcast outside organizations to all users, or select an organization to restrict.</p>
  </div>
  <div>
  <label className="block text-sm font-semibold text-foreground mb-1">Severity</label>

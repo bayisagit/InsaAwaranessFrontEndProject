@@ -17,6 +17,7 @@ import { Input } from '@/components/Input';
 import { Modal } from '@/components/Modal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { ExpandableCreateSection } from '@/components/ExpandableCreateSection';
+import { ReportDataBuilder } from '@/components/builders/ReportDataBuilder';
 import { toast } from 'react-hot-toast';
 
 const SELECT_CLS = "block w-full rounded-lg border border-border py-2.5 px-3 text-sm shadow-sm shadow-black/5 dark:shadow-none focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none bg-card";
@@ -46,11 +47,16 @@ export default function AdminReportsPage() {
  const [isActionLoading, setIsActionLoading] = useState(false);
  const [actionError, setActionError] = useState('');
  const [selected, setSelected] = useState<ComplianceReport | null>(null);
- const [form, setForm] = useState({
- organization: '',
- title: '',
- status: 'draft' as ComplianceReport['status'],
- report_data: ''
+ const [form, setForm] = useState<{
+  organization: string;
+  title: string;
+  status: ComplianceReport['status'];
+  report_data: Record<string, any>;
+ }>({
+  organization: '',
+  title: '',
+  status: 'draft',
+  report_data: {}
  });
 
  const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean; id: string | null }>({ isOpen: false, id: null });
@@ -103,51 +109,42 @@ export default function AdminReportsPage() {
  const getOrgName = (id: string) => orgs.find(o => o.id === id)?.name || id;
 
  const openModal = (item: ComplianceReport) => {
- setActionError('');
- setIsCreateExpanded(false);
- setSelected(item);
- setForm({
- organization: item.organization || '',
- title: item.title,
- status: item.status,
- report_data: item.report_data ? JSON.stringify(item.report_data, null, 2) : '{}'
- });
- setIsModalOpen(true);
+  setActionError('');
+  setIsCreateExpanded(false);
+  setSelected(item);
+  setForm({
+   organization: item.organization || '',
+   title: item.title,
+   status: item.status,
+   report_data: item.report_data || {}
+  });
+  setIsModalOpen(true);
  };
 
  const toggleCreate = () => {
- if (!isCreateExpanded) {
- setActionError('');
- setSelected(null);
- setForm({
- organization: user?.role === 'org_admin' ? (user.organization_id || '') : '',
- title: '',
- status: 'draft',
- report_data: '{}'
- });
- }
- setIsCreateExpanded(!isCreateExpanded);
+  if (!isCreateExpanded) {
+   setActionError('');
+   setSelected(null);
+   setForm({
+    organization: user?.role === 'org_admin' ? (user.organization_id || '') : '',
+    title: '',
+    status: 'draft',
+    report_data: {}
+   });
+  }
+  setIsCreateExpanded(!isCreateExpanded);
  };
 
  const handleSubmit = async (ev: React.FormEvent) => {
- ev.preventDefault(); setActionError(''); setIsActionLoading(true);
- const isEditing = !!selected;
+  ev.preventDefault(); setActionError(''); setIsActionLoading(true);
+  const isEditing = !!selected;
 
- let parsedReportData: Record<string, any> = {};
- try {
- parsedReportData = JSON.parse(form.report_data);
- } catch {
- setActionError('Invalid JSON in report data field.');
- setIsActionLoading(false);
- return;
- }
-
- const payload = {
- organization: form.organization,
- title: form.title,
- status: form.status,
- report_data: parsedReportData
- };
+  const payload = {
+   organization: form.organization,
+   title: form.title,
+   status: form.status,
+   report_data: typeof form.report_data === 'object' ? form.report_data : {}
+  };
 
  const { error: apiErr } = isEditing
  ? await updateComplianceReport(selected!.id, payload)
@@ -253,14 +250,13 @@ export default function AdminReportsPage() {
  </div>
  </div>
 
- <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Report Data (JSON)</label>
- <textarea
- className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[150px] resize-y"
- placeholder='{ "findings": [], "summary": "" }'
- value={form.report_data}
- onChange={e => setForm({ ...form, report_data: e.target.value })}
- disabled={isActionLoading}
+ <div className="pt-2">
+ <div className="text-sm font-semibold text-foreground mb-2">Report Content & Findings Builder</div>
+ <ReportDataBuilder
+  key={isCreateExpanded ? "new-report-active" : "new-report-idle"}
+  initialData={form.report_data}
+  onChange={(newData) => setForm(prev => ({ ...prev, report_data: newData }))}
+  reportTitle={form.title}
  />
  </div>
 
@@ -374,14 +370,13 @@ export default function AdminReportsPage() {
  </div>
  </div>
 
- <div>
- <label className="block text-sm font-semibold text-foreground mb-1">Report Data (JSON)</label>
- <textarea
- className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[150px] resize-y"
- placeholder='{ "findings": [], "summary": "" }'
- value={form.report_data}
- onChange={e => setForm({ ...form, report_data: e.target.value })}
- disabled={isActionLoading}
+ <div className="pt-2">
+ <div className="text-sm font-semibold text-foreground mb-2">Report Content & Findings Builder</div>
+ <ReportDataBuilder
+  key={selected?.id || "edit-report"}
+  initialData={form.report_data}
+  onChange={(newData) => setForm(prev => ({ ...prev, report_data: newData }))}
+  reportTitle={form.title}
  />
  </div>
 

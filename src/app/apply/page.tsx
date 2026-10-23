@@ -113,9 +113,14 @@ export default function ApplyPage() {
                     <p className="text-muted-foreground text-sm mb-2">
                         <span dangerouslySetInnerHTML={{ __html: t.raw('submittedDesc').replace('{name}', submittedName) }} />
                     </p>
-                    <p className="text-muted-foreground text-sm mb-8 leading-relaxed max-w-sm mx-auto">
+                    <p className="text-muted-foreground text-sm mb-4 leading-relaxed max-w-sm mx-auto">
                         <span dangerouslySetInnerHTML={{ __html: t.raw('underReview') }} />
                     </p>
+                    {form.contact_email && (
+                        <div className="mb-6 p-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-medium max-w-sm mx-auto">
+                            📩 An acknowledgment email has been sent to <strong>{form.contact_email}</strong>.
+                        </div>
+                    )}
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Button
                             variant="outline"

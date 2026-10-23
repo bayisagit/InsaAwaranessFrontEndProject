@@ -28,8 +28,8 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
  const [error, setError] = useState<string | null>(null);
  const fileInputRef = useRef<HTMLInputElement>(null);
 
- const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
- const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+ const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'doz1fanub';
+ const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'insa_upload';
 
  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
  const file = event.target.files?.[0];
