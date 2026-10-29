@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, SidebarFooter, useSidebar } from '@/components/ui/sidebar';
 import { BookOpen, Layers, FileText, CheckSquare, Award, Settings, ArrowLeft, LayoutDashboard, ShieldAlert, User, LogOut, BarChart3, PieChart, Eye, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
@@ -23,6 +23,84 @@ import { useAuth } from '@/context/AuthContext';
 
 interface CourseWorkspaceLayoutProps {
     children: React.ReactNode;
+}
+
+interface CourseWorkspaceSidebarProps {
+    courseId: string | null;
+    courseName: string;
+    navItems: { title: string; url: string; icon: React.ElementType }[];
+    pathname: string;
+}
+
+function CourseWorkspaceSidebar({
+    courseId,
+    courseName,
+    navItems,
+    pathname,
+}: CourseWorkspaceSidebarProps) {
+    const { setOpenMobile, isMobile } = useSidebar();
+
+    useEffect(() => {
+        if (isMobile) {
+            setOpenMobile(false);
+        }
+    }, [pathname, isMobile, setOpenMobile]);
+
+    const handleItemClick = () => {
+        if (isMobile) {
+            setOpenMobile(false);
+        }
+    };
+
+    return (
+        <Sidebar collapsible="icon" className="border-r border-border bg-card">
+            <SidebarHeader className="py-4 px-2">
+                <Link
+                    href="/admin"
+                    onClick={handleItemClick}
+                    className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 uppercase tracking-widest mb-4 px-2"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Admin
+                </Link>
+                <div className="px-2">
+                    <div className="flex items-center gap-3 mb-3 mt-1">
+                        <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                            <BookOpen className="size-5" />
+                        </div>
+                        <div>
+                            <h2 className="text-sm font-bold leading-tight line-clamp-2 text-foreground">{courseName}</h2>
+                            <p className="text-xs text-muted-foreground mt-0.5">Course Workspace</p>
+                        </div>
+                    </div>
+                </div>
+            </SidebarHeader>
+            <SidebarSeparator />
+            
+            <SidebarContent className="px-2 py-4">
+                <SidebarMenu>
+                    {courseId && navItems.map((item) => {
+                        const isOverview = item.url === `/admin/courses/${courseId}`;
+                        const isActive = isOverview ? pathname === item.url : pathname.startsWith(item.url + '/') || pathname === item.url;
+                        return (
+                            <SidebarMenuItem key={item.title}>
+                                <SidebarMenuButton
+                                    isActive={isActive}
+                                    tooltip={item.title}
+                                    render={<Link href={item.url} />}
+                                    onClick={handleItemClick}
+                                    className="hover:bg-muted/50"
+                                >
+                                    <item.icon className="size-4 shrink-0" />
+                                    <span>{item.title}</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        );
+                    })}
+                </SidebarMenu>
+            </SidebarContent>
+        </Sidebar>
+    );
 }
 
 export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) {
@@ -173,43 +251,12 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
     return (
         <SidebarProvider>
             {/* Course Specific Sidebar */}
-            <Sidebar collapsible="icon" className="border-r border-border bg-card">
-                <SidebarHeader className="py-4 px-2">
-                    <Link href="/admin" className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 transition-colors uppercase tracking-widest mb-4 px-2">
-                        <ArrowLeft className="w-4 h-4" />
-                        Back to Admin
-                    </Link>
-                    <div className="px-2">
-                        <div className="flex items-center gap-3 mb-3 mt-1">
-                            <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                                <BookOpen className="size-5" />
-                            </div>
-                            <div>
-                                <h2 className="text-sm font-bold leading-tight line-clamp-2 text-foreground">{courseName}</h2>
-                                <p className="text-xs text-muted-foreground mt-0.5">Course Workspace</p>
-                            </div>
-                        </div>
-                    </div>
-                </SidebarHeader>
-                <SidebarSeparator />
-                
-                <SidebarContent className="px-2 py-4">
-                    <SidebarMenu>
-                        {courseId && navItems.map((item) => {
-                            const isOverview = item.url === `/admin/courses/${courseId}`;
-                            const isActive = isOverview ? pathname === item.url : pathname.startsWith(item.url + '/') || pathname === item.url;
-                            return (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton isActive={isActive} tooltip={item.title} render={<Link href={item.url} />} className="hover:bg-muted/50">
-                                        <item.icon className="size-4 shrink-0" />
-                                        <span>{item.title}</span>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            )
-                        })}
-                    </SidebarMenu>
-                </SidebarContent>
-            </Sidebar>
+            <CourseWorkspaceSidebar
+                courseId={courseId}
+                courseName={courseName}
+                navItems={navItems}
+                pathname={pathname}
+            />
 
             {/* Main Content Area */}
             <SidebarInset className="flex flex-col flex-1 overflow-hidden h-screen bg-muted">

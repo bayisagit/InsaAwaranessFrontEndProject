@@ -296,6 +296,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   }, [pathname, isMobile, setOpenMobile]);
   
+  const handleItemClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   const handleLogout = () => setIsLogoutModalOpen(true);
   const confirmLogout = () => {
     logout();
@@ -340,7 +346,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href={homeUrl} />} className="group/logo">
+            <SidebarMenuButton size="lg" render={<Link href={homeUrl} />} onClick={handleItemClick} className="group/logo">
               <div className="flex items-center gap-3 w-full overflow-hidden">
                 <div className="flex aspect-square size-8 items-center justify-center group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:shrink-0!">
                   <img src="/logo.png" alt="INSA" className="h-8 w-8 object-contain" />
@@ -385,7 +391,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <SidebarMenuSub>
                               {item.subItems!.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarMenuSubButton isActive={pathname === subItem.url} render={<Link href={subItem.url} />}>
+                                  <SidebarMenuSubButton isActive={pathname === subItem.url} render={<Link href={subItem.url} />} onClick={handleItemClick}>
                                     <span>{getTitle(subItem.title)}</span>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
@@ -400,7 +406,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   // No sub-items
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton isActive={isActive} tooltip={getTitle(item.title)} render={<Link href={item.url} />}>
+                      <SidebarMenuButton isActive={isActive} tooltip={getTitle(item.title)} render={<Link href={item.url} />} onClick={handleItemClick}>
                         <item.icon className="size-4 shrink-0" />
                         <span>{getTitle(item.title)}</span>
                       </SidebarMenuButton>
@@ -418,20 +424,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip={t('settings')} render={<Link href="/profile" />}>
+            <SidebarMenuButton tooltip={t('settings')} render={<Link href="/profile" />} onClick={handleItemClick}>
               <Settings className="size-4 shrink-0" />
               <span>{t('settings')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip={t('notifications')} render={<Link href="/notifications" />}>
+            <SidebarMenuButton tooltip={t('notifications')} render={<Link href="/notifications" />} onClick={handleItemClick}>
               <Bell className="size-4 shrink-0" />
               <span>{t('notifications')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           {isInstallable && (
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={triggerInstall} tooltip="Install App" className="flex items-center gap-3 w-full text-primary hover:text-primary hover:bg-primary/10 cursor-pointer transition-colors duration-200">
+              <SidebarMenuButton onClick={() => { handleItemClick(); triggerInstall(); }} tooltip="Install App" className="flex items-center gap-3 w-full text-primary hover:text-primary hover:bg-primary/10 cursor-pointer transition-colors duration-200">
                 <Download className="size-4 shrink-0" />
                 <span>Install App</span>
               </SidebarMenuButton>

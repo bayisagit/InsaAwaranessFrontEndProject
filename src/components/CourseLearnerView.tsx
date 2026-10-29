@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarInset, SidebarTrigger, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, useSidebar } from '@/components/ui/sidebar';
 import { BookOpen, Layers, CheckSquare, Award, ArrowLeft, CheckCircle2, Circle, ChevronDown, GraduationCap, ArrowRight, User, LogOut, Bell } from 'lucide-react';
 import { apiFetch, Course, CourseModule, Enrollment, getAssessments, getAssessment, Assessment } from '@/lib/api';
 import { AssessmentViewer } from '@/components/AssessmentViewer';
@@ -25,6 +25,159 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmModal } from '@/components/ConfirmModal';
+
+interface CourseLearnerSidebarProps {
+    courseId: string;
+    previewMode: boolean;
+    activeSectionId: string;
+    modules: CourseModule[];
+    expandedModules: Record<string, boolean>;
+    toggleModule: (moduleId: string) => void;
+    scrollToSection: (id: string) => void;
+}
+
+function CourseLearnerSidebar({
+    courseId,
+    previewMode,
+    activeSectionId,
+    modules,
+    expandedModules,
+    toggleModule,
+    scrollToSection,
+}: CourseLearnerSidebarProps) {
+    const { setOpenMobile, isMobile } = useSidebar();
+
+    const handleSelectSection = (id: string) => {
+        scrollToSection(id);
+        if (isMobile) {
+            setOpenMobile(false);
+        }
+    };
+
+    const handleLinkClick = () => {
+        if (isMobile) {
+            setOpenMobile(false);
+        }
+    };
+
+    return (
+        <Sidebar className="border-r border-border bg-card">
+            <SidebarHeader className="p-5 border-b border-border bg-muted/30">
+                <Link
+                    href={previewMode ? `/admin/courses/${courseId}` : "/dashboard/courses"}
+                    onClick={handleLinkClick}
+                    className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 uppercase tracking-widest"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    {previewMode ? "Admin Workspace" : "My Courses"}
+                </Link>
+            </SidebarHeader>
+            
+            <SidebarContent className="p-3">
+                {/* Overview Nav */}
+                <button
+                    onClick={() => handleSelectSection('overview')}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${activeSectionId === 'overview' ? 'bg-primary text-white shadow-md' : 'text-foreground hover:bg-muted/50'}`}
+                >
+                    <BookOpen className="w-4 h-4" />
+                    Overview
+                </button>
+                
+                <div className="mt-6 mb-2 px-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Course Content</div>
+                
+                {/* Modules and Lessons Nav */}
+                <div className="space-y-1">
+                    {modules.map((mod, index) => {
+                        const modId = `module-${mod.id}`;
+                        const isActiveMod = activeSectionId === modId;
+                        const isExpanded = expandedModules[mod.id];
+                        
+                        return (
+                            <div key={mod.id} className="flex flex-col">
+                                <button
+                                    onClick={() => {
+                                        toggleModule(mod.id);
+                                        scrollToSection(modId);
+                                    }}
+                                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${isActiveMod ? 'text-primary bg-primary/5' : 'text-foreground hover:bg-muted/30'}`}
+                                >
+                                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`} />
+                                    <span className="truncate">Module {index + 1}: {mod.title}</span>
+                                </button>
+                                
+                                {/* Lessons */}
+                                <div className={`pl-8 pr-3 flex flex-col gap-0.5 overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 mt-1 mb-2 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    {(mod.lessons || []).sort((a, b) => a.order - b.order).map((lesson, lIdx) => {
+                                        const lesId = `lesson-${lesson.id}`;
+                                        const isActiveLes = activeSectionId === lesId;
+                                        return (
+                                            <div key={lesson.id} className="flex flex-col gap-0.5">
+                                                <button
+                                                    onClick={() => handleSelectSection(lesId)}
+                                                    className={`w-full flex items-start gap-2 py-1.5 px-2 rounded-md text-xs text-left transition-colors cursor-pointer ${isActiveLes ? 'text-primary font-bold bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}
+                                                >
+                                                    <Circle className={`w-2 h-2 mt-1 shrink-0 ${isActiveLes ? 'fill-primary' : ''}`} />
+                                                    <span className="line-clamp-2">Lesson {lIdx + 1}: {lesson.title}</span>
+                                                </button>
+                                                {lesson.assessment && (
+                                                    <button
+                                                        onClick={() => handleSelectSection(`${lesId}-assessment`)}
+                                                        className={`w-full flex items-start gap-2 py-1.5 px-2 pl-6 rounded-md text-xs text-left transition-colors cursor-pointer ${activeSectionId === `${lesId}-assessment` ? 'text-indigo-600 font-bold bg-indigo-50 dark:bg-indigo-500/10 dark:text-indigo-400' : 'text-muted-foreground hover:text-indigo-500'}`}
+                                                    >
+                                                        <CheckSquare className="w-3 h-3 mt-0.5 shrink-0" />
+                                                        <span className="line-clamp-2">Lesson Assessment</span>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                    
+                                    {/* Module Quizzes */}
+                                    {(mod.module_quizzes || []).map((quiz, qIdx) => {
+                                        const quizId = `module-${mod.id}-quiz-${quiz.id}`;
+                                        const isActiveQuiz = activeSectionId === quizId;
+                                        return (
+                                            <button
+                                                key={quiz.id}
+                                                onClick={() => handleSelectSection(quizId)}
+                                                className={`w-full flex items-start gap-2 py-2 px-2 mt-1 rounded-md text-xs text-left font-bold transition-colors cursor-pointer ${isActiveQuiz ? 'text-orange-600 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400' : 'text-orange-500/80 hover:text-orange-600 dark:hover:text-orange-400'}`}
+                                            >
+                                                <Award className="w-3 h-3 mt-0.5 shrink-0" />
+                                                <span className="line-clamp-2">Module Quiz: {quiz.title || `Quiz ${qIdx + 1}`}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+                
+                {/* Assessments Nav */}
+                <div className="mt-6 mb-2">
+                    <button
+                        onClick={() => handleSelectSection('assessment')}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${activeSectionId === 'assessment' ? 'bg-primary text-white shadow-md' : 'text-foreground hover:bg-muted/50'}`}
+                    >
+                        <Award className="w-4 h-4" />
+                        Final Assessment
+                    </button>
+                </div>
+
+                <div className="mt-2 mb-2">
+                    <Link
+                        href={previewMode ? "#" : "/dashboard/certificates"}
+                        onClick={handleLinkClick}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition-all duration-200"
+                    >
+                        <Award className="w-4 h-4" />
+                        My Certificates
+                    </Link>
+                </div>
+            </SidebarContent>
+        </Sidebar>
+    );
+}
 
 export function CourseLearnerView({ courseId, previewMode = false }: { courseId: string; previewMode?: boolean }) {
     const router = useRouter();
@@ -191,113 +344,15 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
     return (
         <SidebarProvider>
             {/* Sidebar */}
-            <Sidebar className="border-r border-border bg-card">
-                <SidebarHeader className="p-5 border-b border-border bg-muted/30">
-                    <Link href={previewMode ? `/admin/courses/${courseId}` : "/dashboard/courses"} className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 uppercase tracking-widest">
-                        <ArrowLeft className="w-4 h-4" />
-                        {previewMode ? "Admin Workspace" : "My Courses"}
-                    </Link>
-                </SidebarHeader>
-                
-                <SidebarContent className="p-3">
-                    {/* Overview Nav */}
-                    <button
-                        onClick={() => scrollToSection('overview')}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeSectionId === 'overview' ? 'bg-primary text-white shadow-md' : 'text-foreground hover:bg-muted/50'}`}
-                    >
-                        <BookOpen className="w-4 h-4" />
-                        Overview
-                    </button>
-                    
-                    <div className="mt-6 mb-2 px-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Course Content</div>
-                    
-                    {/* Modules and Lessons Nav */}
-                    <div className="space-y-1">
-                        {modules.map((mod, index) => {
-                            const modId = `module-${mod.id}`;
-                            const isActiveMod = activeSectionId === modId;
-                            const isExpanded = expandedModules[mod.id];
-                            
-                            return (
-                                <div key={mod.id} className="flex flex-col">
-                                    <button
-                                        onClick={() => {
-                                            toggleModule(mod.id);
-                                            scrollToSection(modId);
-                                        }}
-                                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${isActiveMod ? 'text-primary bg-primary/5' : 'text-foreground hover:bg-muted/30'}`}
-                                    >
-                                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`} />
-                                        <span className="truncate">Module {index + 1}: {mod.title}</span>
-                                    </button>
-                                    
-                                    {/* Lessons */}
-                                    <div className={`pl-8 pr-3 flex flex-col gap-0.5 overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 mt-1 mb-2 opacity-100' : 'max-h-0 opacity-0'}`}>
-                                        {(mod.lessons || []).sort((a, b) => a.order - b.order).map((lesson, lIdx) => {
-                                            const lesId = `lesson-${lesson.id}`;
-                                            const isActiveLes = activeSectionId === lesId;
-                                            return (
-                                                <div key={lesson.id} className="flex flex-col gap-0.5">
-                                                    <button
-                                                        onClick={() => scrollToSection(lesId)}
-                                                        className={`w-full flex items-start gap-2 py-1.5 px-2 rounded-md text-xs text-left transition-colors ${isActiveLes ? 'text-primary font-bold bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}
-                                                    >
-                                                        <Circle className={`w-2 h-2 mt-1 shrink-0 ${isActiveLes ? 'fill-primary' : ''}`} />
-                                                        <span className="line-clamp-2">Lesson {lIdx + 1}: {lesson.title}</span>
-                                                    </button>
-                                                    {lesson.assessment && (
-                                                        <button
-                                                            onClick={() => scrollToSection(`${lesId}-assessment`)}
-                                                            className={`w-full flex items-start gap-2 py-1.5 px-2 pl-6 rounded-md text-xs text-left transition-colors ${activeSectionId === `${lesId}-assessment` ? 'text-indigo-600 font-bold bg-indigo-50 dark:bg-indigo-500/10 dark:text-indigo-400' : 'text-muted-foreground hover:text-indigo-500'}`}
-                                                        >
-                                                            <CheckSquare className="w-3 h-3 mt-0.5 shrink-0" />
-                                                            <span className="line-clamp-2">Lesson Assessment</span>
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                        
-                                        {/* Module Quizzes */}
-                                        {(mod.module_quizzes || []).map((quiz, qIdx) => {
-                                            const quizId = `module-${mod.id}-quiz-${quiz.id}`;
-                                            const isActiveQuiz = activeSectionId === quizId;
-                                            return (
-                                                <button
-                                                    key={quiz.id}
-                                                    onClick={() => scrollToSection(quizId)}
-                                                    className={`w-full flex items-start gap-2 py-2 px-2 mt-1 rounded-md text-xs text-left font-bold transition-colors ${isActiveQuiz ? 'text-orange-600 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400' : 'text-orange-500/80 hover:text-orange-600 dark:hover:text-orange-400'}`}
-                                                >
-                                                    <Award className="w-3 h-3 mt-0.5 shrink-0" />
-                                                    <span className="line-clamp-2">Module Quiz: {quiz.title || `Quiz ${qIdx + 1}`}</span>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    
-                    {/* Assessments Nav */}
-                    <div className="mt-6 mb-2">
-                        <button
-                            onClick={() => scrollToSection('assessment')}
-                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeSectionId === 'assessment' ? 'bg-primary text-white shadow-md' : 'text-foreground hover:bg-muted/50'}`}
-                        >
-                            <Award className="w-4 h-4" />
-                            Final Assessment
-                        </button>
-                    </div>
-
-                    <div className="mt-2 mb-2">
-                        <Link href={previewMode ? "#" : "/dashboard/certificates"} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition-all duration-200">
-                            <Award className="w-4 h-4" />
-                            My Certificates
-                        </Link>
-                    </div>
-                </SidebarContent>
-            </Sidebar>
+            <CourseLearnerSidebar
+                courseId={courseId}
+                previewMode={previewMode}
+                activeSectionId={activeSectionId}
+                modules={modules}
+                expandedModules={expandedModules}
+                toggleModule={toggleModule}
+                scrollToSection={scrollToSection}
+            />
 
             {/* Main Content Area */}
             <SidebarInset className="flex flex-col flex-1 overflow-hidden h-screen bg-muted/30">

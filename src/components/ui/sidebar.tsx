@@ -199,7 +199,19 @@ function Sidebar({
  <SheetTitle>Sidebar</SheetTitle>
  <SheetDescription>Displays the mobile sidebar.</SheetDescription>
  </SheetHeader>
- <div className="flex h-full w-full flex-col">{children}</div>
+ <div
+ className="flex h-full w-full flex-col"
+ onClick={(event) => {
+ const target = event.target as HTMLElement | null
+ const anchor = target?.closest("a")
+ const closeTrigger = target?.closest("[data-sidebar-close='true']")
+ if ((anchor && anchor.getAttribute("href")) || closeTrigger) {
+ setOpenMobile(false)
+ }
+ }}
+ >
+ {children}
+ </div>
  </SheetContent>
  </Sheet>
  )
@@ -668,12 +680,15 @@ function SidebarMenuSubButton({
  size = "md",
  isActive = false,
  className,
+ onClick,
  ...props
 }: useRender.ComponentProps<"a"> &
  React.ComponentProps<"a"> & {
  size?: "sm" | "md"
  isActive?: boolean
  }) {
+ const { isMobile, setOpenMobile } = useSidebar()
+
  return useRender({
  defaultTagName: "a",
  props: mergeProps<"a">(
@@ -682,6 +697,12 @@ function SidebarMenuSubButton({
  "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-lg px-2 text-sidebar-foreground ring-sidebar-ring outline-hidden group-data-[collapsible=icon]:hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[size=md]:text-sm data-[size=sm]:text-xs data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",
  className
  ),
+ onClick: (event: React.MouseEvent<HTMLAnchorElement>) => {
+ onClick?.(event)
+ if (isMobile) {
+ setOpenMobile(false)
+ }
+ },
  },
  props
  ),
