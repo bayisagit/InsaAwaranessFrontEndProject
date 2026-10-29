@@ -69,7 +69,7 @@ export default function SignupPage() {
     const [isResending, setIsResending] = useState(false);
     const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
-    const { user, isAuthenticated, isLoading: isAuthLoading, checkAuth } = useAuth();
+    const { user, isAuthenticated, isLoading: isAuthLoading, checkAuth, loginSession } = useAuth();
     const t = useTranslations('auth');
 
     useEffect(() => {
@@ -79,8 +79,8 @@ export default function SignupPage() {
         }
     }, [isAuthenticated, isAuthLoading, user]);
 
-    const handleSocialLogin = (data: { access: string; refresh: string; user: { role: string; first_name?: string; must_change_password?: boolean }; dashboard_route?: string; must_change_password?: boolean }) => {
-        setTokens({ access: data.access, refresh: data.refresh });
+    const handleSocialLogin = (data: { access: string; refresh: string; user: any; dashboard_route?: string; must_change_password?: boolean }) => {
+        loginSession({ access: data.access, refresh: data.refresh }, data.user);
         const mustChange = data.must_change_password || data.user?.must_change_password;
         let target = '/dashboard';
         if (mustChange) {
@@ -98,7 +98,6 @@ export default function SignupPage() {
             const role = data.user?.role;
             target = (role === 'super_admin' || role === 'org_admin' || role === 'course_provider') ? '/admin' : '/dashboard';
         }
-        checkAuth().catch(() => {});
         window.location.href = target;
     };
 

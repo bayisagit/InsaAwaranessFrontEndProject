@@ -1,18 +1,21 @@
 export function getApiBaseUrl(): string {
-    // Server-side (Node.js SSR in Docker container or local server)
+    // Server-side (Node.js SSR in Docker container or cloud serverless function)
     if (typeof window === 'undefined') {
         return (
             process.env.INTERNAL_API_URL ||
             process.env.NEXT_PUBLIC_API_BASE_URL ||
             process.env.NEXT_PUBLIC_API_URL ||
-            'http://backend:8000'
+            (process.env.NODE_ENV === 'production'
+                ? 'https://insaawaranessbackendproject.onrender.com'
+                : 'http://backend:8000')
         );
     }
     // Client-side (Browser)
+    const isLocalhost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname);
     return (
         process.env.NEXT_PUBLIC_API_BASE_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
-        (window.location.hostname === 'localhost'
+        (isLocalhost
             ? 'http://localhost:8000'
             : 'https://insaawaranessbackendproject.onrender.com')
     );
@@ -20,10 +23,15 @@ export function getApiBaseUrl(): string {
 
 export const API_BASE_URL =
     (typeof window === 'undefined'
-        ? (process.env.INTERNAL_API_URL || 'http://backend:8000')
+        ? (process.env.INTERNAL_API_URL ||
+           process.env.NEXT_PUBLIC_API_BASE_URL ||
+           process.env.NEXT_PUBLIC_API_URL ||
+           (process.env.NODE_ENV === 'production'
+               ? 'https://insaawaranessbackendproject.onrender.com'
+               : 'http://backend:8000'))
         : (process.env.NEXT_PUBLIC_API_BASE_URL ||
            process.env.NEXT_PUBLIC_API_URL ||
-           (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+           (typeof window !== 'undefined' && ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname)
                ? 'http://localhost:8000'
                : 'https://insaawaranessbackendproject.onrender.com')));
 // Types
@@ -695,11 +703,26 @@ export interface DemographicDistribution {
     organizations: Record<string, number>;
 }
 
-// Token Management Hook-like helpers for local storage
+// Token Management Hook-like helpers for local storage and cookies
 export const getTokens = (): Tokens | null => {
     if (typeof window === 'undefined') return null;
-    const access = localStorage.getItem('access_token');
-    const refresh = localStorage.getItem('refresh_token');
+    let access = localStorage.getItem('access_token');
+    let refresh = localStorage.getItem('refresh_token');
+
+    // Cookie fallback for cross-tab or hydration resiliency
+    if (!access && typeof document !== 'undefined') {
+        const match = document.cookie.match(/(?:^|;\s*)access_token=([^;]+)/);
+        if (match) {
+            access = decodeURIComponent(match[1]);
+            localStorage.setItem('access_token', access);
+        }
+        const refMatch = document.cookie.match(/(?:^|;\s*)refresh_token=([^;]+)/);
+        if (refMatch) {
+            refresh = decodeURIComponent(refMatch[1]);
+            localStorage.setItem('refresh_token', refresh);
+        }
+    }
+
     if (access) return { access, refresh: refresh || undefined };
     return null;
 };
@@ -710,12 +733,28 @@ export const setTokens = (tokens: Tokens) => {
     if (tokens.refresh) {
         localStorage.setItem('refresh_token', tokens.refresh);
     }
+    // Also sync to cookie with 7-day expiration so SSR/browser requests keep auth alive
+    if (typeof document !== 'undefined') {
+        const isSecure = window.location.protocol === 'https:';
+        const secureFlag = isSecure ? '; Secure' : '';
+        document.cookie = `access_token=${encodeURIComponent(tokens.access)}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secureFlag}`;
+        if (tokens.refresh) {
+            document.cookie = `refresh_token=${encodeURIComponent(tokens.refresh)}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax${secureFlag}`;
+        }
+    }
 };
 
 export const clearTokens = () => {
     if (typeof window === 'undefined') return;
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('auth_user');
+    if (typeof document !== 'undefined') {
+        const isSecure = window.location.protocol === 'https:';
+        const secureFlag = isSecure ? '; Secure' : '';
+        document.cookie = `access_token=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
+        document.cookie = `refresh_token=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
+    }
 };
 
 // In-flight GET request deduplication cache to prevent parallel redundant fetches

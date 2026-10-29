@@ -17,14 +17,15 @@ function handlePostLogin(
     data: {
         access: string;
         refresh: string;
-        user: { role: string; first_name?: string; must_change_password?: boolean };
+        user: any;
         dashboard_route?: string;
         must_change_password?: boolean;
     },
     router: ReturnType<typeof useRouter>,
-    checkAuth: () => Promise<any>
+    loginSession: (tokens: { access: string; refresh?: string }, user: any) => void
 ) {
-    setTokens({ access: data.access, refresh: data.refresh });
+    // 1. Establish session in AuthContext, localStorage, and cookies synchronously
+    loginSession({ access: data.access, refresh: data.refresh }, data.user);
 
     const mustChange = data.must_change_password || data.user?.must_change_password;
     let target = '/dashboard';
@@ -50,7 +51,7 @@ function handlePostLogin(
         }
     }
 
-    checkAuth().catch(() => {});
+    // Direct, clean navigation without race-condition aborts
     window.location.href = target;
 }
 
@@ -62,7 +63,7 @@ export default function LoginPage() {
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [socialLoading, setSocialLoading] = useState<'google' | 'github' | null>(null);
     const router = useRouter();
-    const { user, isAuthenticated, isLoading: isAuthLoading, checkAuth } = useAuth();
+    const { user, isAuthenticated, isLoading: isAuthLoading, checkAuth, loginSession } = useAuth();
     const t = useTranslations('auth');
 
     const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
@@ -95,7 +96,7 @@ export default function LoginPage() {
             return;
         }
         toast.success(`Welcome, ${data.user.first_name || 'User'}!`);
-        handlePostLogin(data, router, checkAuth);
+        handlePostLogin(data, router, loginSession);
         setSocialLoading(null);
     };
 
@@ -161,7 +162,7 @@ export default function LoginPage() {
         }
         if (data?.access) {
             toast.success(`Welcome back, ${data.user.first_name || 'User'}!`);
-            handlePostLogin(data, router, checkAuth);
+            handlePostLogin(data, router, loginSession);
         }
         setIsLoading(false);
     };

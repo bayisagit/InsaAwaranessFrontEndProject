@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast';
 function CallbackContent() {
  const router = useRouter();
  const searchParams = useSearchParams();
- const { checkAuth } = useAuth();
+ const { checkAuth, loginSession } = useAuth();
  const [status, setStatus] = useState<'processing' | 'error'>('processing');
  const [errorMsg, setErrorMsg] = useState('');
 
@@ -46,8 +46,7 @@ function CallbackContent() {
  return;
  }
 
- setTokens({ access: data.access, refresh: data.refresh });
- await checkAuth();
+ loginSession({ access: data.access, refresh: data.refresh }, data.user);
 
  toast.success(`Welcome, ${data.user.first_name || 'User'}!`);
 
