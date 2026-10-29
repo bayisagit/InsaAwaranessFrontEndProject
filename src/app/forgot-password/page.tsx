@@ -161,8 +161,8 @@ function ForgotPasswordContent() {
     };
 
     return (
-        <div className="min-h-[85vh] flex flex-col items-center justify-center px-4 py-16 bg-muted">
-            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-3xl shadow-sm border border-border text-center">
+        <div className="min-h-[85vh] flex flex-col items-center justify-center px-3 sm:px-4 py-8 sm:py-16 bg-muted">
+            <div className="w-full max-w-md bg-card p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-sm border border-border text-center">
                 
                 {/* ══════════════════════════════════════════════════════════
                     STEP 1: ENTER EMAIL (Matching Screenshot 1)

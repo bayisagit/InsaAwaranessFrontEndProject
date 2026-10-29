@@ -93,8 +93,8 @@ export default function ChangePasswordPage() {
     }
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
-            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-3 sm:px-4 py-8 sm:py-20 bg-muted">
+            <div className="w-full max-w-md bg-card p-5 sm:p-8 md:p-10 rounded-xl sm:rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border">
 
                 {/* Forced-change banner */}
                 {user?.must_change_password && (

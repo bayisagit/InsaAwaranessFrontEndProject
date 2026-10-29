@@ -252,8 +252,8 @@ export default function SignupPage() {
 
     if (registeredEmail) {
         return (
-            <div className="min-h-[85vh] flex flex-col items-center justify-center px-4 py-16 bg-muted">
-                <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-3xl shadow-sm border border-border text-center">
+            <div className="min-h-[85vh] flex flex-col items-center justify-center px-3 sm:px-4 py-8 sm:py-16 bg-muted">
+                <div className="w-full max-w-md bg-card p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-sm border border-border text-center">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-2">
                         {isVerified ? 'Email Verified!' : 'Enter security code'}
                     </h1>
@@ -400,7 +400,7 @@ export default function SignupPage() {
                     </div>
                 </div>
             </div>
-            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-card py-12 overflow-y-auto">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-12 lg:px-24 bg-card py-8 sm:py-12 overflow-y-auto">
                 <div className="max-w-md w-full mx-auto">
                     <h2 className="text-3xl font-bold text-foreground mb-2">{t('createYourAccount')}</h2>
                     <p className="text-muted-foreground text-sm mb-8">{t('enterDetails')}</p>
@@ -476,7 +476,7 @@ export default function SignupPage() {
                                 {fieldErrors.non_field}
                             </div>
                         )}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <Input label={t('firstName')} placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={isLoading} autoComplete="given-name" />
                             <Input label={t('lastName')} placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={isLoading} autoComplete="family-name" />
                         </div>
@@ -489,7 +489,7 @@ export default function SignupPage() {
                                 ))}
                             </select>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="space-y-1">
                                 <Input label={t('password')} name="password" type="password" placeholder="Create a strong password" value={password} onChange={(e) => setPassword(e.target.value)} required showPasswordToggle error={fieldErrors.password} autoComplete="new-password" />
                                 {password && (

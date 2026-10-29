@@ -87,7 +87,7 @@ export function OtpInput({
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 sm:gap-3 my-4" onPaste={handlePaste}>
+        <div className="flex items-center justify-center gap-1.5 sm:gap-3 my-4 w-full" onPaste={handlePaste}>
             {/* First 3 Digits */}
             {digits.slice(0, 3).map((digit, i) => (
                 <input
@@ -101,13 +101,13 @@ export function OtpInput({
                     disabled={disabled}
                     onChange={(e) => handleChange(i, e)}
                     onKeyDown={(e) => handleKeyDown(i, e)}
-                    className="w-11 h-14 sm:w-13 sm:h-16 text-center text-2xl font-bold rounded-2xl border-2 border-border bg-card text-foreground transition-all duration-150 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed shadow-xs"
+                    className="w-10 h-13 sm:w-13 sm:h-16 text-xl sm:text-2xl font-bold rounded-xl sm:rounded-2xl border-2 border-border bg-card text-foreground transition-all duration-150 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed shadow-xs shrink-0"
                     autoComplete="one-time-code"
                 />
             ))}
 
             {/* Middle Hyphen Separator (as in Screenshot 2) */}
-            <span className="text-muted-foreground/60 font-semibold text-2xl select-none px-0.5 sm:px-1">-</span>
+            <span className="text-muted-foreground/60 font-semibold text-lg sm:text-2xl select-none px-0.5 sm:px-1 shrink-0">-</span>
 
             {/* Second 3 Digits */}
             {digits.slice(3, 6).map((digit, i) => {
@@ -124,7 +124,7 @@ export function OtpInput({
                         disabled={disabled}
                         onChange={(e) => handleChange(actualIndex, e)}
                         onKeyDown={(e) => handleKeyDown(actualIndex, e)}
-                        className="w-11 h-14 sm:w-13 sm:h-16 text-center text-2xl font-bold rounded-2xl border-2 border-border bg-card text-foreground transition-all duration-150 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed shadow-xs"
+                        className="w-10 h-13 sm:w-13 sm:h-16 text-xl sm:text-2xl font-bold rounded-xl sm:rounded-2xl border-2 border-border bg-card text-foreground transition-all duration-150 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed shadow-xs shrink-0"
                         autoComplete="one-time-code"
                     />
                 );

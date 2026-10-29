@@ -121,19 +121,19 @@ export default function DashboardCertificatesPage() {
  </section>
 
  {isLoadingCertificates ? (
- <div className="max-w-5xl mx-auto pt-10">
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-12 pt-6 sm:pt-10">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
  {[1, 2, 3, 4].map(i => (
  <CardSkeleton key={i} />
  ))}
  </div>
  </div>
  ) : error ? (
- <div className="max-w-5xl mx-auto py-10">
+ <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-12 py-6 sm:py-10">
  <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100">{error}</div>
  </div>
  ) : (
- <div className="max-w-5xl mx-auto pt-10">
+ <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-12 pt-6 sm:pt-10">
  {certificates.length === 0 ? (
  <EmptyState
  icon={

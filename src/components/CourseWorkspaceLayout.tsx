@@ -217,18 +217,18 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     <SidebarTrigger className="-ml-1 text-muted-foreground" />
                     
                     {/* Breadcrumbs */}
-                    <div className="flex-1 flex items-center text-sm font-medium text-muted-foreground">
-                        <Link href="/admin/courses" className="hover:text-primary transition-colors">Courses</Link>
-                        <span className="mx-2 text-gray-300">/</span>
-                        <Link href={`/admin/courses/${courseId}`} className={`hover:text-primary transition-colors ${!moduleName ? 'text-foreground' : ''}`}>
+                    <div className="flex-1 flex items-center text-xs sm:text-sm font-medium text-muted-foreground min-w-0 overflow-hidden">
+                        <Link href="/admin/courses" className="hover:text-primary transition-colors shrink-0">Courses</Link>
+                        <span className="mx-1.5 sm:mx-2 text-gray-300 shrink-0">/</span>
+                        <Link href={`/admin/courses/${courseId}`} className={`hover:text-primary transition-colors truncate max-w-[100px] sm:max-w-[200px] md:max-w-none ${!moduleName ? 'text-foreground' : ''}`}>
                             {courseName}
                         </Link>
                         {moduleName && moduleId && (
                             <>
-                                <span className="mx-2 text-gray-300">/</span>
+                                <span className="mx-1.5 sm:mx-2 text-gray-300 shrink-0">/</span>
                                 <Link
                                     href={courseId ? `/admin/courses/${courseId}/modules/${moduleId}` : `/admin/modules/${moduleId}`}
-                                    className={`hover:text-primary transition-colors ${!lessonName ? 'text-foreground' : ''}`}
+                                    className={`hover:text-primary transition-colors truncate max-w-[80px] sm:max-w-[160px] md:max-w-none ${!lessonName ? 'text-foreground' : ''}`}
                                 >
                                     {moduleName}
                                 </Link>
@@ -236,10 +236,10 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                         )}
                         {lessonName && lessonId && (
                             <>
-                                <span className="mx-2 text-gray-300">/</span>
+                                <span className="mx-1.5 sm:mx-2 text-gray-300 shrink-0">/</span>
                                 <Link
                                     href={courseId && moduleId ? `/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}` : `/admin/lessons/${lessonId}`}
-                                    className="text-foreground hover:text-primary transition-colors duration-200 transition-colors"
+                                    className="text-foreground hover:text-primary transition-colors truncate max-w-[80px] sm:max-w-[160px] md:max-w-none"
                                 >
                                     {lessonName}
                                 </Link>
@@ -299,7 +299,7 @@ export function CourseWorkspaceLayout({ children }: CourseWorkspaceLayoutProps) 
                     </div>
                 </header>
                 
-                <div className="flex-1 overflow-auto p-6 lg:p-8">
+                <div className="flex-1 overflow-auto p-3 sm:p-6 lg:p-8">
                     {children}
                 </div>
             </SidebarInset>

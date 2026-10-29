@@ -113,8 +113,8 @@ interface Course {
  <p className="mt-6 text-base leading-7 text-muted-foreground max-w-2xl">
  {t('heroSubtitle')}
  </p>
- <div className="mt-8 max-w-xl w-full flex bg-card border border-border rounded-full p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
- <div className="pl-4 flex items-center text-muted-foreground">
+ <div className="mt-8 max-w-xl w-full flex items-center bg-card border border-border rounded-full p-1.5 sm:p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
+ <div className="pl-3 sm:pl-4 flex items-center text-muted-foreground shrink-0">
  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
  </svg>
@@ -122,11 +122,11 @@ interface Course {
  <input
  type="text"
  placeholder={t('searchPlaceholder')}
- className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none"
+ className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-sm px-3 sm:px-4 outline-none text-foreground"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
- <button className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
+ <button className="shrink-0 bg-primary hover:bg-primary-hover text-white rounded-full px-4 sm:px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
  {tCommon('search')}
  </button>
  </div>

@@ -20,7 +20,7 @@ export const Footer = async () => {
 
     return (
         <footer className="w-full bg-card border-t border-border">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="col-span-1 md:col-span-1">
                     <div className="flex items-center gap-2 mb-4">
                         <img src={logoUrl} alt="INSA" className="h-6 w-6 object-contain" />
@@ -92,7 +92,7 @@ export const Footer = async () => {
                 </div>
             </div>
 
-            <div className="border-t border-border mx-6 lg:mx-12 py-6 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
+            <div className="border-t border-border mx-4 sm:mx-6 lg:mx-12 py-5 sm:py-6 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground gap-3 text-center sm:text-left">
                 <p>{t('copyright')}</p>
                 <div className="mt-4 md:mt-0">
                     <span className="text-green-500 flex items-center gap-1">

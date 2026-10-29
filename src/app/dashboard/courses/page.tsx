@@ -53,42 +53,42 @@ export default function DashboardCoursesPage() {
 
     return (
         <div className="pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-foreground">My Enrolled Courses</h1>
-                    <p className="text-muted-foreground mt-1">Manage and track your active training sessions</p>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">My Enrolled Courses</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Manage and track your active training sessions</p>
                 </div>
-                <Link href="/courses">
-                    <Button variant="primary" className="rounded-full px-6">Explore Catalog</Button>
+                <Link href="/courses" className="w-full sm:w-auto">
+                    <Button variant="primary" className="rounded-full px-6 w-full sm:w-auto">Explore Catalog</Button>
                 </Link>
             </div>
 
             {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl mb-8">
+                <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl mb-6 sm:mb-8">
                     {error}
                 </div>
             )}
 
             {enrollments.length === 0 ? (
-                <div className="bg-card rounded-3xl border border-dashed border-border p-20 text-center shadow-sm shadow-black/5 dark:shadow-none">
-                    <div className="text-6xl mb-6 grayscale opacity-30">📚</div>
-                    <h2 className="text-xl font-bold text-foreground mb-2">No active enrollments</h2>
-                    <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+                <div className="bg-card rounded-2xl sm:rounded-3xl border border-dashed border-border p-8 sm:p-20 text-center shadow-sm shadow-black/5 dark:shadow-none">
+                    <div className="text-5xl sm:text-6xl mb-4 sm:mb-6 grayscale opacity-30">📚</div>
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2">No active enrollments</h2>
+                    <p className="text-sm text-muted-foreground mb-6 sm:mb-8 max-w-sm mx-auto">
                         You haven't enrolled in any courses yet. Start your journey by exploring our course catalog.
                     </p>
-                    <Link href="/dashboard/catalog">
-                        <Button variant="primary" className="px-8 rounded-full shadow-lg shadow-black/10 dark:shadow-none">Browse Catalog</Button>
+                    <Link href="/dashboard/catalog" className="inline-block w-full sm:w-auto">
+                        <Button variant="primary" className="w-full sm:w-auto px-8 rounded-full shadow-lg shadow-black/10 dark:shadow-none">Browse Catalog</Button>
                     </Link>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                     {enrollments.map((enrollment) => {
                         const course = enrollment.course || {};
                         const courseId = typeof course === 'object' ? course.id : course;
                         const resumeUrl = `/dashboard/courses/${courseId}`;
 
                         return (
-                            <Link href={resumeUrl} key={enrollment.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col cursor-pointer hover:-translate-y-1 ease-in-out block">
+                            <Link href={resumeUrl} key={enrollment.id} className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col cursor-pointer hover:-translate-y-1 ease-in-out block">
                                 <div className="relative h-40 bg-muted/50">
                                     {course.thumbnail_url ? (
                                         <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
@@ -102,8 +102,8 @@ export default function DashboardCoursesPage() {
                                     </div>
                                 </div>
 
-                                <div className="p-6 flex-1 flex flex-col">
-                                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1">{course.title || 'Course Details'}</h3>
+                                <div className="p-4 sm:p-6 flex-1 flex flex-col">
+                                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1">{course.title || 'Course Details'}</h3>
                                     <div className="flex justify-between items-center mb-6">
                                         <span className="text-xs font-semibold text-muted-foreground">Progress</span>
                                         <span className="text-xs font-bold text-primary">{enrollment.progress}%</span>

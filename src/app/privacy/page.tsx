@@ -2,14 +2,19 @@ import React from 'react';
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="min-h-screen bg-muted py-20 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto bg-card rounded-3xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
-                <div className="bg-primary/5 border-b border-border p-8 text-center">
-                    <h1 className="text-3xl font-extrabold text-foreground mb-4">Privacy Policy</h1>
-                    <p className="text-muted-foreground">Effective Date: {new Date().toLocaleDateString()}</p>
+        <div className="min-h-screen bg-muted py-8 sm:py-20 px-3 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto mb-4">
+                <a href="/" className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
+                    ← Back to Home
+                </a>
+            </div>
+            <div className="max-w-3xl mx-auto bg-card rounded-2xl sm:rounded-3xl shadow-sm shadow-black/5 dark:shadow-none border border-border overflow-hidden">
+                <div className="bg-primary/5 border-b border-border p-5 sm:p-8 text-center">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-3 sm:mb-4">Privacy Policy</h1>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Effective Date: {new Date().toLocaleDateString()}</p>
                 </div>
                 
-                <div className="p-8 space-y-8 text-foreground/80 leading-relaxed">
+                <div className="p-5 sm:p-8 space-y-6 sm:space-y-8 text-foreground/80 leading-relaxed text-sm sm:text-base">
                     <section>
                         <h2 className="text-xl font-bold text-foreground mb-4 border-b border-border pb-2">1. Introduction</h2>
                         <p>

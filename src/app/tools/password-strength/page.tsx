@@ -70,15 +70,15 @@ export default function PasswordStrengthPage() {
                 size="sm"
             />
 
-            <div className="max-w-2xl mx-auto px-6 mt-12">
-                <div className="bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-8">
+            <div className="max-w-2xl mx-auto px-3 sm:px-6 mt-6 sm:mt-12">
+                <div className="bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-5 sm:p-8">
                     <div className="space-y-6">
                         <div>
                             <label className="block text-sm font-bold text-foreground mb-2">Check your password</label>
                             <div className="relative">
                                 <input
                                     type="text"
-                                    className="w-full px-5 py-4 bg-muted border border-border rounded-xl text-lg focus:ring-2 focus:ring-primary focus:bg-card transition-all outline-none"
+                                    className="w-full px-4 sm:px-5 py-3.5 sm:py-4 bg-muted border border-border rounded-xl text-base sm:text-lg focus:ring-2 focus:ring-primary focus:bg-card transition-all outline-none pr-12"
                                     placeholder="Type a password..."
                                     value={password}
                                     onChange={handleChange}
@@ -105,26 +105,26 @@ export default function PasswordStrengthPage() {
                             <p className="mt-3 text-sm text-foreground text-center font-medium">{strength.feedback}</p>
                         </div>
 
-                        <div className="pt-6 border-t border-gray-50 grid grid-cols-2 gap-4">
-                            <div className={`p-4 rounded-xl border ${password.length >= 12 ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
+                        <div className="pt-6 border-t border-gray-50 grid grid-cols-2 gap-3 sm:gap-4">
+                            <div className={`p-3 sm:p-4 rounded-xl border ${password.length >= 12 ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-muted-foreground">Length &gt; 12</span>
                                     {password.length >= 12 && <span className="text-green-600 font-bold text-base">✓</span>}
                                 </div>
                             </div>
-                            <div className={`p-4 rounded-xl border ${/[A-Z]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
+                            <div className={`p-3 sm:p-4 rounded-xl border ${/[A-Z]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-muted-foreground">Uppercase</span>
                                     {/[A-Z]/.test(password) && <span className="text-green-600 font-bold text-base">✓</span>}
                                 </div>
                             </div>
-                            <div className={`p-4 rounded-xl border ${/[0-9]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
+                            <div className={`p-3 sm:p-4 rounded-xl border ${/[0-9]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-muted-foreground">Numbers</span>
                                     {/[0-9]/.test(password) && <span className="text-green-600 font-bold text-base">✓</span>}
                                 </div>
                             </div>
-                            <div className={`p-4 rounded-xl border ${/[^A-Za-z0-9]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
+                            <div className={`p-3 sm:p-4 rounded-xl border ${/[^A-Za-z0-9]/.test(password) ? 'bg-green-50 border-green-100' : 'bg-muted border-border'}`}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold text-muted-foreground">Symbols</span>
                                     {/[^A-Za-z0-9]/.test(password) && <span className="text-green-600 font-bold text-base">✓</span>}
@@ -134,10 +134,10 @@ export default function PasswordStrengthPage() {
                     </div>
                 </div>
 
-                <div className="mt-12 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 rounded-2xl p-8 text-white relative overflow-hidden border border-slate-800 shadow-xl">
+                <div className="mt-8 sm:mt-12 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 rounded-2xl p-5 sm:p-8 text-white relative overflow-hidden border border-slate-800 shadow-xl">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none"></div>
                     <div className="relative z-10">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                        <h3 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2 text-white">
                             <span className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold text-blue-400">i</span>
                             Best Practices
                         </h3>

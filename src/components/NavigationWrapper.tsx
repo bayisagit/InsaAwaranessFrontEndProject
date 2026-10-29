@@ -24,7 +24,7 @@ export function NavigationWrapper({
     return (
         <>
             {Header}
-            <div className="flex-1 flex flex-col w-full pb-16 md:pb-0">{children}</div>
+            <div className="flex-1 flex flex-col w-full">{children}</div>
             <div className="pb-16 md:pb-0">{Footer}</div>
             <MobileBottomNav />
         </>

@@ -35,19 +35,19 @@ export default function VerifyCertificatePage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center px-3 sm:px-6 py-8 sm:py-12">
             <div className="w-full max-w-lg">
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-4">
-                        <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center mb-8 sm:mb-10">
+                    <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full mb-4">
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
                     </div>
-                    <h1 className="text-3xl font-extrabold text-foreground">Certificate Verification</h1>
-                    <p className="text-muted-foreground mt-2">INSA Cyber Awareness Platform</p>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">Certificate Verification</h1>
+                    <p className="text-sm sm:text-base text-muted-foreground mt-2">INSA Cyber Awareness Platform</p>
                 </div>
 
-                <div className="bg-card rounded-3xl border border-border shadow-xl p-8">
+                <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-xl p-5 sm:p-8">
                     {isLoading ? (
                         <div className="text-center py-12">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
@@ -55,34 +55,34 @@ export default function VerifyCertificatePage() {
                         </div>
                     ) : result?.valid ? (
                         <div>
-                            <div className="flex items-center gap-3 bg-green-50 border border-green-100 rounded-2xl px-5 py-4 mb-6">
-                                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                            <div className="flex items-center gap-3 bg-green-50 border border-green-100 rounded-2xl px-4 sm:px-5 py-3.5 sm:py-4 mb-6">
+                                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                                     <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="font-bold text-green-800 text-sm uppercase tracking-wide">Verified Certificate</p>
-                                    <p className="text-green-700 text-xs">This certificate is authentic and issued by INSA.</p>
+                                    <p className="font-bold text-green-800 text-xs sm:text-sm uppercase tracking-wide">Verified Certificate</p>
+                                    <p className="text-green-700 text-[11px] sm:text-xs">This certificate is authentic and issued by INSA.</p>
                                 </div>
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex justify-between items-start border-b border-border pb-4">
-                                    <span className="text-sm text-muted-foreground font-medium">Certificate ID</span>
-                                    <span className="text-sm font-mono text-foreground text-right max-w-[220px] break-all">{result.certificate_id}</span>
+                                <div className="flex justify-between items-start border-b border-border pb-4 gap-2">
+                                    <span className="text-xs sm:text-sm text-muted-foreground font-medium shrink-0">Certificate ID</span>
+                                    <span className="text-xs sm:text-sm font-mono text-foreground text-right max-w-[200px] sm:max-w-[220px] break-all">{result.certificate_id}</span>
                                 </div>
-                                <div className="flex justify-between items-center border-b border-border pb-4">
-                                    <span className="text-sm text-muted-foreground font-medium">Issue Date</span>
-                                    <span className="text-sm font-semibold text-foreground">{formatDate(result.issued_at)}</span>
+                                <div className="flex justify-between items-center border-b border-border pb-4 gap-2">
+                                    <span className="text-xs sm:text-sm text-muted-foreground font-medium shrink-0">Issue Date</span>
+                                    <span className="text-xs sm:text-sm font-semibold text-foreground text-right">{formatDate(result.issued_at)}</span>
                                 </div>
-                                <div className="flex justify-between items-center border-b border-border pb-4">
-                                    <span className="text-sm text-muted-foreground font-medium">Recipient</span>
-                                    <span className="text-sm font-semibold text-foreground">{result.user}</span>
+                                <div className="flex justify-between items-center border-b border-border pb-4 gap-2">
+                                    <span className="text-xs sm:text-sm text-muted-foreground font-medium shrink-0">Recipient</span>
+                                    <span className="text-xs sm:text-sm font-semibold text-foreground text-right truncate">{result.user}</span>
                                 </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-muted-foreground font-medium">Course</span>
-                                    <span className="text-sm font-semibold text-foreground text-right max-w-[250px]">{result.course}</span>
+                                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1 sm:gap-2">
+                                    <span className="text-xs sm:text-sm text-muted-foreground font-medium shrink-0">Course</span>
+                                    <span className="text-xs sm:text-sm font-semibold text-foreground sm:text-right max-w-full sm:max-w-[250px]">{result.course}</span>
                                 </div>
                             </div>
 

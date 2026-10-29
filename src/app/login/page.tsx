@@ -180,14 +180,14 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
-            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
-                <div className="flex justify-center mb-6">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-3 sm:px-4 py-8 sm:py-20 bg-muted">
+            <div className="w-full max-w-md bg-card p-5 sm:p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
+                <div className="flex justify-center mb-4 sm:mb-6">
                     <Image priority src="/loginlogo.png" alt="Login Logo" width={80} height={80} className="object-contain" style={{ width: 'auto', height: 'auto' }} />
                 </div>
 
-                <h1 className="text-3xl font-bold text-foreground mb-2">{t('welcomeBack')}</h1>
-                <p className="text-sm font-medium text-muted-foreground mb-8 max-w-xs mx-auto">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{t('welcomeBack')}</h1>
+                <p className="text-sm font-medium text-muted-foreground mb-6 sm:mb-8 max-w-xs mx-auto">
                     {t('securePortal')}
                 </p>
 

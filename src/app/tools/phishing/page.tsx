@@ -75,16 +75,16 @@ export default function PhishingSimulationPage() {
 
  if (isFinished) {
  return (
- <div className="min-h-screen bg-muted flex items-center justify-center p-6">
- <div className="max-w-md w-full bg-card rounded-3xl shadow-xl border border-border p-10 text-center">
- <div className="text-6xl mb-4">{score === scenarios.length ? '🏆' : '🎯'}</div>
- <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold border border-amber-500/20 mb-4">
- <span>★ Badge Unlocked: Phishing Hunter (+150 XP)</span>
+ <div className="min-h-screen bg-muted flex items-center justify-center px-3 sm:px-6 py-8 sm:py-12">
+ <div className="max-w-md w-full bg-card rounded-2xl sm:rounded-3xl shadow-xl border border-border p-5 sm:p-10 text-center">
+ <div className="text-5xl sm:text-6xl mb-4">{score === scenarios.length ? '🏆' : '🎯'}</div>
+ <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold border border-amber-500/20 mb-4 max-w-full">
+ <span className="truncate">★ Badge Unlocked: Phishing Hunter (+150 XP)</span>
  </div>
- <h2 className="text-3xl font-extrabold text-foreground mb-2">Simulation Complete</h2>
- <p className="text-muted-foreground mb-8">You identified {score} out of {scenarios.length} threats correctly.</p>
+ <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-2">Simulation Complete</h2>
+ <p className="text-sm sm:text-base text-muted-foreground mb-8">You identified {score} out of {scenarios.length} threats correctly.</p>
  <div className="space-y-4">
- <Link href="/dashboard"><Button variant="primary" className="w-full py-4">Return to Dashboard</Button></Link>
+ <Link href="/dashboard" className="block w-full"><Button variant="primary" className="w-full py-3.5 sm:py-4">Return to Dashboard</Button></Link>
  <button onClick={() => { setCurrentStep(0); setScore(0); setIsFinished(false); setSelectedAnswer(null); setShowResult(false); }} className="text-sm font-semibold text-primary hover:underline cursor-pointer">Try Again</button>
  </div>
  </div>
@@ -105,65 +105,65 @@ export default function PhishingSimulationPage() {
  <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest block">Progress</span>
  <span className="font-bold text-white">{currentStep + 1} / {scenarios.length}</span>
  </div>
- <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+ <div className="w-24 sm:w-32 h-2 bg-white/20 rounded-full overflow-hidden">
  <div className="h-full bg-primary transition-all duration-500" style={{ width: `${((currentStep + 1) / scenarios.length) * 100}%` }}></div>
  </div>
  </div>
  }
  />
 
- <div className="max-w-4xl mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+ <div className="max-w-4xl mx-auto px-3 sm:px-6 mt-6 sm:mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
  {/* Email Interface */}
  <div className="lg:col-span-2">
  <div className="bg-card rounded-2xl shadow-lg shadow-black/10 dark:shadow-none border border-border overflow-hidden">
- <div className="bg-muted px-6 py-4 border-b border-border flex items-center gap-2">
+ <div className="bg-muted px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border flex items-center gap-2">
  <div className="flex gap-1.5">
  <div className="w-3 h-3 rounded-full bg-red-400"></div>
  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
  <div className="w-3 h-3 rounded-full bg-green-400"></div>
  </div>
- <span className="text-xs font-semibold text-muted-foreground ml-2">Inbox — {current.sender.split('<')[0]}</span>
+ <span className="text-xs font-semibold text-muted-foreground ml-2 truncate">Inbox — {current.sender.split('<')[0]}</span>
  </div>
 
- <div className="p-8">
- <div className="mb-8">
- <h2 className="text-xl font-bold text-foreground mb-4">{current.subject}</h2>
- <div className="flex items-start gap-4 text-sm">
- <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">
+ <div className="p-4 sm:p-8">
+ <div className="mb-6 sm:mb-8">
+ <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">{current.subject}</h2>
+ <div className="flex items-start gap-3 sm:gap-4 text-sm">
+ <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">
  {current.sender[0]}
  </div>
  <div className="flex-1 min-w-0">
- <div className="flex justify-between items-center mb-1">
- <span className="font-bold text-foreground truncate">{current.sender}</span>
+ <div className="flex justify-between items-center mb-1 gap-2">
+ <span className="font-bold text-foreground truncate text-xs sm:text-sm">{current.sender}</span>
  <span className="text-xs text-muted-foreground shrink-0">{current.date}</span>
  </div>
- <span className="text-xs text-muted-foreground">To: You &lt;citizen@nation.et&gt;</span>
+ <span className="text-xs text-muted-foreground block truncate">To: You &lt;citizen@nation.et&gt;</span>
  </div>
  </div>
  </div>
 
- <div className="text-foreground leading-relaxed mb-10 whitespace-pre-wrap">
+ <div className="text-foreground leading-relaxed mb-8 sm:mb-10 text-sm sm:text-base whitespace-pre-wrap">
  {current.content}
  </div>
 
- <div className="inline-block px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md shadow-black/10 dark:shadow-none cursor-pointer hover:bg-blue-700 transition-colors">
+ <div className="block sm:inline-block w-full sm:w-auto text-center px-6 sm:px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md shadow-black/10 dark:shadow-none cursor-pointer hover:bg-blue-700 transition-colors">
  {current.cta}
  </div>
  </div>
 
  {/* Analysis / Result */}
  {showResult && (
- <div className={`p-8 border-t-4 ${selectedAnswer === current.isPhishing ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'}`}>
+ <div className={`p-4 sm:p-8 border-t-4 ${selectedAnswer === current.isPhishing ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'}`}>
  <div className="flex items-center gap-3 mb-3">
  <span className="text-2xl">{selectedAnswer === current.isPhishing ? '✅' : '❌'}</span>
- <h4 className="font-bold text-foreground">
+ <h4 className="font-bold text-foreground text-sm sm:text-base">
  {selectedAnswer === current.isPhishing ? 'Correct! You spotted it.' : 'Oops! This was a threat.'}
  </h4>
  </div>
- <p className="text-sm text-foreground leading-relaxed mb-6">
+ <p className="text-xs sm:text-sm text-foreground leading-relaxed mb-6">
  {current.reason}
  </p>
- <Button onClick={nextStep} variant="primary">
+ <Button onClick={nextStep} variant="primary" className="w-full sm:w-auto">
  {currentStep === scenarios.length - 1 ? 'Finish Simulation' : 'Next Scenario →'}
  </Button>
  </div>
@@ -171,16 +171,16 @@ export default function PhishingSimulationPage() {
  </div>
 
  {!showResult && (
- <div className="mt-8 flex justify-center gap-4">
+ <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
  <button
  onClick={() => handleAnswer(true)}
- className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl shadow-lg shadow-black/10 dark:shadow-none transition-all scale-100 hover:scale-105 active:scale-95 cursor-pointer"
+ className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl shadow-lg shadow-black/10 dark:shadow-none transition-all scale-100 hover:scale-105 active:scale-95 cursor-pointer text-sm sm:text-base"
  >
  This is Phishing 🚩
  </button>
  <button
  onClick={() => handleAnswer(false)}
- className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl shadow-lg shadow-black/10 dark:shadow-none transition-all scale-100 hover:scale-105 active:scale-95 cursor-pointer"
+ className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl shadow-lg shadow-black/10 dark:shadow-none transition-all scale-100 hover:scale-105 active:scale-95 cursor-pointer text-sm sm:text-base"
  >
  This is Legitimate ✅
  </button>
@@ -190,7 +190,7 @@ export default function PhishingSimulationPage() {
 
  {/* Sidebar - Hints */}
  <div className="lg:col-span-1">
- <div className="bg-card rounded-2xl p-6 border border-border shadow-sm shadow-black/5 dark:shadow-none sticky top-24">
+ <div className="bg-card rounded-2xl p-4 sm:p-6 border border-border shadow-sm shadow-black/5 dark:shadow-none sticky top-24">
  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
  <span className="text-yellow-500 text-xl">💡</span> Hints
  </h3>

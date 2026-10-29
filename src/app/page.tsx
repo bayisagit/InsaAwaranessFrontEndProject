@@ -53,7 +53,7 @@ export default async function Home() {
   return (
     <div className="w-full flex-col flex bg-card">
       {/* Hero Section */}
-      <section className="relative overflow-hidden w-full px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center flex flex-col items-center"
+      <section className="relative overflow-hidden w-full px-4 sm:px-6 lg:px-8 py-16 sm:py-32 text-center flex flex-col items-center"
         style={{ backgroundImage: "url('/background.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         {/* Dark overlay for text legibility */}
@@ -64,7 +64,7 @@ export default async function Home() {
           {t('officialPortal')}
         </span>
 
-        <h1 className="relative z-10 mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-6xl max-w-3xl">
+        <h1 className="relative z-10 mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl max-w-3xl leading-tight">
           {cms['hero_title']?.[locale] ? (
             renderHeroTitle(cms['hero_title'][locale])
           ) : (
@@ -74,16 +74,16 @@ export default async function Home() {
           )}
         </h1>
 
-        <p className="relative z-10 mt-6 text-lg leading-8 text-gray-300 max-w-2xl">
+        <p className="relative z-10 mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-300 max-w-2xl">
           {getCmsValue('hero_subtitle', 'heroSubtitle')}
         </p>
 
-        <div className="relative z-10 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/courses" aria-label="Explore Courses">
-            <Button variant="primary" size="lg">{tCommon('exploreCourses')} &rarr;</Button>
+        <div className="relative z-10 mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+          <Link href="/courses" aria-label="Explore Courses" className="w-full sm:w-auto">
+            <Button variant="primary" size="lg" className="w-full sm:w-auto">{tCommon('exploreCourses')} &rarr;</Button>
           </Link>
-          <Link href="/login" aria-label="Sign In to your account">
-            <Button variant="outline" size="lg" className="border-border text-white hover:bg-white/10">{tCommon('signIn')}</Button>
+          <Link href="/login" aria-label="Sign In to your account" className="w-full sm:w-auto">
+            <Button variant="outline" size="lg" className="w-full sm:w-auto border-border text-white hover:bg-white/10">{tCommon('signIn')}</Button>
           </Link>
         </div>
 
@@ -110,16 +110,16 @@ export default async function Home() {
       </section>
 
       {/* Strategic Pillars */}
-      <section className="py-24 bg-muted px-4 sm:px-6 lg:px-8">
+      <section className="py-12 sm:py-24 bg-muted px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{t('strategicPillars')}</h2>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
             {t('strategicPillarsDesc')}
           </p>
 
-          <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 sm:mt-16 grid grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Pillar 1 */}
-            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+            <div className="bg-card rounded-xl sm:rounded-2xl p-5 sm:p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="w-12 h-12 rounded-xl bg-red-50 text-primary flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -135,7 +135,7 @@ export default async function Home() {
             </div>
 
             {/* Pillar 2 */}
-            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+            <div className="bg-card rounded-xl sm:rounded-2xl p-5 sm:p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="w-12 h-12 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -151,7 +151,7 @@ export default async function Home() {
             </div>
 
             {/* Pillar 3 */}
-            <div className="bg-card rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+            <div className="bg-card rounded-xl sm:rounded-2xl p-5 sm:p-8 shadow-sm shadow-black/5 dark:shadow-none border border-border text-left hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-6">
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -170,16 +170,16 @@ export default async function Home() {
       </section>
 
       {/* Tailored Guidance */}
-      <section className="py-24 bg-card px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+      <section className="py-12 sm:py-24 bg-card px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 items-center">
           <div className="lg:col-span-1">
             <span className="text-primary text-xs font-bold tracking-widest uppercase mb-4 block">{t('sectorSpecific')}</span>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{t('tailoredGuidance')}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground lg:text-4xl">{t('tailoredGuidance')}</h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
               {t('tailoredGuidanceDesc')}
             </p>
             <Link href="/resources" aria-label="View all resource categories">
-              <Button variant="outline" className="mt-8">{tCommon('viewAllCategories')}</Button>
+              <Button variant="outline" className="mt-6 sm:mt-8">{tCommon('viewAllCategories')}</Button>
             </Link>
           </div>
 
@@ -187,13 +187,13 @@ export default async function Home() {
             {/* 1. Incident Response Playbooks */}
             <Link 
               href="/resources?category=Incident+Response" 
-              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+              className="bg-muted rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-200 shrink-0">
                   <ShieldAlert className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                <span className="text-xs font-semibold text-primary opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
                   {tCommon('learnMore')} &rarr;
                 </span>
               </div>
@@ -204,13 +204,13 @@ export default async function Home() {
             {/* 2. Compliance Frameworks */}
             <Link 
               href="/resources?category=Compliance" 
-              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+              className="bg-muted rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-200 shrink-0">
                   <FileCheck className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                <span className="text-xs font-semibold text-primary opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
                   {tCommon('learnMore')} &rarr;
                 </span>
               </div>
@@ -221,13 +221,13 @@ export default async function Home() {
             {/* 3. Threat Modeling Templates */}
             <Link 
               href="/resources?category=Threat+Modeling" 
-              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+              className="bg-muted rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-200 shrink-0">
                   <Layers className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                <span className="text-xs font-semibold text-primary opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
                   {tCommon('learnMore')} &rarr;
                 </span>
               </div>
@@ -238,13 +238,13 @@ export default async function Home() {
             {/* 4. Security Awareness Kits */}
             <Link 
               href="/resources?category=Security+Awareness" 
-              className="bg-muted rounded-2xl p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
+              className="bg-muted rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-border hover:shadow-lg shadow-black/10 dark:shadow-none hover:border-primary/50 hover:bg-card hover:-translate-y-1 transition-all duration-200 group cursor-pointer block select-none"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-200 shrink-0">
                   <Package className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                <span className="text-xs font-semibold text-primary opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
                   {tCommon('learnMore')} &rarr;
                 </span>
               </div>
@@ -256,19 +256,19 @@ export default async function Home() {
       </section>
 
       {/* Recent Threat Alerts */}
-      <section className="py-24 bg-muted px-4 sm:px-6 lg:px-8">
+      <section className="py-12 sm:py-24 bg-muted px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
               <span className="w-1.5 h-6 bg-primary rounded-full"></span> {t('recentThreatAlerts')}
             </h2>
-            <Link href="/alerts" className="text-sm font-semibold text-muted-foreground hover:text-foreground" aria-label="View all threat alerts">
+            <Link href="/alerts" className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground" aria-label="View all threat alerts">
               {t('viewAllAlerts')} &rarr;
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-card p-6 border-t-4 border-red-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-card p-5 sm:p-6 border-t-4 border-red-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-red-500 uppercase tracking-wider bg-red-50 px-2 py-1 rounded">{t('criticalAlert')}</span>
                 <span className="text-xs text-muted-foreground">{t('timeHourAgo')}</span>
@@ -280,7 +280,7 @@ export default async function Home() {
               </Link>
             </div>
 
-            <div className="bg-card p-6 border-t-4 border-yellow-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+            <div className="bg-card p-5 sm:p-6 border-t-4 border-yellow-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none hover:scale-[1.01] transition-all duration-300 group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-yellow-600 uppercase tracking-wider bg-yellow-50 px-2 py-1 rounded">{t('highAlert')}</span>
                 <span className="text-xs text-muted-foreground">{t('timeHoursAgo')}</span>
@@ -292,7 +292,7 @@ export default async function Home() {
               </Link>
             </div>
 
-            <div className="bg-card p-6 border-t-4 border-blue-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none">
+            <div className="bg-card p-5 sm:p-6 border-t-4 border-blue-500 rounded-b-xl shadow-sm shadow-black/5 dark:shadow-none">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-2 py-1 rounded">{t('updateAlert')}</span>
                 <span className="text-xs text-muted-foreground">{t('timeDayAgo')}</span>
@@ -311,25 +311,25 @@ export default async function Home() {
       <ContactSection variant="home" />
 
       {/* CTA Footer Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-2xl border-t border-slate-800">
+      <section className="relative py-14 sm:py-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-2xl border-t border-slate-800">
         {/* Luminous accents */}
         <div className="absolute -top-24 -left-24 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
             {t('ctaTitle')}
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto drop-shadow-sm font-normal leading-relaxed">
+          <p className="mt-4 text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto drop-shadow-sm font-normal leading-relaxed">
             {t('ctaDesc')}
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/signup" aria-label="Create a free account">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <Link href="/signup" aria-label="Create a free account" className="w-full sm:w-auto">
               <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold px-8 shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all">
                 {tCommon('createFreeAccount')}
               </Button>
             </Link>
-            <Link href="/resources" aria-label="Explore cybersecurity resources">
+            <Link href="/resources" aria-label="Explore cybersecurity resources" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto font-bold px-8 text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/50 shadow-lg shadow-black/20 hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-md">
                 {tCommon('exploreTools')}
               </Button>

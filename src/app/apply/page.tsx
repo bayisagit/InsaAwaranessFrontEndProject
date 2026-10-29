@@ -143,22 +143,22 @@ export default function ApplyPage() {
 
     // ── Application Form ─────────────────────────────────────────────────────
     return (
-        <div className="min-h-screen bg-muted py-16 px-4">
+        <div className="min-h-screen bg-muted py-8 sm:py-16 px-3 sm:px-4">
             <div className="max-w-2xl mx-auto">
                 {/* Page header */}
-                <div className="text-center mb-10">
+                <div className="text-center mb-8 sm:mb-10">
                     <span className="inline-block px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-semibold tracking-wider mb-4">
                         {t('pageBadge')}
                     </span>
-                    <h1 className="text-4xl font-extrabold text-foreground mb-3">
+                    <h1 className="text-2xl sm:text-4xl font-extrabold text-foreground mb-3">
                         Apply for Organization Access
                     </h1>
-                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
                         {t('pageDesc')}
                     </p>
                 </div>
 
-                <div className="bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-8 md:p-10">
+                <div className="bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-5 sm:p-8 md:p-10">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {fieldErrors.non_field && (
                             <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-start gap-2">

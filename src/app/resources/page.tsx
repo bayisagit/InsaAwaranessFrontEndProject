@@ -159,8 +159,8 @@ function ResourcesContent() {
 
             <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-12 -mt-0 mb-8 space-y-6">
                 {/* Search Bar */}
-                <form onSubmit={handleSearch} className="max-w-xl mx-auto flex bg-card border border-border rounded-full p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
-                    <div className="pl-4 flex items-center text-muted-foreground">
+                <form onSubmit={handleSearch} className="max-w-xl mx-auto flex items-center bg-card border border-border rounded-full p-1.5 sm:p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
+                    <div className="pl-3 sm:pl-4 flex items-center text-muted-foreground shrink-0">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -168,11 +168,11 @@ function ResourcesContent() {
                     <input
                         type="text"
                         placeholder={t('searchPlaceholder')}
-                        className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none"
+                        className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-sm px-3 sm:px-4 outline-none text-foreground"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button type="submit" className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
+                    <button type="submit" className="shrink-0 bg-primary hover:bg-primary-hover text-white rounded-full px-4 sm:px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
                         {tCommon('search')}
                     </button>
                 </form>
@@ -250,10 +250,10 @@ function ResourcesContent() {
                     />
                 ) : (
                     <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                             {resources.map(resource => (
-                                <div key={resource.id} className="bg-card rounded-2xl p-6 border border-border shadow-sm shadow-black/5 dark:shadow-none flex gap-5 hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/20 transition-all group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
-                                    <div className="w-14 h-14 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                <div key={resource.id} className="bg-card rounded-2xl p-4 sm:p-6 border border-border shadow-sm shadow-black/5 dark:shadow-none flex gap-3.5 sm:gap-5 hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/20 transition-all group cursor-pointer hover:-translate-y-1 duration-200 ease-in-out">
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-xl sm:text-2xl group-hover:scale-110 transition-transform">
                                         {getIcon(resource)}
                                     </div>
                                     <div className="flex-1 flex flex-col justify-between min-w-0">
@@ -319,24 +319,24 @@ function ResourcesContent() {
                 )}
             </section>
 
-            <section className="relative mt-20 py-20 px-6 sm:px-10 lg:px-14 rounded-3xl overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-2xl border border-slate-800 text-center max-w-6xl mx-auto w-full mb-16">
+            <section className="relative mt-12 sm:mt-20 py-12 sm:py-20 px-4 sm:px-10 lg:px-14 rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-2xl border border-slate-800 text-center max-w-6xl mx-auto w-full mb-16">
                 <div className="absolute -top-24 -left-24 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="relative z-10 max-w-3xl mx-auto">
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
+                    <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
                         {t('cantFindTitle')}
                     </h2>
-                    <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                    <p className="mt-4 text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
                         {t('cantFindDesc')}
                     </p>
                     <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/contact" aria-label="Contact Support">
+                        <Link href="/contact" aria-label="Contact Support" className="w-full sm:w-auto">
                             <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold px-8 shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all">
                                 {tCommon('contactSupport')}
                             </Button>
                         </Link>
-                        <Link href="/courses" aria-label="Explore cybersecurity resources">
+                        <Link href="/courses" aria-label="Explore cybersecurity resources" className="w-full sm:w-auto">
                             <Button size="lg" className="w-full sm:w-auto font-bold px-8 text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/50 shadow-lg shadow-black/20 hover:shadow-xl hover:-translate-y-0.5 transition-all backdrop-blur-md">
                                 {tCommon('exploreCourses')}
                             </Button>

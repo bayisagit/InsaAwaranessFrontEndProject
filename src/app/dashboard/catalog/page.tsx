@@ -94,20 +94,20 @@ export default function DashboardCatalogPage() {
 
  return (
  <div className="pb-20">
- <section className="relative overflow-hidden bg-card px-4 sm:px-6 lg:px-12 py-16 text-center flex flex-col items-center border-b border-border rounded-2xl mb-8">
+ <section className="relative overflow-hidden bg-card px-4 sm:px-6 lg:px-12 py-8 sm:py-16 text-center flex flex-col items-center border-b border-border rounded-xl sm:rounded-2xl mb-6 sm:mb-8">
  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[300px] bg-primary/5 rounded-[100%] filter blur-3xl opacity-70"></div>
- <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-4 flex items-center gap-2">
+ <span className="text-primary text-[10px] font-bold tracking-widest uppercase mb-3 sm:mb-4 flex items-center gap-2">
  <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
  CYBERSECURITY TRAINING
  </span>
- <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl max-w-2xl">
+ <h1 className="mt-1 sm:mt-2 text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground max-w-2xl leading-tight">
  Ignite Your <span className="text-primary">Cyber Resilience</span>
  </h1>
- <p className="mt-6 text-base leading-7 text-muted-foreground max-w-2xl">
+ <p className="mt-3 sm:mt-6 text-sm sm:text-base leading-6 sm:leading-7 text-muted-foreground max-w-2xl">
  Expert-led training designed to empower you with the skills to identify threats and protect our digital nation.
  </p>
- <div className="mt-8 max-w-xl w-full flex bg-card border border-border rounded-full p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
- <div className="pl-4 flex items-center text-muted-foreground">
+ <div className="mt-6 sm:mt-8 max-w-xl w-full flex bg-card border border-border rounded-full p-1.5 sm:p-2 shadow-sm shadow-black/5 dark:shadow-none focus-within:ring-2 focus-within:ring-primary transition-all">
+ <div className="pl-3 sm:pl-4 flex items-center text-muted-foreground shrink-0">
  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
  </svg>
@@ -115,11 +115,11 @@ export default function DashboardCatalogPage() {
  <input
  type="text"
  placeholder="Search courses..."
- className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none"
+ className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-sm px-3 sm:px-4 outline-none text-foreground"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
- <button className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
+ <button className="shrink-0 bg-primary hover:bg-primary-hover text-white rounded-full px-4 sm:px-6 py-2 text-sm font-semibold transition-colors cursor-pointer">
  Search
  </button>
  </div>
@@ -216,9 +216,9 @@ export default function DashboardCatalogPage() {
  const diff = course.difficulty?.toLowerCase() || '';
  const color = difficultyColors[diff] || 'gray';
  return (
- <div key={course.id} className="bg-card rounded-2xl p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/20 transition-all cursor-pointer flex flex-col h-full relative group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+ <div key={course.id} className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border hover:shadow-md shadow-black/10 dark:shadow-none hover:border-primary/20 transition-all cursor-pointer flex flex-col h-full relative group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
  {(course.level || course.difficulty) && (
- <div className={`absolute top-6 right-6 px-2 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${
+ <div className={`absolute top-4 right-4 sm:top-6 sm:right-6 px-2 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${
  (course.level || course.difficulty || '').toLowerCase() === 'beginner' ? 'bg-green-50 text-green-600' :
  (course.level || course.difficulty || '').toLowerCase() === 'medium' ? 'bg-yellow-50 text-yellow-600' :
  (course.level || course.difficulty || '').toLowerCase() === 'advanced' ? 'bg-red-50 text-red-600' :

@@ -99,7 +99,7 @@ export default function NotificationsPage() {
  }
  />
 
- <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 mt-8">
+ <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-12 mt-4 sm:mt-8">
  {error && (
  <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">{error}</div>
  )}
@@ -119,18 +119,18 @@ export default function NotificationsPage() {
  {notifications.map((n) => (
  <div
  key={n.id}
- className={`group bg-card rounded-xl border p-5 flex gap-4 transition-all hover:border-primary/30 ${n.is_read ? 'border-border' : 'border-primary/20 shadow-sm shadow-black/5 dark:shadow-none'}`}
+ className={`group bg-card rounded-xl border p-3.5 sm:p-5 flex gap-3 sm:gap-4 transition-all hover:border-primary/30 ${n.is_read ? 'border-border' : 'border-primary/20 shadow-sm shadow-black/5 dark:shadow-none'}`}
  >
  <div className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${n.is_read ? 'bg-gray-200' : 'bg-primary'}`}></div>
- <div className="flex-1">
- <div className="flex justify-between items-start gap-4">
- <p className={`text-sm ${n.is_read ? 'text-muted-foreground' : 'text-foreground font-medium'}`}><LinkifyText text={n.message} /></p>
+ <div className="flex-1 min-w-0">
+ <div className="flex justify-between items-start gap-2 sm:gap-4">
+ <p className={`text-sm break-words flex-1 ${n.is_read ? 'text-muted-foreground' : 'text-foreground font-medium'}`}><LinkifyText text={n.message} /></p>
  <button
  onClick={() => toggleReadStatus(n.id, n.is_read)}
- className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap ${n.is_read ? 'text-primary hover:bg-primary/5' : 'text-muted-foreground hover:bg-muted/50'}`}
+ className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity whitespace-nowrap shrink-0 ${n.is_read ? 'text-primary hover:bg-primary/5' : 'text-muted-foreground hover:bg-muted/50'}`}
  title={n.is_read ? "Mark as unread" : "Mark as read"}
  >
- {n.is_read ? "Keep as unread" : "Mark read"}
+ {n.is_read ? "Keep unread" : "Mark read"}
  </button>
  </div>
  <div className="flex items-center gap-3 mt-2 cursor-pointer">

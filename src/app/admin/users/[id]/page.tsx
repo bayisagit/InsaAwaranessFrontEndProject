@@ -762,8 +762,8 @@ export default function UserDetailPage() {
                     onChange={(e) => setSortOrder(e.target.value as any)}
                     className="bg-muted/40 border border-border rounded-xl px-3 py-1.5 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                   >
-                    <option value="newest">Newest ▾</option>
-                    <option value="oldest">Oldest ▾</option>
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
                   </select>
                 </div>
               </div>

@@ -115,7 +115,7 @@ export function PwaInstallProvider({ children }: { children: React.ReactNode }) 
       {showPromptBanner && !isInstalled && (
         <aside
           aria-label="Install App"
-          className="fixed bottom-5 right-5 z-50 max-w-sm w-[calc(100vw-2.5rem)] bg-card/95 backdrop-blur-xl border border-primary/20 rounded-2xl p-4 shadow-2xl shadow-primary/10 dark:shadow-black/40 animate-slide-up transition-all"
+          className="fixed bottom-20 sm:bottom-5 right-3 sm:right-5 z-50 max-w-sm w-[calc(100vw-1.5rem)] sm:w-[calc(100vw-2.5rem)] bg-card/95 backdrop-blur-xl border border-primary/20 rounded-2xl p-4 shadow-2xl shadow-primary/10 dark:shadow-black/40 animate-slide-up transition-all"
         >
           <div className="flex items-start gap-3.5">
             <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-primary/10 border border-primary/20 flex items-center justify-center shadow-inner">

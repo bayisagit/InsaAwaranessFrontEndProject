@@ -47,8 +47,8 @@ export default function PaymentVerifyPage() {
     };
 
     return (
-        <div className="min-h-screen bg-muted flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-card rounded-2xl p-8 shadow-sm border border-border text-center">
+        <div className="min-h-screen bg-muted flex items-center justify-center px-3 sm:px-4 py-8">
+            <div className="max-w-md w-full bg-card rounded-2xl p-5 sm:p-8 shadow-sm border border-border text-center">
                 {status === 'verifying' && (
                     <div className="flex flex-col items-center">
                         <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-6" />

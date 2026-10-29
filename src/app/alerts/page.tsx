@@ -136,10 +136,10 @@ export default function AlertsPage() {
             Official Security Advisories
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-3">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-3">
             National Cybersecurity Threat Advisories
           </h1>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto mb-8">
             Verified threat bulletins, vulnerability notices, and actionable defense guidance issued by the Information Network Security Administration (INSA).
           </p>
 
@@ -156,9 +156,9 @@ export default function AlertsPage() {
               />
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {/* Severity Filter Tabs */}
-              <div className="flex bg-muted p-1 rounded-xl shadow-inner text-xs font-bold">
+              <div className="flex items-center overflow-x-auto no-scrollbar max-w-full bg-muted p-1 rounded-xl shadow-inner text-xs font-bold">
                 {[
                   { id: 'all', label: 'All Severities' },
                   { id: 'high', label: 'High' },
@@ -168,7 +168,7 @@ export default function AlertsPage() {
                   <button
                     key={s.id}
                     onClick={() => setSeverityFilter(s.id)}
-                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                       severityFilter === s.id
                         ? 'bg-card text-foreground shadow-xs'
                         : 'text-muted-foreground hover:text-foreground'
@@ -180,10 +180,10 @@ export default function AlertsPage() {
               </div>
 
               {/* Status Filter Tabs */}
-              <div className="flex bg-muted p-1 rounded-xl shadow-inner text-xs font-semibold">
+              <div className="flex items-center overflow-x-auto no-scrollbar max-w-full bg-muted p-1 rounded-xl shadow-inner text-xs font-semibold">
                 <button
                   onClick={() => setStatusFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     statusFilter === 'all'
                       ? 'bg-card text-foreground shadow-xs font-bold'
                       : 'text-muted-foreground hover:text-foreground'
@@ -193,7 +193,7 @@ export default function AlertsPage() {
                 </button>
                 <button
                   onClick={() => setStatusFilter('pending')}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     statusFilter === 'pending'
                       ? 'bg-card text-foreground shadow-xs font-bold'
                       : 'text-muted-foreground hover:text-foreground'
@@ -203,7 +203,7 @@ export default function AlertsPage() {
                 </button>
                 <button
                   onClick={() => setStatusFilter('acknowledged')}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     statusFilter === 'acknowledged'
                       ? 'bg-card text-foreground shadow-xs font-bold'
                       : 'text-muted-foreground hover:text-foreground'
@@ -218,7 +218,7 @@ export default function AlertsPage() {
       </section>
 
       {/* Main Content Area */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 mt-6 sm:mt-10">
         {error && (
           <div role="alert" className="bg-destructive/10 text-destructive p-4 rounded-2xl border border-destructive/20 mb-8 text-sm">
             {error}
@@ -271,13 +271,13 @@ export default function AlertsPage() {
         )}
 
         {/* Subscribe / Alert Preferences CTA */}
-        <div className="mt-16 bg-card rounded-3xl p-8 border border-border shadow-md shadow-black/5 text-center">
+        <div className="mt-10 sm:mt-16 bg-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-border shadow-md shadow-black/5 text-center">
           <h3 className="text-lg font-bold text-foreground mb-2">Want to receive advisories directly?</h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
             Configure instant security email alerts in your account profile to stay informed about active cyber threats.
           </p>
           <Link href="/profile">
-            <Button variant="outline">Update Notification Settings</Button>
+            <Button variant="outline" className="w-full sm:w-auto">Update Notification Settings</Button>
           </Link>
         </div>
       </div>

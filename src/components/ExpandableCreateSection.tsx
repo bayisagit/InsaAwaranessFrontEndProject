@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/Button';
 import Link from 'next/link';
+import { ChevronDown, ChevronRight, Check } from 'lucide-react';
 
 export interface NextStepAction {
     label: string;
@@ -45,7 +46,8 @@ export function ExpandableCreateSection({
                     type="button"
                 >
                     <span className="flex items-center gap-2">
-                        {isOpen ? '▼' : '▸'} {title}
+                        {isOpen ? <ChevronDown className="w-4 h-4 text-primary" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                        {title}
                     </span>
                 </button>
                 <AnimatePresence>
@@ -59,8 +61,8 @@ export function ExpandableCreateSection({
                             <div className="border-t border-border bg-card p-6">
                                 {isSuccess ? (
                                     <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in zoom-in duration-300">
-                                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                                            <span className="text-3xl text-green-600">✓</span>
+                                        <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/40 rounded-full flex items-center justify-center mb-4">
+                                            <Check className="w-8 h-8 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground mb-2">{successTitle}</h3>
                                         <p className="text-muted-foreground mb-8">{successDescription}</p>

@@ -12,7 +12,7 @@ export function MobileBottomNav() {
   const { isAuthenticated, user } = useAuth();
 
   // Hide on immersive full-screen flows (e.g. exam player / learning session)
-  if (pathname?.startsWith('/learn/') || pathname?.startsWith('/exam/')) {
+  if (pathname?.startsWith('/learn/') || pathname?.includes('/exam')) {
     return null;
   }
 

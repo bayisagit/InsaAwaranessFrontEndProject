@@ -31,25 +31,25 @@ export function AwarenessHubGrid() {
             />
 
             {/* Grid */}
-            <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-12 py-8 sm:py-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                     {awarenessTopics.map((topic) => {
                         const colors = colorMap[topic.accentColor] || colorMap.blue;
                         const prefix = toCamel(topic.slug);
                         return (
                             <Link key={topic.slug} href={`/awareness/${topic.slug}`} className="group block">
                                 <div
-                                    className={`relative bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border border-b-4 ${colors.border} p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden h-full`}
+                                    className={`relative bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border border-b-4 ${colors.border} p-5 sm:p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden h-full`}
                                 >
                                     {/* Decorative quarter-circle */}
                                     <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-bl-full ${colors.bg} opacity-50`} />
 
-                                    <div className="cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out flex items-start gap-5 mb-5">
-                                        <div className={`w-14 h-14 rounded-xl ${colors.iconBg} flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                                    <div className="cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out flex items-start gap-3.5 sm:gap-5 mb-5">
+                                        <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl ${colors.iconBg} flex items-center justify-center text-xl sm:text-2xl shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                                             {topic.icon}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
+                                            <h3 className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
                                                 {(t as any)(`${prefix}Title`) || topic.title}
                                             </h3>
                                             <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">

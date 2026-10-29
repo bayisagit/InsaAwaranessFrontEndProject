@@ -110,8 +110,8 @@ function VerifyEmailContent() {
     };
 
     return (
-        <div className="min-h-[85vh] bg-muted flex items-center justify-center p-4 py-16">
-            <div className="bg-card rounded-3xl shadow-sm border border-border p-8 md:p-10 max-w-md w-full text-center">
+        <div className="min-h-[85vh] bg-muted flex items-center justify-center px-3 sm:px-4 py-8 sm:py-16">
+            <div className="bg-card rounded-2xl sm:rounded-3xl shadow-sm border border-border p-5 sm:p-8 md:p-10 max-w-md w-full text-center">
                 
                 {status === 'verifying' && (
                     <div className="py-8">

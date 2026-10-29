@@ -43,16 +43,16 @@ const Card = ({ children, title, subtitle, icon }: { children: React.ReactNode, 
         animate={{ opacity: 1, y: 0 }}
         className="bg-card shadow-xl shadow-gray-100/50 dark:shadow-none rounded-3xl overflow-hidden border border-border mb-8"
     >
-        <div className="px-8 py-6 border-b border-gray-50 dark:border-border bg-gradient-to-r from-gray-50/80 to-white dark:from-card dark:to-card flex items-center justify-between">
+        <div className="px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-50 dark:border-border bg-gradient-to-r from-gray-50/80 to-white dark:from-card dark:to-card flex items-center justify-between">
             <div>
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
                     {icon && <span className="text-primary">{icon}</span>}
                     {title}
                 </h2>
-                {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+                {subtitle && <p className="text-xs sm:text-sm text-muted-foreground mt-1">{subtitle}</p>}
             </div>
         </div>
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
             {children}
         </div>
     </motion.div>
@@ -240,22 +240,22 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-background pb-20 mt-10">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50/50 dark:bg-background pb-20 mt-4 sm:mt-10">
+            <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
 
                 {/* Modern Hero Section */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative bg-secondary rounded-3xl p-8 mb-10 overflow-hidden shadow-2xl shadow-secondary/20"
+                    className="relative bg-secondary rounded-2xl sm:rounded-3xl p-5 sm:p-8 mb-6 sm:mb-10 overflow-hidden shadow-2xl shadow-secondary/20"
                 >
                     <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 bg-primary/10 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-80 w-80 bg-blue-500/5 rounded-full blur-3xl"></div>
 
-                    <div className="relative flex flex-col md:flex-row items-center gap-8">
+                    <div className="relative flex flex-col md:flex-row items-center gap-6 sm:gap-8">
                     <div className="relative group">
                         {user?.profile_photo ? (
-                            <div className="h-32 w-32 rounded-3xl overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-300 relative">
+                            <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-300 relative">
                                 <img src={user?.profile_photo} alt="Profile" className="h-full w-full object-cover" />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                                     <CloudinaryUpload
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="h-32 w-32 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-4xl font-bold shadow-2xl group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
+                            <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl sm:text-4xl font-bold shadow-2xl group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
                                 {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                                     <CloudinaryUpload
@@ -295,15 +295,15 @@ export default function ProfilePage() {
                         )}
                     </div>
 
-                        <div className="text-center md:text-left">
-                            <h1 className="text-4xl font-black text-foreground mb-3 tracking-tight">{user?.first_name} {user?.last_name}</h1>
-                            <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                                <span className="px-5 py-2 bg-primary/10 border border-primary/20 rounded-2xl text-xs font-semibold text-primary uppercase tracking-wider shadow-sm shadow-black/5 dark:shadow-none">
+                        <div className="text-center md:text-left min-w-0">
+                            <h1 className="text-2xl sm:text-4xl font-black text-foreground mb-3 tracking-tight break-words">{user?.first_name} {user?.last_name}</h1>
+                            <div className="flex flex-wrap justify-center md:justify-start gap-2.5 sm:gap-3">
+                                <span className="px-3.5 sm:px-5 py-2 bg-primary/10 border border-primary/20 rounded-2xl text-xs font-semibold text-primary uppercase tracking-wider shadow-sm shadow-black/5 dark:shadow-none">
                                     {roleLabel[user?.role || ''] || user?.role}
                                 </span>
-                                <span className="px-5 py-2 bg-card rounded-2xl text-xs font-bold text-foreground uppercase tracking-wider border border-border flex items-center gap-2 shadow-sm shadow-black/5 dark:shadow-none">
-                                    <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
-                                    {user?.email}
+                                <span className="px-3.5 sm:px-5 py-2 bg-card rounded-2xl text-xs font-bold text-foreground uppercase tracking-wider border border-border flex items-center gap-2 shadow-sm shadow-black/5 dark:shadow-none max-w-full min-w-0">
+                                    <span className="h-2 w-2 shrink-0 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
+                                    <span className="truncate">{user?.email}</span>
                                 </span>
                             </div>
                         </div>
@@ -401,7 +401,7 @@ export default function ProfilePage() {
                                                 ]} />
                                                 )}
 
-                                                <div className="grid grid-cols-2 gap-6">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                                     <SelectField label={t('ageRange')} name="age_range" value={profileData.age_range || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('ageRange') })} options={[{ value: '13_17', label: '13–17' }, { value: '18_22', label: '18–22' }, { value: '23_25', label: '23–25' }, { value: '26_30', label: '26–30' }, { value: '31_35', label: '31–35' }, { value: '36_40', label: '36–40' }, { value: '41_plus', label: '41+' }]} />
                                                     {/* API only allows male/female */}
                                                     <SelectField label={t('gender')} name="gender" value={profileData.gender || ''} onChange={handleProfileChange} placeholder={t('selectLabel', { label: t('gender') })} options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }]} />
@@ -462,7 +462,7 @@ export default function ProfilePage() {
                             <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className="bg-secondary rounded-[2.5rem] p-9 text-foreground shadow-2xl shadow-secondary/30 relative overflow-hidden group border border-border"
+                                className="bg-secondary rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-9 text-foreground shadow-2xl shadow-secondary/30 relative overflow-hidden group border border-border"
                             >
                                 <div className="absolute top-0 right-0 h-40 w-40 bg-primary/10 rounded-full -mr-20 -mt-20 blur-3xl transition-all group-hover:bg-primary/20"></div>
                                 <div className="absolute bottom-0 left-0 h-40 w-40 bg-blue-500/10 rounded-full -ml-20 -mb-20 blur-3xl"></div>
@@ -474,7 +474,7 @@ export default function ProfilePage() {
                                     </div>
 
                                     <div className="flex items-baseline gap-3 mb-10">
-                                        <span className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">{learningStats.averageProgress}%</span>
+                                        <span className="text-4xl sm:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">{learningStats.averageProgress}%</span>
                                         <span className="text-sm font-black text-primary tracking-widest uppercase">Avg Progress</span>
                                     </div>
 
@@ -585,37 +585,37 @@ export default function ProfilePage() {
                                         return (
                                             <div
                                                 key={b.id}
-                                                className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                                                className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
                                                     isUnlocked
                                                         ? 'bg-card border-emerald-500/30 shadow-xs'
                                                         : 'bg-muted/30 border-border'
                                                 }`}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${b.bgColor}`}>
+                                                <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${b.bgColor}`}>
                                                         <Icon className={`w-5 h-5 ${b.color}`} />
                                                     </div>
-                                                    <div>
-                                                        <div className="flex items-center gap-2">
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                                                             <span className="text-sm font-bold text-foreground">{b.name}</span>
-                                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
                                                                 +{b.xp} XP
                                                             </span>
                                                         </div>
-                                                        <p className="text-[11px] text-muted-foreground">{b.desc}</p>
+                                                        <p className="text-[11px] text-muted-foreground line-clamp-2 break-words">{b.desc}</p>
                                                     </div>
                                                 </div>
 
-                                                <div>
+                                                <div className="shrink-0">
                                                     {isUnlocked ? (
-                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
                                                             <CheckCircle2 className="w-3.5 h-3.5" />
                                                             Earned
                                                         </span>
                                                     ) : (
                                                         <button
                                                             onClick={() => router.push(b.href)}
-                                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white transition-all shadow-xs cursor-pointer hover:scale-[1.02]"
+                                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white transition-all shadow-xs cursor-pointer hover:scale-[1.02] shrink-0"
                                                         >
                                                             <span>Earn</span>
                                                             <ArrowRight className="w-3 h-3" />

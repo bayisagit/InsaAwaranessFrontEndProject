@@ -65,11 +65,11 @@ export default function CampaignsPage() {
  center
  />
 
- <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 mt-16">
+ <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 mt-8 sm:mt-16">
  {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-8">{error}</div>}
 
  {isLoading ? (
- <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
  {[1, 2].map(i => (
  <CardSkeleton key={i} />
  ))}
@@ -85,10 +85,10 @@ export default function CampaignsPage() {
  description="We are currently planning the next series of awareness events. Check back soon for new opportunities!"
  />
  ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
  {campaigns.map((camp) => (
- <div key={camp.id} className="bg-card rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden flex flex-col hover:shadow-xl hover:border-primary/20 transition-all group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
- <div className="h-48 bg-background relative">
+ <div key={camp.id} className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm shadow-black/5 dark:shadow-none overflow-hidden flex flex-col hover:shadow-xl hover:border-primary/20 transition-all group cursor-pointer hover:-translate-y-1 duration-200 ease-in-out">
+ <div className="h-44 sm:h-48 bg-background relative">
  {camp.content_type === 'poster' && camp.content_url ? (
  <img src={camp.content_url} alt={camp.title} className="w-full h-full object-cover" />
  ) : (
@@ -108,9 +108,9 @@ export default function CampaignsPage() {
  </span>
  </div>
  </div>
- <div className="p-8 flex flex-col flex-1">
- <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">{camp.title}</h3>
- <p className="text-sm text-muted-foreground leading-relaxed mb-8 flex-1">
+ <div className="p-5 sm:p-8 flex flex-col flex-1">
+ <h3 className="text-lg sm:text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">{camp.title}</h3>
+ <p className="text-sm text-muted-foreground leading-relaxed mb-6 sm:mb-8 flex-1">
  <LinkifyText text={camp.message} />
  </p>
  {camp.content_type === 'video' && camp.content_url && (

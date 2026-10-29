@@ -159,21 +159,21 @@ export default function CourseDetailPage() {
         <div className="min-h-screen bg-muted pb-20">
             {/* Hero */}
             <div className="bg-card border-b border-border">
-                <div className="max-w-5xl mx-auto px-6 lg:px-12 py-10">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-10">
                     <Link href={isAuthenticated ? "/dashboard/catalog" : "/courses"} className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 mb-6 inline-flex items-center gap-1 transition-colors">
                         ← {isAuthenticated ? "Back to Course Catalog" : "Back to Training"}
                     </Link>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 mt-2">
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 mt-2">
                         {/* Left: Thumbnail */}
                         <div className="lg:col-span-2">
                             {course.thumbnail_url ? (
-                                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg shadow-black/10 dark:shadow-none border border-border bg-muted">
+                                <div className="relative aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-lg shadow-black/10 dark:shadow-none border border-border bg-muted">
                                     <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
                                 </div>
                             ) : (
-                                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg shadow-black/10 dark:shadow-none border border-border bg-gradient-to-br from-primary/5 to-blue-500/5 flex items-center justify-center">
-                                    <GraduationCap className="w-16 h-16 text-primary/30" />
+                                <div className="relative aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-lg shadow-black/10 dark:shadow-none border border-border bg-gradient-to-br from-primary/5 to-blue-500/5 flex items-center justify-center">
+                                    <GraduationCap className="w-12 h-12 sm:w-16 sm:h-16 text-primary/30" />
                                 </div>
                             )}
                         </div>
@@ -181,26 +181,26 @@ export default function CourseDetailPage() {
                         {/* Right: Content */}
                         <div className="lg:col-span-3 flex flex-col justify-between gap-6">
                             <div>
-                                <div className="flex items-center gap-3 mb-4">
+                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                                     {course.language && (
-                                        <span className="inline-flex items-center px-3 py-1 rounded-lg bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
                                             {course.language}
                                         </span>
                                     )}
                                     {course.difficulty && (
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${difficultyColor[diff] || 'bg-muted/50 text-muted-foreground'}`}>
+                                        <span className={`px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold uppercase ${difficultyColor[diff] || 'bg-muted/50 text-muted-foreground'}`}>
                                             {course.difficulty}
                                         </span>
                                     )}
                                     {course.payment_type === 'paid' && (
-                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase bg-yellow-500/10 text-yellow-600 dark:text-yellow-500 border border-yellow-500/20">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold uppercase bg-yellow-500/10 text-yellow-600 dark:text-yellow-500 border border-yellow-500/20">
                                             {course.currency || 'ETB'} {course.course_price}
                                         </span>
                                     )}
                                 </div>
-                                <h1 className="text-3xl lg:text-4xl font-extrabold text-foreground leading-tight max-w-2xl">{course.title}</h1>
+                                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-foreground leading-tight max-w-2xl">{course.title}</h1>
                                 {course.description && (
-                                    <p className="mt-4 text-muted-foreground leading-relaxed max-w-xl">
+                                    <p className="mt-3 sm:mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
                                         <LinkifyText text={course.description} />
                                     </p>
                                 )}
@@ -247,12 +247,12 @@ export default function CourseDetailPage() {
 
             {/* Non-enrolled landing section */}
             {!isEnrolled && (
-                <div className="max-w-5xl mx-auto px-6 lg:px-12 mt-10 space-y-10">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 mt-6 sm:mt-10 space-y-6 sm:space-y-10">
                     {/* Course Overview */}
                     <div>
-                        <h2 className="text-xl font-bold text-foreground mb-4">Course Overview</h2>
-                        <div className="bg-card rounded-2xl border border-border p-6 shadow-sm shadow-black/5 dark:shadow-none">
-                            <p className="text-muted-foreground leading-relaxed">
+                        <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Course Overview</h2>
+                        <div className="bg-card rounded-xl sm:rounded-2xl border border-border p-4 sm:p-6 shadow-sm shadow-black/5 dark:shadow-none">
+                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                                 {course.description || 'This course provides comprehensive training on the subject. Enroll to access the full curriculum, interactive lessons, and assessment materials.'}
                             </p>
                         </div>
@@ -260,31 +260,31 @@ export default function CourseDetailPage() {
 
                     {/* Learning Objectives */}
                     <div>
-                        <h2 className="text-xl font-bold text-foreground mb-4">Learning Objectives</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Learning Objectives</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                             {[
                                 'Understand fundamental concepts and best practices',
                                 'Develop practical skills through hands-on exercises',
                                 'Apply knowledge to real-world scenarios',
                                 'Assess your understanding with quizzes and exams',
                             ].map((objective, i) => (
-                                <div key={i} className="flex items-start gap-3 bg-card rounded-xl border border-border p-4 shadow-sm shadow-black/5 dark:shadow-none">
-                                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+                                <div key={i} className="flex items-start gap-3 bg-card rounded-xl border border-border p-3.5 sm:p-4 shadow-sm shadow-black/5 dark:shadow-none">
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 mt-0.5">
                                         {i + 1}
                                     </div>
-                                    <p className="text-sm text-foreground font-medium">{objective}</p>
+                                    <p className="text-xs sm:text-sm text-foreground font-medium">{objective}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Enroll CTA */}
-                    <div className="bg-gradient-to-r from-primary/5 to-blue-500/5 rounded-3xl border border-primary/10 p-10 text-center shadow-sm shadow-black/5 dark:shadow-none">
-                        <h3 className="text-2xl font-bold text-foreground mb-3">Ready to Get Started?</h3>
-                        <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
+                    <div className="bg-gradient-to-r from-primary/5 to-blue-500/5 rounded-2xl sm:rounded-3xl border border-primary/10 p-6 sm:p-10 text-center shadow-sm shadow-black/5 dark:shadow-none">
+                        <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2 sm:mb-3">Ready to Get Started?</h3>
+                        <p className="text-sm sm:text-base text-muted-foreground mb-6 max-w-lg mx-auto">
                             Enroll in this course to access all modules, lessons, and assessment materials.
                         </p>
-                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="px-10 py-4 text-lg shadow-xl shadow-primary/20 cursor-pointer transition-colors duration-200">
+                        <Button variant="primary" disabled={isEnrolling} onClick={handleEnroll} className="w-full sm:w-auto px-8 sm:px-10 py-3.5 sm:py-4 text-base sm:text-lg shadow-xl shadow-primary/20 cursor-pointer transition-colors duration-200">
                             {course.payment_type === 'paid' && !course.is_unlocked
                                 ? 'Unlock Course'
                                 : isEnrolling
@@ -297,19 +297,19 @@ export default function CourseDetailPage() {
 
             {/* Enrolled modules */}
             {isEnrolled && (
-                <div className="max-w-5xl mx-auto px-6 lg:px-12 mt-10">
-                    <h2 className="text-xl font-bold text-foreground mb-6">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 mt-6 sm:mt-10">
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-4 sm:mb-6">
                         Course Modules
                         <span className="text-sm font-normal text-muted-foreground ml-2">({modules.length})</span>
                     </h2>
 
                     {modules.length === 0 ? (
-                        <div className="bg-card rounded-2xl border border-border p-16 text-center shadow-sm shadow-black/5 dark:shadow-none">
-                            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6 text-4xl grayscale filter">
-                                <svg className="w-10 h-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                        <div className="bg-card rounded-xl sm:rounded-2xl border border-border p-8 sm:p-16 text-center shadow-sm shadow-black/5 dark:shadow-none">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4 sm:mb-6 text-3xl sm:text-4xl grayscale filter">
+                                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                             </div>
-                            <h3 className="text-xl font-bold text-foreground mb-2">No Modules Available</h3>
-                            <p className="text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                            <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">No Modules Available</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
                                 This course currently doesn&apos;t have any modules. Our training team is working on the content. Please check back soon!
                             </p>
                         </div>
@@ -321,14 +321,14 @@ export default function CourseDetailPage() {
                                     <Link
                                         key={module.id}
                                         href={`/courses/${id}/modules/${module.id}`}
-                                        className="block bg-card rounded-xl border border-border p-5 flex items-start gap-4 hover:border-primary/40 hover:shadow-md shadow-black/10 dark:shadow-none transition-all group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out"
+                                        className="bg-card rounded-xl border border-border p-4 sm:p-5 flex items-start gap-3 sm:gap-4 hover:border-primary/40 hover:shadow-md shadow-black/10 dark:shadow-none transition-all group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out"
                                     >
-                                        <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
                                             {i + 1}
                                         </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{module.title}</h3>
-                                            {module.description && <p className="text-sm text-muted-foreground mt-1"><LinkifyText text={module.description} /></p>}
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors truncate">{module.title}</h3>
+                                            {module.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2"><LinkifyText text={module.description} /></p>}
                                         </div>
                                         <div className="ml-auto flex items-center gap-2 shrink-0">
                                             <span className="text-xs font-bold text-gray-300 group-hover:text-primary uppercase tracking-widest hidden sm:block">Start Reading</span>

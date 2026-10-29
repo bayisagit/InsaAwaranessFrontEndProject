@@ -22,9 +22,9 @@ interface PageHeroProps {
 }
 
 const sizeClasses: Record<string, string> = {
-    sm: 'py-10',
-    md: 'py-16 sm:py-20',
-    lg: 'py-20 sm:py-24',
+    sm: 'py-8 sm:py-10',
+    md: 'py-10 sm:py-16 md:py-20',
+    lg: 'py-12 sm:py-20 md:py-24',
 };
 
 export const PageHero: React.FC<PageHeroProps> = ({
@@ -83,7 +83,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
                         </span>
                     )}
                     {typeof title === 'string' ? (
-                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight max-w-3xl">
+                        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight max-w-3xl">
                             {title}
                         </h1>
                     ) : (
@@ -91,7 +91,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
                     )}
                     {description && (
                         typeof description === 'string' ? (
-                            <p className="text-base sm:text-lg text-gray-200 max-w-2xl leading-relaxed">
+                            <p className="text-sm sm:text-lg text-gray-200 max-w-2xl leading-relaxed">
                                 {description}
                             </p>
                         ) : (
@@ -100,7 +100,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
                     )}
                     {children && <div className="w-full">{children}</div>}
                     {actions && (
-                        <div className={`flex items-center gap-3 flex-wrap pt-2 ${center ? 'justify-center' : ''}`}>
+                        <div className={`flex items-center gap-3 flex-wrap pt-2 w-full sm:w-auto ${center ? 'justify-center' : ''}`}>
                             {actions}
                         </div>
                     )}

@@ -306,15 +306,15 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                         👁 Preview Mode — Learner progress, assessments, and analytics are simulated and not saved.
                     </div>
                 )}
-                <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-card/80 backdrop-blur-md px-6 shadow-sm z-50 sticky top-0">
-                    <SidebarTrigger className="-ml-2" />
+                <header className="flex h-16 shrink-0 items-center gap-2 sm:gap-4 border-b bg-card/80 backdrop-blur-md px-4 sm:px-6 shadow-sm z-50 sticky top-0">
+                    <SidebarTrigger className="-ml-1 sm:-ml-2 shrink-0" />
                     
-                    <div className="flex-1 flex items-center gap-2 text-sm font-medium">
-                        <span className="text-muted-foreground hidden sm:inline">Learning:</span>
-                        <span className="text-foreground font-bold">{course.title}</span>
+                    <div className="flex-1 min-w-0 flex items-center gap-2 text-sm font-medium">
+                        <span className="text-muted-foreground hidden sm:inline shrink-0">Learning:</span>
+                        <span className="text-foreground font-bold truncate">{course.title}</span>
                     </div>
 
-                    <div className="flex items-center gap-3 ml-auto">
+                    <div className="flex items-center gap-2 sm:gap-3 ml-auto shrink-0">
                         <NotificationBell />
                         <DropdownMenu>
                             <DropdownMenuTrigger className="outline-none">
@@ -381,7 +381,7 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                             </div>
                         </div>
                     ) : (
-                        <div className="max-w-6xl mx-auto px-6 lg:px-12 pt-10 flex flex-col gap-12 w-full">
+                        <div className="max-w-6xl mx-auto px-2.5 sm:px-6 lg:px-12 pt-4 sm:pt-10 flex flex-col gap-6 sm:gap-12 w-full">
                             {/* Overview Section */}
                             <section id="overview" className="scroll-mt-24 space-y-6">
                                 <div>
@@ -393,7 +393,7 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                                 </div>
                                 
                                 {course.description && (
-                                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                                    <div className="bg-card rounded-xl sm:rounded-2xl border border-border p-4 sm:p-6 shadow-sm">
                                         <h3 className="text-lg font-bold text-foreground mb-3">About this Course</h3>
                                         <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap"><LinkifyText text={course.description} /></p>
                                     </div>
@@ -418,8 +418,8 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                                     </section>
 
                                     {(mod.lessons || []).sort((a, b) => a.order - b.order).map((lesson, lIdx) => (
-                                        <section id={`lesson-${lesson.id}`} key={lesson.id} className="scroll-mt-24 pl-4 sm:pl-8">
-                                            <div className="bg-card rounded-3xl border border-border p-8 shadow-sm hover:shadow-md transition-shadow">
+                                        <section id={`lesson-${lesson.id}`} key={lesson.id} className="scroll-mt-24 pl-0 sm:pl-8">
+                                            <div className="bg-card rounded-xl sm:rounded-3xl border border-border p-3 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
                                                 <h3 className="text-xl font-bold text-foreground mb-6 pb-4 border-b border-border">
                                                     Lesson {index + 1}.{lIdx + 1}: {lesson.title}
                                                 </h3>
@@ -447,7 +447,7 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
 
                                                 {/* Lesson Assessment */}
                                                 {(lesson.content_type === 'assessment' || lesson.assessment) && (
-                                                    <div id={`lesson-${lesson.id}-assessment`} className="mt-8 mb-4 border-t border-border pt-8 scroll-mt-24">
+                                                    <div id={`lesson-${lesson.id}-assessment`} className="mt-6 sm:mt-8 mb-4 border-t border-border pt-6 sm:pt-8 scroll-mt-24">
                                                         <h4 className="text-lg font-bold text-indigo-700 dark:text-indigo-400 mb-4 flex items-center gap-2">
                                                             <CheckSquare className="w-5 h-5" />
                                                             Lesson Assessment
@@ -461,8 +461,8 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                                     
                                     {/* Module Quizzes */}
                                     {(mod.module_quizzes || []).map((quiz, qIdx) => (
-                                        <section id={`module-${mod.id}-quiz-${quiz.id}`} key={quiz.id} className="scroll-mt-24 pl-4 sm:pl-8 mt-6">
-                                            <div className="bg-orange-50/50 dark:bg-orange-950/20 rounded-3xl border border-orange-200 dark:border-orange-900/50 p-8 shadow-sm">
+                                        <section id={`module-${mod.id}-quiz-${quiz.id}`} key={quiz.id} className="scroll-mt-24 pl-0 sm:pl-8 mt-6">
+                                            <div className="bg-orange-50/50 dark:bg-orange-950/20 rounded-xl sm:rounded-3xl border border-orange-200 dark:border-orange-900/50 p-3 sm:p-8 shadow-sm">
                                                 <h3 className="text-xl font-bold text-orange-800 dark:text-orange-400 mb-6 pb-4 border-b border-orange-200 dark:border-orange-900/50 flex items-center gap-3">
                                                     <Award className="w-6 h-6" />
                                                     Module Quiz: {quiz.title || `Quiz ${qIdx + 1}`}
@@ -480,7 +480,7 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
 
                             {/* Final Assessment */}
                             <section id="assessment" className="scroll-mt-24 mb-20">
-                                <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-3xl p-10 text-center shadow-lg">
+                                <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl sm:rounded-3xl p-3 sm:p-10 text-center shadow-lg">
                                     <div className="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-600 dark:text-indigo-400">
                                         <Award className="w-10 h-10" />
                                     </div>
@@ -505,7 +505,7 @@ export function CourseLearnerView({ courseId, previewMode = false }: { courseId:
                                             </Link>
                                         </div>
                                     ) : isAssessmentStarted && exam ? (
-                                        <div className="mt-8 text-left bg-card p-6 rounded-3xl border border-border">
+                                        <div className="mt-5 sm:mt-8 text-left bg-card p-2.5 sm:p-6 rounded-xl sm:rounded-3xl border border-border">
                                             {enrollment?.status === 'completed' && (
                                                 <div className="mb-6 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-xl p-4 flex items-center justify-between">
                                                     <div className="flex items-center gap-3 text-green-700 dark:text-green-400 font-bold">

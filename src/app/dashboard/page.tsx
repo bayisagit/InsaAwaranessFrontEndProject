@@ -207,24 +207,26 @@ export default function DashboardPage() {
  </div>
 
  {/* Global Alert Banner */}
- <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 rounded-2xl p-5 mb-8 flex items-start gap-4 shadow-sm shadow-black/5 dark:shadow-none relative overflow-hidden">
+ <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 rounded-2xl p-4 sm:p-5 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm shadow-black/5 dark:shadow-none relative overflow-hidden">
  <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-orange-100 dark:from-orange-500/20 to-transparent pointer-events-none"></div>
+ <div className="flex items-start gap-3.5 flex-1 min-w-0 relative z-10">
  <div className="w-10 h-10 rounded-full bg-card text-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-black/5 dark:shadow-none mt-0.5">
  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
  </svg>
  </div>
- <div className="flex-1 relative z-10">
- <div className="flex items-center gap-3 mb-1">
+ <div className="flex-1 min-w-0">
+ <div className="flex flex-wrap items-center gap-2 mb-1">
  <h3 className="font-bold text-foreground">{alerts[0]?.title || t('nationalThreatAdvisory')}</h3>
- <span className="bg-orange-600 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded">{t('actionRequired')}</span>
+ <span className="bg-orange-600 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded shrink-0">{t('actionRequired')}</span>
  </div>
- <p className="text-sm text-foreground max-w-4xl">
+ <p className="text-sm text-foreground max-w-4xl line-clamp-3 sm:line-clamp-none">
  {alerts[0]?.message || 'Phishing campaigns targeting public sector employees increased by 42%. Verify all communications immediately through the official portal.'}
  </p>
  </div>
- <Link href="/dashboard/alerts" className="relative z-10">
- <button className="bg-card border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-orange-50 dark:hover:bg-orange-500/10 shrink-0 mt-2 sm:mt-0 cursor-pointer">
+ </div>
+ <Link href="/dashboard/alerts" className="relative z-10 w-full sm:w-auto shrink-0">
+ <button className="w-full sm:w-auto bg-card border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-orange-50 dark:hover:bg-orange-500/10 cursor-pointer text-center">
  {t('viewBriefing')}
  </button>
  </Link>
@@ -246,7 +248,7 @@ export default function DashboardPage() {
  {/* Left Column (Main Content) */}
  <div className="lg:col-span-2 space-y-8">
  <AnimatedSection delay={0.1}>
- <div className="grid grid-cols-3 gap-4">
+ <div className="grid grid-cols-3 gap-2 sm:gap-4">
  <StatCard
  icon={
  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -335,12 +337,12 @@ export default function DashboardPage() {
  {/* Recommended Courses */}
  <AnimatedSection delay={0.3}>
  <div>
- <div className="flex justify-between items-center mb-4">
- <div className="flex items-center gap-2">
- <h2 className="text-lg font-bold text-foreground border-l-4 border-orange-500 pl-3">{t('topRecommendations')}</h2>
- <span className="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded font-bold">{recommendedCourses.length}</span>
+ <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+ <div className="flex items-center gap-2 min-w-0">
+ <h2 className="text-lg font-bold text-foreground border-l-4 border-orange-500 pl-3 truncate">{t('topRecommendations')}</h2>
+ <span className="text-[10px] bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded font-bold shrink-0">{recommendedCourses.length}</span>
  </div>
- <Link href="/courses" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">{t('viewFullCatalog')}</Link>
+ <Link href="/courses" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 shrink-0">{t('viewFullCatalog')}</Link>
  </div>
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

@@ -49,6 +49,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 import {
@@ -283,10 +284,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { isInstallable, triggerInstall } = usePwaInstall();
+  const { setOpenMobile, isMobile } = useSidebar();
   const t = useTranslations('sidebar');
   const tCommon = useTranslations('common');
   const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
   const [openState, setOpenState] = React.useState<Record<string, boolean>>({});
+
+  React.useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [pathname, isMobile, setOpenMobile]);
   
   const handleLogout = () => setIsLogoutModalOpen(true);
   const confirmLogout = () => {

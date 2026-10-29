@@ -24,7 +24,7 @@ export function FeatureCard({ icon, title, description, bullets, accentColor }: 
 
     return (
         <div
-            className={`relative bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border border-b-4 ${colors.border} p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl group overflow-hidden`}
+            className={`relative bg-card rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border border-b-4 ${colors.border} p-5 sm:p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl group overflow-hidden`}
         >
             {/* Decorative quarter-circle */}
             <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-bl-full ${colors.bg} opacity-50`} />

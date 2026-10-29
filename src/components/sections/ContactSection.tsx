@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { toast } from 'react-hot-toast';
 import { createContactMessage } from '@/lib/api';
+import { Mail, Phone, Building2, ChevronDown } from 'lucide-react';
 
 interface ContactSectionProps {
     variant?: 'full' | 'home';
@@ -69,20 +70,20 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
 
     if (variant === 'home') {
         return (
-            <section className="py-20 px-6 lg:px-8 bg-card border-t border-border">
+            <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-card border-t border-border">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">
+                    <div className="text-center mb-10 sm:mb-12">
+                        <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground mb-4">
                             {t('getInTouch')}
                         </h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
+                        <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
                             {t('getInTouchDesc')}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
-                        <div className="bg-muted rounded-2xl p-8 border border-border text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
-                            <div className="text-orange-500 text-3xl mb-4">&#9993;</div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto mb-10 sm:mb-12">
+                        <div className="bg-muted rounded-2xl p-5 sm:p-8 border border-border text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
+                            <div className="text-orange-500 flex justify-center mb-4"><Mail className="w-8 h-8" /></div>
                             <h4 className="font-semibold text-foreground mb-2">{t('emailSupport')}</h4>
                             <p className="text-sm text-muted-foreground mb-3">{t('emailSupportDesc')}</p>
                             <a href="mailto:support@cybersafenation.gov" className="text-primary font-medium text-sm hover:underline">
@@ -90,8 +91,8 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                             </a>
                         </div>
 
-                        <div className="bg-muted rounded-2xl p-8 border border-orange-500/20 dark:border-orange-500/30 text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
-                            <div className="text-orange-600 text-3xl mb-4">&#9742;</div>
+                        <div className="bg-muted rounded-2xl p-5 sm:p-8 border border-orange-500/20 dark:border-orange-500/30 text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
+                            <div className="text-orange-600 flex justify-center mb-4"><Phone className="w-8 h-8" /></div>
                             <h4 className="font-semibold text-foreground mb-2">{t('emergencyHotline')}</h4>
                             <p className="text-sm text-muted-foreground mb-3">{t('emergencyHotlineDesc')}</p>
                             <a href="tel:+18005550199" className="text-orange-600 font-bold hover:underline tracking-wider">
@@ -99,8 +100,8 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                             </a>
                         </div>
 
-                        <div className="bg-muted rounded-2xl p-8 border border-border text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
-                            <div className="text-muted-foreground text-3xl mb-4">&#127970;</div>
+                        <div className="bg-muted rounded-2xl p-5 sm:p-8 border border-border text-center hover:shadow-md shadow-black/10 dark:shadow-none transition-shadow">
+                            <div className="text-muted-foreground flex justify-center mb-4"><Building2 className="w-8 h-8" /></div>
                             <h4 className="font-semibold text-foreground mb-2">{t('headquarters')}</h4>
                             <p className="text-sm text-muted-foreground whitespace-pre-line">
                                 {t('headquartersAddress')}
@@ -109,8 +110,8 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                     </div>
 
                     <div className="text-center">
-                        <Link href="/contact">
-                            <Button variant="primary">{t('contactUs')} &rarr;</Button>
+                        <Link href="/contact" className="inline-block w-full sm:w-auto">
+                            <Button variant="primary" className="w-full sm:w-auto">{t('contactUs')} &rarr;</Button>
                         </Link>
                     </div>
                 </div>
@@ -126,16 +127,16 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                 center
             />
 
-            <section className="py-16 px-6 lg:px-8 max-w-6xl mx-auto w-full flex flex-col md:flex-row gap-16">
+            <section className="py-8 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full flex flex-col md:flex-row gap-10 sm:gap-16">
                 {/* Left Side - Info */}
-                <div className="w-full md:w-[350px] shrink-0 space-y-12">
+                <div className="w-full md:w-[350px] shrink-0 space-y-8 sm:space-y-12">
                     <div>
                         <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-6 pb-2 border-b border-border">
                             {t('directSupport')}
                         </h3>
                         <div className="space-y-6">
                             <div className="flex items-start gap-4">
-                                <div className="text-orange-500 mt-1">&#9993;</div>
+                                <div className="text-orange-500 mt-1 shrink-0"><Mail className="w-5 h-5" /></div>
                                 <div>
                                     <h4 className="font-semibold text-foreground">{t('emailSupport')}</h4>
                                     <p className="text-sm text-muted-foreground mb-1">{t('emailSupportDesc')}</p>
@@ -145,7 +146,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                 </div>
                             </div>
                             <div className="flex items-start gap-4 p-4 bg-orange-500/10 border border-orange-500/20 dark:border-orange-500/30 rounded-xl">
-                                <div className="text-orange-600 mt-1">&#9742;</div>
+                                <div className="text-orange-600 mt-1 shrink-0"><Phone className="w-5 h-5" /></div>
                                 <div>
                                     <h4 className="font-semibold text-foreground">{t('emergencyHotline')}</h4>
                                     <p className="text-sm text-muted-foreground mb-1">{t('emergencyHotlineDesc')}</p>
@@ -155,7 +156,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
-                                <div className="text-muted-foreground mt-1">&#127970;</div>
+                                <div className="text-muted-foreground mt-1 shrink-0"><Building2 className="w-5 h-5" /></div>
                                 <div>
                                     <h4 className="font-semibold text-foreground">{t('headquarters')}</h4>
                                     <p className="text-sm text-muted-foreground whitespace-pre-line">
@@ -178,7 +179,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                     onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
                                 >
                                     <span className="text-sm font-medium text-foreground group-hover:text-primary">{t('faqVerifyEmail')}</span>
-                                    <span className={`text-muted-foreground transition-transform duration-200 ${openFaq === 1 ? 'rotate-180' : ''}`}>&#11163;</span>
+                                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openFaq === 1 ? 'rotate-180' : ''}`} />
                                 </div>
                                 {openFaq === 1 && (
                                     <div className="mt-3 text-sm text-muted-foreground leading-relaxed">
@@ -194,7 +195,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                     onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
                                 >
                                     <span className="text-sm font-medium text-foreground group-hover:text-primary">{t('faqTrainingMandatory')}</span>
-                                    <span className={`text-muted-foreground transition-transform duration-200 ${openFaq === 2 ? 'rotate-180' : ''}`}>&#11163;</span>
+                                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openFaq === 2 ? 'rotate-180' : ''}`} />
                                 </div>
                                 {openFaq === 2 && (
                                     <div className="mt-3 text-sm text-muted-foreground leading-relaxed">
@@ -208,9 +209,9 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
 
                 {/* Right Side - Form */}
                 <div className="flex-1">
-                    <div className="bg-card border border-border rounded-2xl p-8 shadow-sm shadow-black/5 dark:shadow-none">
-                        <h2 className="text-2xl font-bold text-foreground mb-2">{t('sendMessage')}</h2>
-                        <p className="text-muted-foreground text-sm mb-8">{t('sendMessageDesc')}</p>
+                    <div className="bg-card border border-border rounded-2xl p-5 sm:p-8 shadow-sm shadow-black/5 dark:shadow-none">
+                        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">{t('sendMessage')}</h2>
+                        <p className="text-muted-foreground text-sm mb-6 sm:mb-8">{t('sendMessageDesc')}</p>
 
                         {successMsg && (
                             <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 rounded-xl text-sm flex items-start gap-3 shadow-sm dark:shadow-emerald-950/30">
@@ -231,7 +232,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                         )}
 
                         <form className="space-y-6" onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <Input label={t('firstName')} placeholder="Jane" required value={firstName} onChange={e => setFirstName(e.target.value)} disabled={isSubmitting} />
                                 <Input label={t('lastName')} placeholder="Doe" required value={lastName} onChange={e => setLastName(e.target.value)} disabled={isSubmitting} />
                             </div>
@@ -242,7 +243,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                 <label className="block text-sm font-medium text-foreground mb-1">{t('subjectCategory')} <span className="text-primary">*</span></label>
                                 <div className="relative">
                                     <select 
-                                        className="block w-full rounded-lg border border-border py-3 pl-3 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary appearance-none bg-card text-foreground"
+                                        className="block w-full rounded-lg border border-border py-3 pl-3.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary appearance-none bg-card text-foreground cursor-pointer shadow-sm shadow-black/5 dark:shadow-none transition-colors"
                                         value={subjectCategory}
                                         onChange={e => setSubjectCategory(e.target.value)}
                                         disabled={isSubmitting}
@@ -252,8 +253,8 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                         <option value={t('subjectTraining')}>{t('subjectTraining')}</option>
                                         <option value={t('subjectTechnical')}>{t('subjectTechnical')}</option>
                                     </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground">
-                                        &#11163;
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-muted-foreground">
+                                        <ChevronDown className="w-4 h-4" />
                                     </div>
                                 </div>
                             </div>
@@ -291,7 +292,7 @@ export function ContactSection({ variant = 'full' }: ContactSectionProps) {
                                 />
                             </div>
 
-                            <Button type="submit" disabled={isSubmitting || !captchaToken} className="bg-orange-500 hover:bg-orange-600 text-white px-8">
+                            <Button type="submit" disabled={isSubmitting || !captchaToken} className="bg-orange-500 hover:bg-orange-600 text-white px-8 w-full sm:w-auto">
                                 {isSubmitting ? 'Sending...' : t('sendMessage')}
                             </Button>
                         </form>

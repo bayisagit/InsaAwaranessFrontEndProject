@@ -282,7 +282,7 @@ export const Header: React.FC<HeaderProps> = ({ rightAction }) => {
  animate={{ x: 0 }}
  exit={{ x: '100%' }}
  transition={{ type: 'spring', damping: 30, stiffness: 300 }}
- className="fixed top-16 right-0 bottom-0 w-80 max-w-[85vw] bg-background border-l border-border z-50 overflow-y-auto shadow-2xl md:hidden"
+ className="fixed top-16 right-0 bottom-0 w-80 max-w-[85vw] bg-background border-l border-border z-50 overflow-y-auto shadow-2xl md:hidden pb-20 sm:pb-8"
  >
  <div className="py-4">
  <div className="space-y-1">

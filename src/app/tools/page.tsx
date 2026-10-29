@@ -86,10 +86,10 @@ export default function ToolsLandingPage() {
                 className="w-full text-center"
             />
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 mt-16">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 mt-8 sm:mt-16">
                 {error && <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-8">{error}</div>}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
                     {isLoading ? (
                         [1, 2, 3].map(i => (
                             <CardSkeleton key={i} />
@@ -112,7 +112,7 @@ export default function ToolsLandingPage() {
                             const theme = getTheme(tool.name);
                             const href = getHref(tool.name);
                             return (
-                                <div key={tool.id} className="bg-card rounded-3xl p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col items-center text-center cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+                                <div key={tool.id} className="bg-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-border shadow-sm shadow-black/5 dark:shadow-none hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col items-center text-center cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
                                     <div className={`w-20 h-20 rounded-2xl ${theme.color} flex items-center justify-center mb-6 shadow-sm shadow-black/5 dark:shadow-none group-hover:scale-110 transition-transform`}>
                                         {theme.icon}
                                     </div>

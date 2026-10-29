@@ -103,11 +103,11 @@ export default function CertificatesPage() {
  return (
  <div className="min-h-screen bg-muted pb-20">
  <section className="bg-card border-b border-border">
- <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 text-center">
- <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-4">
+ <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-10 sm:py-20 text-center">
+ <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-4">
  My Certificates
  </h1>
- <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+ <p className="text-sm sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
  View and download your earned cybersecurity certifications.
  </p>
  <div className="max-w-md mx-auto">
@@ -121,19 +121,19 @@ export default function CertificatesPage() {
  </section>
 
  {isLoadingCertificates ? (
- <div className="max-w-5xl mx-auto px-6 lg:px-12 pt-10">
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-12 pt-6 sm:pt-10">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
  {[1, 2, 3, 4].map(i => (
  <CardSkeleton key={i} />
  ))}
  </div>
  </div>
  ) : error ? (
- <div className="max-w-5xl mx-auto px-6 lg:px-12 py-10">
+ <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-12 py-6 sm:pt-10">
  <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100">{error}</div>
  </div>
  ) : (
- <div className="max-w-5xl mx-auto px-6 lg:px-12 pt-10">
+ <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-12 pt-6 sm:pt-10">
  {certificates.length === 0 ? (
  <EmptyState
  icon={
@@ -146,9 +146,9 @@ export default function CertificatesPage() {
  />
  ) : (
  <>
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pb-20">
  {certificates.map(cert => (
- <div key={cert.id} className="bg-card rounded-2xl border border-border p-6 shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none transition-all group cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out">
+ <div key={cert.id} className="bg-card rounded-2xl border border-border p-4 sm:p-6 shadow-sm shadow-black/5 dark:shadow-none hover:shadow-md shadow-black/10 dark:shadow-none transition-all group cursor-pointer hover:-translate-y-1 duration-200 ease-in-out">
  <div className="flex items-start gap-4">
  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

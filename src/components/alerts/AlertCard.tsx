@@ -149,7 +149,7 @@ export function AlertCard({
       id={alert.id}
       className={`relative bg-card rounded-2xl border border-border border-l-4 ${config.borderAccent} shadow-md ${config.glow} transition-all duration-200 hover:shadow-lg dark:hover:shadow-black/30 overflow-hidden group`}
     >
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* Top Header: Severity + Metadata + Dismiss */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="flex flex-wrap items-center gap-2.5">
@@ -202,7 +202,7 @@ export function AlertCard({
         </div>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-foreground mb-2.5 tracking-tight group-hover:text-primary transition-colors">
+        <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2.5 tracking-tight group-hover:text-primary transition-colors">
           {alert.title}
         </h2>
 
@@ -212,7 +212,7 @@ export function AlertCard({
         </div>
 
         {/* Bottom Actions Bar */}
-        <div className="pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3">
+        <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
@@ -235,9 +235,9 @@ export function AlertCard({
           </div>
 
           {/* Primary Acknowledge Action Button */}
-          <div>
+          <div className="w-full sm:w-auto">
             {acknowledged ? (
-              <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-sm">
+              <div className="inline-flex items-center justify-center gap-1.5 w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-sm">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                 <span>Acknowledged & Logged</span>
               </div>
@@ -245,7 +245,7 @@ export function AlertCard({
               <button
                 onClick={handleAckClick}
                 disabled={isAcknowledging}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white shadow-md shadow-primary/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white shadow-md shadow-primary/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
                 title={
                   isAuthenticated
                     ? 'Confirm you have read and understood this threat advisory'

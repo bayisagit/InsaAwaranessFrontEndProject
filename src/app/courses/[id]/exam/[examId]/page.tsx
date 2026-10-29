@@ -45,7 +45,7 @@ export default function CourseExamPage() {
     }
 
     return (
-        <div className="min-h-screen bg-muted py-12 px-6">
+        <div className="min-h-screen bg-muted py-6 sm:py-12 px-3 sm:px-6">
             <div className="max-w-4xl mx-auto">
                 <header className="mb-10 flex items-center justify-between">
                     <div>

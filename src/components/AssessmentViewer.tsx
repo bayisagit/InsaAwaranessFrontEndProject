@@ -10,7 +10,7 @@ import { Button } from '@/components/Button';
 import { AssessmentSkeleton } from '@/components/LoadingSkeleton';
 import { LinkifyText } from '@/components/LinkifyText';
 import Link from 'next/link';
-import { GripVertical, ChevronUp, ChevronDown, Link2, X, RotateCcw, Check } from 'lucide-react';
+import { GripVertical, ChevronUp, ChevronDown, ChevronRight, Link2, X, RotateCcw, Check } from 'lucide-react';
 
 // ─── Props ──────────────────────────────────────────────────────────────────────
 // Accepts either a direct assessmentId or a lessonId / certificateExamId to look up
@@ -658,7 +658,25 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
              status: 'graded',
              started_at: new Date().toISOString(),
              submitted_at: new Date().toISOString(),
-             answers: []
+             answers: assessment.questions.map((q, idx) => {
+                 const rawAns = answers[q.id];
+                 const choiceIds = ['multiple_choice', 'true_false', 'multiple_select'].includes(q.type)
+                     ? (Array.isArray(rawAns) ? rawAns : rawAns ? [rawAns] : [])
+                     : [];
+                 return {
+                     id: `preview-ans-${idx}`,
+                     attempt: 'fake-preview',
+                     question: q.id,
+                     question_details: q,
+                     response_text: typeof rawAns === 'string' ? rawAns : '',
+                     response_json: choiceIds.length ? { choice_ids: choiceIds } : typeof rawAns === 'object' ? rawAns : null,
+                     is_correct: true,
+                     requires_manual_grading: q.requires_manual_grading,
+                     score: q.points,
+                     created_at: new Date().toISOString(),
+                     updated_at: new Date().toISOString(),
+                 };
+             })
          } as any);
          setIsSubmitting(false);
          if (onComplete) onComplete();
@@ -718,54 +736,207 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  const passed = result.passed && !isPendingReview;
 
  return (
- <div className="bg-card border border-border rounded-2xl shadow-sm shadow-black/5 dark:shadow-none overflow-hidden">
+ <div className="bg-card border border-border rounded-xl sm:rounded-2xl shadow-sm shadow-black/5 dark:shadow-none overflow-hidden">
  {/* Result header */}
- <div className={`px-6 py-8 text-center ${passed ? 'bg-green-50 dark:bg-green-950/30' : isPendingReview ? 'bg-yellow-50 dark:bg-yellow-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}>
- <div className="text-5xl mb-3">{passed ? '🏆' : isPendingReview ? '⏳' : '📚'}</div>
+ <div className={`px-4 sm:px-6 py-6 sm:py-8 text-center ${passed ? 'bg-green-50 dark:bg-green-950/30' : isPendingReview ? 'bg-yellow-50 dark:bg-yellow-950/30' : 'bg-red-50 dark:bg-red-950/30'}`}>
+ <div className="text-4xl sm:text-5xl mb-2 sm:mb-3">{passed ? '🏆' : isPendingReview ? '⏳' : '📚'}</div>
  {isPendingReview ? (
- <><h3 className="text-xl font-bold text-yellow-800 dark:text-yellow-400 mb-1">Pending Review</h3>
- <p className="text-yellow-700 dark:text-yellow-400 text-sm">Your answers include questions that require manual grading. Results will be updated once reviewed by an instructor.</p></>
+ <><h3 className="text-lg sm:text-xl font-bold text-yellow-800 dark:text-yellow-400 mb-1">Pending Review</h3>
+ <p className="text-yellow-700 dark:text-yellow-400 text-xs sm:text-sm">Your answers include questions that require manual grading. Results will be updated once reviewed by an instructor.</p></>
  ) : (
- <><h3 className={`text-xl font-bold mb-1 ${passed ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>{passed ? 'Well done! You passed!' : 'Keep practicing!'}</h3>
- <p className={`text-sm ${passed ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+ <><h3 className={`text-lg sm:text-xl font-bold mb-1 ${passed ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'}`}>{passed ? 'Well done! You passed!' : 'Keep practicing!'}</h3>
+ <p className={`text-xs sm:text-sm ${passed ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
  Score: <strong>{result.score.toFixed(1)}%</strong> (Pass mark: {assessment.passing_score}%)
  </p></>
  )}
  </div>
 
   {/* View Answers toggle */}
-  <div className="border-t border-border px-6 pt-4">
-  <button onClick={() => setShowAnswers(s => !s)} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-wider cursor-pointer">
-  {showAnswers ? '▼' : '▶'} {showAnswers ? 'Hide Answers' : 'View Answers'}
+  <div className="border-t border-border px-3 sm:px-6 py-2.5 sm:pt-4">
+  <button onClick={() => setShowAnswers(s => !s)} className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-wider cursor-pointer py-1">
+  {showAnswers ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+  {showAnswers ? 'Hide Answers' : 'View Answers'}
   </button>
   </div>
 
   {/* Per-answer breakdown */}
   {showAnswers && (
-  <div className="p-6 space-y-4">
-  <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Answer Review</h4>
+  <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
+  <h4 className="text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider">Answer Review</h4>
   {result.answers.map(ans => {
-  const q = questions.find(q => q.id === ans.question);
+  const q = (questions.find(item => item.id === ans.question) || ans.question_details) as AssessmentQuestion | undefined;
   if (!q) return null;
   const isPending = ans.requires_manual_grading;
   return (
-  <div key={ans.id} className={`p-4 rounded-xl border ${isPending ? 'border-yellow-200 dark:border-yellow-900/50 bg-yellow-50 dark:bg-yellow-950/30' : ans.is_correct ? 'border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/30' : 'border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30'}`}>
-  <div className="flex justify-between items-start gap-3">
-  <p className="text-sm font-semibold text-foreground flex-1"><LinkifyText text={q.prompt} /></p>
-  <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${isPending ? 'bg-yellow-200 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400' : ans.score > 0 ? 'bg-green-200 dark:bg-green-900/50 text-green-800 dark:text-green-400' : 'bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-400'}`}>
-  {isPending ? '⏳ Pending Review' : `${ans.score} / ${q.points} pts`}
+  <div key={ans.id} className={`p-3 sm:p-4 rounded-xl border ${isPending ? 'border-yellow-200 dark:border-yellow-900/50 bg-yellow-50 dark:bg-yellow-950/30' : ans.is_correct ? 'border-green-200 dark:border-green-900/50 bg-green-50/50 dark:bg-green-950/20' : 'border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20'}`}>
+  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3">
+  <p className="text-sm font-semibold text-foreground flex-1 leading-snug break-words"><LinkifyText text={q.prompt} /></p>
+  <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full shrink-0 self-start ${isPending ? 'bg-yellow-200 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400' : ans.is_correct ? 'bg-emerald-200 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300' : 'bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-400'}`}>
+  {isPending ? '⏳ Pending Review' : ans.is_correct ? `✓ Correct · ${ans.score} / ${q.points} pts` : `✗ Incorrect · ${ans.score} / ${q.points} pts`}
   </span>
   </div>
 
-  {['short_answer', 'essay'].includes(q.type) && ans.response_text && (
-    <div className="mt-2.5 p-3 rounded-lg bg-card border border-border text-xs">
-      <span className="text-muted-foreground font-semibold block mb-1">Your Submission:</span>
-      <p className="text-foreground whitespace-pre-wrap">{ans.response_text}</p>
+  {/* Multiple Choice, True/False, Multiple Select Answers Review */}
+  {['multiple_choice', 'true_false', 'multiple_select'].includes(q.type) && q.choices && q.choices.length > 0 && (() => {
+    const rawUserChoice = (
+      ans.response_json?.choice_ids ??
+      ans.response_json?.choice_id ??
+      ans.response_json?.selected_choice_ids ??
+      answers[q.id]
+    );
+    const userChoiceIds = (
+      Array.isArray(rawUserChoice)
+        ? rawUserChoice
+        : rawUserChoice !== undefined && rawUserChoice !== null && rawUserChoice !== ''
+          ? [rawUserChoice]
+          : []
+    ).map(String);
+
+    const sortedChoices = [...q.choices].sort((a, b) => a.order - b.order);
+
+    return (
+      <div className="mt-3 space-y-2">
+        <div className="flex items-center justify-between text-[11px] text-muted-foreground font-semibold px-0.5">
+          <span>Choices &amp; Evaluation:</span>
+          {q.type === 'multiple_select' && (
+            <span className="text-[10px] opacity-80">(Multiple choices allowed)</span>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          {sortedChoices.map(c => {
+            const isSelected = userChoiceIds.includes(String(c.id));
+            const isCorrectChoice = Boolean(c.is_correct);
+
+            let containerStyle = 'bg-card/60 border-border/70 text-muted-foreground opacity-75';
+            let leftIcon = (
+              <span className="w-5 h-5 rounded-full border border-border/80 flex items-center justify-center shrink-0 opacity-40">
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+              </span>
+            );
+            let statusBadge = null;
+
+            if (isSelected && isCorrectChoice) {
+              containerStyle = 'bg-emerald-500/10 border-emerald-500/50 text-emerald-950 dark:text-emerald-100 ring-1 ring-emerald-500/20 font-medium';
+              leftIcon = (
+                <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                </span>
+              );
+              statusBadge = (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950 flex items-center gap-1 shrink-0">
+                  Your Answer ✓
+                </span>
+              );
+            } else if (isSelected && !isCorrectChoice) {
+              containerStyle = 'bg-red-500/10 border-red-500/50 text-red-950 dark:text-red-100 ring-1 ring-red-500/20 font-medium';
+              leftIcon = (
+                <span className="w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                </span>
+              );
+              statusBadge = (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-600 text-white dark:bg-red-500 dark:text-red-950 flex items-center gap-1 shrink-0">
+                  Your Answer ✗
+                </span>
+              );
+            } else if (!isSelected && isCorrectChoice) {
+              containerStyle = 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-500/60 border-dashed text-emerald-900 dark:text-emerald-200 font-medium';
+              leftIcon = (
+                <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-500/40">
+                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                </span>
+              );
+              statusBadge = (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1 shrink-0">
+                  Correct Answer
+                </span>
+              );
+            }
+
+            return (
+              <div
+                key={c.id}
+                className={`p-2.5 sm:p-3 rounded-xl border text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all ${containerStyle}`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  {leftIcon}
+                  <span className="break-words leading-snug">
+                    {c.text}
+                  </span>
+                </div>
+                {statusBadge && (
+                  <div className="self-end sm:self-center shrink-0">
+                    {statusBadge}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {userChoiceIds.length === 0 && (
+          <p className="text-[11px] text-muted-foreground italic px-1 pt-1">
+            (No option was selected for this question)
+          </p>
+        )}
+      </div>
+    );
+  })()}
+
+  {/* Fill in the blank Answer Review */}
+  {q.type === 'fill_blank' && (() => {
+    const userText = ans.response_text || ans.response_json?.text || (typeof answers[q.id] === 'string' ? answers[q.id] : '') || '';
+    const correctText = q.correct_text_answer;
+
+    return (
+      <div className="mt-3 p-3 rounded-xl bg-card border border-border text-xs space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+          <span className="text-muted-foreground font-semibold flex items-center gap-1.5">
+            {ans.is_correct ? (
+              <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                <Check className="w-3 h-3 stroke-[2.5]" />
+              </span>
+            ) : (
+              <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0">
+                <X className="w-3 h-3 stroke-[2.5]" />
+              </span>
+            )}
+            Your Answer:
+          </span>
+          <span className={`font-mono text-xs px-2.5 py-1 rounded-md font-semibold break-all ${ans.is_correct ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'}`}>
+            {userText || <span className="italic font-sans text-muted-foreground font-normal">(No answer provided)</span>}
+          </span>
+        </div>
+
+        {!ans.is_correct && correctText && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pt-2 border-t border-border/60">
+            <span className="text-muted-foreground font-semibold flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                <Check className="w-3 h-3 stroke-[2.5]" />
+              </span>
+              Correct Answer:
+            </span>
+            <span className="font-mono text-xs px-2.5 py-1 rounded-md font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 break-all">
+              {correctText}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  })()}
+
+  {/* Short Answer & Essay Answer Review */}
+  {['short_answer', 'essay'].includes(q.type) && (
+    <div className="mt-3 p-3 rounded-xl bg-card border border-border text-xs space-y-1.5">
+      <span className="text-muted-foreground font-semibold block">Your Submission:</span>
+      <p className="text-foreground whitespace-pre-wrap leading-relaxed">
+        {ans.response_text || ans.response_json?.text || (typeof answers[q.id] === 'string' ? answers[q.id] : '') || <span className="italic text-muted-foreground">(No answer provided)</span>}
+      </p>
     </div>
   )}
 
+  {/* Ordering Answer Review */}
   {q.type === 'ordering' && q.ordering_items && (
-    <div className="mt-2.5 p-3 rounded-lg bg-card border border-border text-xs space-y-2">
+    <div className="mt-3 p-3 rounded-xl bg-card border border-border text-xs space-y-2">
       <span className="text-muted-foreground font-semibold block">Your Submitted Sequence:</span>
       <div className="space-y-1.5">
         {(() => {
@@ -774,18 +945,32 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
             ? submittedOrder.map(id => q.ordering_items.find(item => String(item.id) === String(id))).filter(Boolean) as typeof q.ordering_items
             : q.ordering_items;
           return itemsToDisplay.map((item, idx) => (
-            <div key={item.id} className="flex items-center gap-2 py-1 px-2.5 rounded bg-muted/60 text-foreground">
+            <div key={item.id} className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-muted/60 text-foreground">
               <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center shrink-0 border border-primary/20">{idx + 1}</span>
               <span className="flex-1 font-medium">{item.text}</span>
             </div>
           ));
         })()}
       </div>
+      {!ans.is_correct && (
+        <div className="pt-2 border-t border-border/60">
+          <span className="text-emerald-700 dark:text-emerald-400 font-semibold block mb-1.5">Correct Sequence:</span>
+          <div className="space-y-1.5">
+            {[...q.ordering_items].sort((a, b) => (a.correct_order ?? a.order) - (b.correct_order ?? b.order)).map((item, idx) => (
+              <div key={item.id} className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-950 dark:text-emerald-200">
+                <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center shrink-0">{idx + 1}</span>
+                <span className="flex-1 font-medium">{item.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )}
 
+  {/* Matching Answer Review */}
   {q.type === 'matching' && q.matching_pairs && (
-    <div className="mt-2.5 p-3 rounded-lg bg-card border border-border text-xs space-y-2">
+    <div className="mt-3 p-3 rounded-xl bg-card border border-border text-xs space-y-2">
       <span className="text-muted-foreground font-semibold block">Your Matched Pairs:</span>
       <div className="space-y-1.5">
         {(() => {
@@ -794,13 +979,17 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
             const userMatch = submittedPairs[p.left_text];
             const isMatchCorrect = userMatch === p.right_text;
             return (
-              <div key={p.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-1.5 px-2.5 rounded bg-muted/60 text-foreground">
-                <span className="font-semibold text-foreground">{p.left_text}</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-muted-foreground hidden sm:inline">→</span>
-                  <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${userMatch ? (isMatchCorrect ? 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-300') : 'text-muted-foreground italic'}`}>
-                    {userMatch || '(No match selected)'}
+              <div key={p.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-2 px-2.5 rounded-lg bg-muted/60 text-foreground">
+                <span className="font-semibold text-foreground text-xs">{p.left_text}</span>
+                <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                  <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${userMatch ? (isMatchCorrect ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300') : 'text-muted-foreground italic'}`}>
+                    {userMatch ? (isMatchCorrect ? `${userMatch} ✓` : `${userMatch} ✗`) : '(No match selected)'}
                   </span>
+                  {!isMatchCorrect && (
+                    <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-medium">
+                      Correct: {p.right_text}
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -810,8 +999,9 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
     </div>
   )}
 
+  {/* Instructor Feedback */}
   {ans.feedback && (
-    <div className="mt-2.5 p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs text-foreground">
+    <div className="mt-3 p-3 rounded-xl bg-primary/10 border border-primary/20 text-xs text-foreground">
       <span className="font-semibold text-primary flex items-center gap-1 mb-1">
         <span>💬</span> Instructor Feedback:
       </span>
@@ -819,8 +1009,15 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
     </div>
   )}
 
-  {!isPending && !ans.is_correct && q.explanation && (
-  <p className="text-xs text-red-700 mt-2 bg-red-100 px-3 py-2 rounded-xl dark:text-red-300 dark:bg-red-900/30"><LinkifyText text={q.explanation} /></p>
+  {/* Explanation */}
+  {q.explanation && (
+    <div className="mt-3 p-3 rounded-xl bg-card/90 border border-border text-xs flex items-start gap-2.5">
+      <span className="text-base shrink-0">💡</span>
+      <div className="flex-1 min-w-0">
+        <span className="font-bold text-foreground block mb-0.5">Explanation</span>
+        <p className="text-muted-foreground leading-relaxed"><LinkifyText text={q.explanation} /></p>
+      </div>
+    </div>
   )}
   </div>
   );
@@ -830,9 +1027,10 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  {/* Attempt history */}
  {history.length > 0 && (
- <div className="border-t border-border px-6 py-4">
- <button onClick={() => setShowHistory(h => !h)} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 uppercase tracking-wider transition-colors cursor-pointer">
- {showHistory ? '▼' : '▶'} Attempt History ({history.length})
+ <div className="border-t border-border px-3 sm:px-6 py-3 sm:py-4">
+ <button onClick={() => setShowHistory(h => !h)} className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-200 uppercase tracking-wider cursor-pointer py-1">
+ {showHistory ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+ Attempt History ({history.length})
  </button>
  {showHistory && (
  <div className="mt-3 space-y-2">
@@ -849,11 +1047,11 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  </div>
  )}
 
-  <div className="px-6 pb-6 flex justify-end gap-3">
-  {!passed && <Button variant="outline" onClick={handleRetake}>Try Again</Button>}
+  <div className="px-3 sm:px-6 pb-4 sm:pb-6 flex flex-col sm:flex-row justify-end gap-2.5 sm:gap-3">
+  {!passed && <Button variant="outline" onClick={handleRetake} className="w-full sm:w-auto">Try Again</Button>}
   {passed && assessment?.parent_type === 'course_exam' && (
-  <Link href={previewMode ? "#" : "/dashboard/certificates"}>
-  <Button variant="primary">🎓 Get Certificate</Button>
+  <Link href={previewMode ? "#" : "/dashboard/certificates"} className="w-full sm:w-auto">
+  <Button variant="primary" className="w-full sm:w-auto">🎓 Get Certificate</Button>
   </Link>
   )}
   </div>
@@ -867,12 +1065,12 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  return (
  <div className="bg-card border border-border rounded-2xl shadow-sm shadow-black/5 dark:shadow-none overflow-hidden">
  {/* Progress bar */}
- <div className="bg-muted px-6 py-4 border-b border-border">
- <div className="flex justify-between items-center mb-2">
- <span className="text-sm font-bold text-foreground">
+ <div className="bg-muted px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
+ <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
+ <span className="text-xs sm:text-sm font-bold text-foreground">
  <LinkifyText text={assessment.title || 'Assessment'} /> · Question {currentIndex + 1} of {questions.length}
  </span>
- <div className="flex items-center gap-3">
+ <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
  {isSaving && <span className="text-[10px] text-muted-foreground animate-pulse">Saving…</span>}
  {assessment.time_limit_minutes > 0 && <span className="text-xs text-muted-foreground">⏱ {assessment.time_limit_minutes} min limit</span>}
  <span className="text-xs font-bold text-primary">{progress}%</span>
@@ -884,18 +1082,18 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  </div>
 
  {/* Question */}
- <div className="p-6">
- <div className="flex items-start gap-3 mb-6">
- <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">{currentIndex + 1}</span>
- <div>
- <h4 className="text-base font-semibold text-foreground">{currentQ.prompt}</h4>
+ <div className="p-4 sm:p-6">
+ <div className="flex items-start gap-3 mb-4 sm:mb-6">
+ <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">{currentIndex + 1}</span>
+ <div className="flex-1 min-w-0">
+ <h4 className="text-sm sm:text-base font-semibold text-foreground leading-snug">{currentQ.prompt}</h4>
  {currentQ.points > 1 && <span className="text-[10px] text-muted-foreground">{currentQ.points} points</span>}
  </div>
  </div>
 
  {/* Multiple choice */}
  {currentQ.type === 'multiple_choice' && currentQ.choices && (
- <div className="space-y-2 ml-11">
+ <div className="space-y-2 ml-0 sm:ml-11">
  {currentQ.choices.sort((a, b) => a.order - b.order).map(c => {
  const selected = (answers[currentQ.id] as string[] | undefined)?.includes(c.id);
  return (
@@ -911,7 +1109,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  {/* Multiple select */}
  {currentQ.type === 'multiple_select' && currentQ.choices && (
- <div className="space-y-2 ml-11">
+ <div className="space-y-2 ml-0 sm:ml-11">
  <p className="text-xs text-muted-foreground mb-2">Select all that apply</p>
  {currentQ.choices.sort((a, b) => a.order - b.order).map(c => {
  const selected = (answers[currentQ.id] as string[] | undefined)?.includes(c.id);
@@ -928,7 +1126,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  {/* True/False */}
  {currentQ.type === 'true_false' && currentQ.choices && (
- <div className="flex gap-3 ml-11">
+ <div className="flex gap-2 sm:gap-3 ml-0 sm:ml-11">
  {currentQ.choices.sort((a, b) => a.order - b.order).map(c => {
  const selected = (answers[currentQ.id] as string[] | undefined)?.includes(c.id);
  return (
@@ -943,7 +1141,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  {/* Fill blank */}
  {currentQ.type === 'fill_blank' && (
- <div className="ml-11 cursor-pointer">
+ <div className="ml-0 sm:ml-11 cursor-pointer">
  <input type="text" className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
  placeholder="Type your answer…" value={(answers[currentQ.id] as string) ?? ''}
  onChange={e => handleAnswer(currentQ.id, e.target.value)} />
@@ -952,7 +1150,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  {/* Short answer */}
  {currentQ.type === 'short_answer' && (
- <div className="ml-11">
+ <div className="ml-0 sm:ml-11">
  <textarea className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[100px] resize-y"
  placeholder="Write your answer here…" value={(answers[currentQ.id] as string) ?? ''}
  onChange={e => handleAnswer(currentQ.id, e.target.value)} />
@@ -962,7 +1160,7 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
 
  {/* Essay */}
  {currentQ.type === 'essay' && (
- <div className="ml-11">
+ <div className="ml-0 sm:ml-11">
  <textarea className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[200px] resize-y"
  placeholder="Write your essay here…" value={(answers[currentQ.id] as string) ?? ''}
  onChange={e => handleAnswer(currentQ.id, e.target.value)} />
@@ -990,10 +1188,10 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  </div>
 
  {/* Navigation */}
- {submitError && <div className="px-6 pb-2 text-sm text-red-600">{submitError}</div>}
- <div className="px-6 pb-6 flex justify-between items-center gap-3">
- <Button variant="outline" onClick={() => navigate(currentIndex - 1)} disabled={currentIndex === 0}>← Previous</Button>
- <div className="flex gap-1">
+ {submitError && <div className="px-4 sm:px-6 pb-2 text-sm text-red-600">{submitError}</div>}
+ <div className="px-4 sm:px-6 pb-4 sm:pb-6 flex justify-between items-center gap-2">
+ <Button variant="outline" size="sm" onClick={() => navigate(currentIndex - 1)} disabled={currentIndex === 0} className="shrink-0 px-3 sm:px-4 text-xs sm:text-sm">← Previous</Button>
+ <div className="flex gap-1 overflow-hidden shrink-0">
  {questions.map((qItem, i) => {
    const raw = answers[qItem.id];
    const isAnswered = raw !== undefined && raw !== null && (
@@ -1009,9 +1207,9 @@ export function AssessmentViewer({ assessmentId: propAssessmentId, lessonId, cer
  })}
  </div>
  {currentIndex < questions.length - 1 ? (
- <Button variant="primary" onClick={() => navigate(currentIndex + 1)}>Next →</Button>
+ <Button variant="primary" size="sm" onClick={() => navigate(currentIndex + 1)} className="shrink-0 px-3 sm:px-4 text-xs sm:text-sm">Next →</Button>
  ) : (
- <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>
+ <Button variant="primary" size="sm" onClick={handleSubmit} disabled={isSubmitting} className="shrink-0 px-3 sm:px-4 text-xs sm:text-sm">
  {isSubmitting ? 'Submitting…' : 'Submit Answers'}
  </Button>
  )}

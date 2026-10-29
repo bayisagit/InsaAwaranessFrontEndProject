@@ -176,8 +176,8 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-20 bg-muted">
-            <div className="w-full max-w-md bg-card p-8 md:p-10 rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-3 sm:px-4 py-8 sm:py-20 bg-muted">
+            <div className="w-full max-w-md bg-card p-5 sm:p-8 md:p-10 rounded-xl sm:rounded-2xl shadow-sm shadow-black/5 dark:shadow-none border border-border text-center">
                 <div className="flex justify-center mb-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                         <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -186,7 +186,7 @@ export default function ResetPasswordPage() {
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-foreground mb-2">Create New Password</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create New Password</h1>
                 <p className="text-sm font-medium text-muted-foreground mb-8 max-w-xs mx-auto">
                     Choose a strong password you haven&apos;t used before.
                 </p>

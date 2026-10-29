@@ -86,20 +86,20 @@ export default function SelfAssessmentPage() {
  if (isFinished) {
  const result = getResult();
  return (
- <div className="min-h-screen bg-muted flex items-center justify-center p-6 text-center">
- <div className="max-w-xl w-full bg-card rounded-[3rem] shadow-2xl border border-border p-12 relative overflow-hidden">
+ <div className="min-h-screen bg-muted flex items-center justify-center px-3 sm:px-6 py-8 sm:py-12 text-center">
+ <div className="max-w-xl w-full bg-card rounded-2xl sm:rounded-[3rem] shadow-2xl border border-border p-6 sm:p-12 relative overflow-hidden">
  <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-primary via-secondary to-primary"></div>
- <div className="text-6xl mb-6">{result.icon}</div>
- <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">Your Assessment Result</h2>
- <h3 className={`text-4xl font-extrabold mb-4 ${result.color}`}>{result.title}</h3>
- <p className="text-muted-foreground mb-10 leading-relaxed text-lg">{result.desc}</p>
+ <div className="text-5xl sm:text-6xl mb-6">{result.icon}</div>
+ <h2 className="text-xs sm:text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">Your Assessment Result</h2>
+ <h3 className={`text-3xl sm:text-4xl font-extrabold mb-4 ${result.color}`}>{result.title}</h3>
+ <p className="text-muted-foreground mb-8 sm:mb-10 leading-relaxed text-base sm:text-lg">{result.desc}</p>
 
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+ <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-10">
  <Link href="/courses" className="w-full">
- <Button variant="primary" className="w-full py-4">View Recommended Modules</Button>
+ <Button variant="primary" className="w-full py-3.5 sm:py-4">View Recommended Modules</Button>
  </Link>
  <Link href="/dashboard" className="w-full">
- <Button variant="outline" className="w-full py-4">Back to Dashboard</Button>
+ <Button variant="outline" className="w-full py-3.5 sm:py-4">Back to Dashboard</Button>
  </Link>
  </div>
 
@@ -124,29 +124,29 @@ export default function SelfAssessmentPage() {
  actions={
  <div className="flex items-center gap-4">
  <span className="text-sm font-bold text-white font-mono">{((currentStep + 1) / questions.length * 100).toFixed(0)}%</span>
- <div className="w-40 h-2 bg-white/20 rounded-full overflow-hidden">
+ <div className="w-28 sm:w-40 h-2 bg-white/20 rounded-full overflow-hidden">
  <div className="h-full bg-primary transition-all duration-300" style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}></div>
  </div>
  </div>
  }
  />
 
- <div className="max-w-3xl mx-auto px-6 mt-20">
- <div className="bg-card rounded-3xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-10 md:p-16">
- <span className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-4 block">Question {currentStep + 1} of {questions.length}</span>
- <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-12 leading-tight">
+ <div className="max-w-3xl mx-auto px-3 sm:px-6 mt-8 sm:mt-16">
+ <div className="bg-card rounded-2xl sm:rounded-3xl shadow-sm shadow-black/5 dark:shadow-none border border-border p-5 sm:p-10 md:p-16">
+ <span className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 sm:mb-4 block">Question {currentStep + 1} of {questions.length}</span>
+ <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground mb-6 sm:mb-12 leading-tight">
  {current.question}
  </h2>
 
- <div className="space-y-4">
+ <div className="space-y-3 sm:space-y-4">
  {current.options.map((opt, i) => (
  <button
  key={i}
  onClick={() => handleAnswer(opt.points)}
- className="w-full text-left p-6 rounded-2xl border border-border hover:border-primary/30 hover:bg-primary/[0.02] hover:shadow-md shadow-black/10 dark:shadow-none transition-all group flex items-center justify-between cursor-pointer"
+ className="w-full text-left p-4 sm:p-6 rounded-2xl border border-border hover:border-primary/30 hover:bg-primary/[0.02] hover:shadow-md shadow-black/10 dark:shadow-none transition-all group flex items-center justify-between cursor-pointer gap-3"
  >
- <span className="font-medium text-foreground group-hover:text-foreground">{opt.text}</span>
- <span className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-[10px] group-hover:bg-primary group-hover:border-primary transition-colors text-transparent group-hover:text-white">✓</span>
+ <span className="font-medium text-foreground group-hover:text-foreground text-sm sm:text-base">{opt.text}</span>
+ <span className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-[10px] group-hover:bg-primary group-hover:border-primary transition-colors text-transparent group-hover:text-white shrink-0">✓</span>
  </button>
  ))}
  </div>
